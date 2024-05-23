@@ -58,15 +58,13 @@ def run_sim():
     sequences={"ancestral":"".join(ancestral_seq),
                 "derived":"".join(mutated_seq)}
 
-    fa_file=sequences_to_codeml_in(sequences, out_fasta)
+    codeml_input_fa_file=sequences_to_codeml_in(sequences, out_fasta)
 
-    # need
-    #conda install -c bioconda paml
-    result=run_codeml(fa_file, slim_folder)
+    # need "conda install -c bioconda paml"
+    result=run_codeml(codeml_input_fa_file, slim_folder)
     paml_out_file=result.ML_dS_file
-    #ks_results= get_Ks_from_file(paml_out_file)
     results = extract_K_values(out_csv, [paml_out_file])
     print(results)
-    
+
 if __name__ == '__main__':
     run_sim()
