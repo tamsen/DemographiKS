@@ -1,0 +1,109 @@
+// Peter Ralph, 10 September 2019: autotetraploidy
+// Modified by Paul Blischak, 29 September 2020
+
+/*
+	Autopolyploid standard neutral model
+
+	Example usage:
+
+	slim -d "rep=1" autotetraploid_snm.slim
+
+	Parameters:
+
+		rep: Simulation replicate number (for running things in a for loop or
+			 an array job on an HPC).
+*/
+
+initialize() {
+	// Use the rep number to modify the starting seed.
+	// Useful when running on a cluster with jobs starting at the same time.
+	setSeed(rdunif(1, 0, asInteger(2^60) - 1)+asInteger(rep));
+	
+	// Number of individuals in population
+	defineConstant("N", 1000);
+
+	// Length of sequence (L)
+	defineConstant("L", 1e6);
+
+	// Mutation rate
+	defineConstant("mu", 6.25e-7);
+
+	initializeMutationType("m1", 0.5, "f", 0.0);
+	m1.convertToSubstitution = T;
+
+	initializeGenomicElementType("g1", m1, 1.0);
+	initializeGenomicElement(g1, 0, L - 1);
+	initializeMutationRate(mu);
+	initializeRecombinationRate(6.25e-7);
+}
+
+
+/*
+Setup initial population as two "subgenome populations", each with N individuals.
+Then, allow individuals to be exchanged between subgenome populations with equal
+frequency.
+*/
+1 early() {
+	sim.addSubpop("p1", N);
+	sim.addSubpop("p2", N);
+	p1.setMigrationRates(p2, 0.5);
+	p2.setMigrationRates(p1, 0.5);
+}
+
+// Print output every 50 generations.
+late() {
+	if (sim.generation % 50 == 0){
+		catn(sim.generation);
+	}
+}
+
+/*
+The burn-in period is typically 10x the total number of chromosomes in the
+starting population. Since we're modeling a polysomic autotetraploid with 
+1000 individuals, that means that there are 4000 chromosomes and the burn-in
+is 40_000 generations.
+*/
+40000 late() {
+	/*
+	  Here we go through and sample 20 chromosomes from the two populations that make
+	  up the autotetraploid. We then get the SFS using the following steps:
+
+	    1. Find all positions that have mutations across both populations.
+	    2. Tabulate the number of individuals with the mutation across all
+	       possible positions.
+	    3. Use the mutation counts to build the SFS.
+	*/
+	for(i in 1:50){
+		// Sample individuals from pop1
+		pop1_ind = sample(p1.individuals, 10, T);
+		pop2_ind = sample(p2.individuals, 10, T);
+
+		mutSum = rep(0, size(sim.mutations));
+		for (ind in c(pop1_ind,pop2_ind)) {
+			for (g in ind.genomes) {
+				mutSum = mutSum + asInteger(g.containsMutations(sim.mutations));
+			}
+		}
+
+		// Get the SFS by tabulating how often we see mutations with
+		// different frequencies.
+		sfs = rep(0,4 * size(pop1_ind)+1);
+		for(mut in mutSum){
+			sfs[mut] = sfs[mut] + 1;
+		}
+
+		// compute diversity at segregating sites
+		N = 4 * length(pop1_ind);
+		p = mutSum / (4 * length(pop1_ind));
+		p = p[p > 0 & p < 1];
+		pi = mean(2 * p * (1-p));
+		catn("The mean diversity at segregating sites among " + length(pop1_ind) + " individuals is: " + pi);
+		catn("The mean diversity over the whole genome is " + pi * length(p) / L);
+		catn("... and the value expected from theory is " + 8 * p1.individualCount * mu);
+		catn("ratio = " + (pi * length(p) / L) / (8 * p1.individualCount * mu));
+
+		// Write the file in dadi format
+		writeFile("autotetraploid_snm2_"+ rep + "_" +i+".fs", "41 unfolded\n" + paste(sfs, " ") + "\n");
+		//writeFile("autotetraploid_snm2_" + i + ".fs", "41 unfolded\n" + paste(sfs, sep=" ") + "\n");
+	}
+}
