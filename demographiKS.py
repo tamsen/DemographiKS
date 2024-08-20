@@ -7,7 +7,7 @@ from cairosvg import svg2png
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 from ks_calculator import sequences_to_codeml_in, run_codeml
-from ks_histogramer import get_Ks_from_file, extract_K_values
+from ks_histogramer import get_Ks_from_file, extract_K_values, plot_Ks_histogram
 
 
 def run_sim():
@@ -29,6 +29,7 @@ def run_sim():
     trees_file = os.path.join(slim_out_folder,"diploid_trees.txt")
     out_fasta=os.path.join(demographics_out_folder,sim_name + ".fa")
     out_csv=os.path.join(demographics_out_folder,sim_name + ".csv")
+    out_png=os.path.join(demographics_out_folder,sim_name + "_hist.png")
 
     # Run the SLiM model
     #subprocess.check_output(["slim", "-m", "-s", "0", my_SLiM_script])
@@ -141,6 +142,8 @@ def run_sim():
 
     print("Extracting Ks values from PAML.")
     results = extract_K_values(out_csv, paml_out_files)
+    plot_Ks_histogram(out_png, "foo species",results ,
+                      None,None,None,None,"ML","b", 0.001)
     print(results)
 
     print("Done.")
