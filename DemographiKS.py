@@ -20,20 +20,45 @@ def run_sim():
 
     slim_folder="/home/tamsen/Data/SLiM_scripts/"
     my_SLiM_script= os.path.join("SLiM_scripts", "TreeSeqRecording.slim")
-    trees_file=os.path.join(slim_folder,"Tex1_TS.trees")
-    sequence_file=os.path.join(slim_folder,"ex1_TS_overlaid.trees")
-    out_fasta=os.path.join(slim_folder,"ex1_out.fa")
-    out_png=os.path.join(slim_folder,"ex1_out.png")
+    # trees_file=os.path.join(slim_folder,"Tex1_TS.trees")"SLiM_output/diploid_trees.txt"
+    trees_file = os.path.join("SLiM_output/diploid_trees.txt")
+    # sequence_file=os.path.join(slim_folder,"ex1_TS_overlaid.trees")
+    sequence_file = os.path.join("SLiM_output/TS_overlaid_trees.txt")
+
+    out_fasta=os.path.join("SLiM_output/ex1_out.fa")
+    out_png=os.path.join("SLiM_output/ex1_out.png")
     out_csv=os.path.join(slim_folder,"ex1_out.csv")
     subprocess.check_output(["slim", "-m", "-s", "0", my_SLiM_script])
     # Overlay neutral mutations
     ts = tskit.load(trees_file)
 
     #https://tskit.dev/msprime/docs/stable/mutations.html
+
+    #overlays neutral mutations
     mts = msprime.sim_mutations(ts, rate=1e-5, random_seed=42, keep=True)
+    print("Mutations added")
+
+    #writes them out here:
     mts.dump(sequence_file)
-    result = mts.draw_svg()
-    svg2png(bytestring=result,write_to=out_png)
+    #print(str(num_variants) + " mutations written over the trees to " + sequence_file)
+    print("Mutations written over the trees to " + sequence_file)
+
+    v_list = [v for v in mts.variants()]
+    print(str(len(v_list)) + " mutations written (dumped)")
+
+    #giant string...
+    result =mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length))
+    with open(out_fasta, "w") as f:
+        f.write(result)
+
+    print("Sequences written (to FASTA " + out_fasta + " )")
+    print("done")
+    return
+
+    #visualization that isnt very good:
+    #result = mts.draw_svg()
+    #svg2png(bytestring=result,write_to=out_png)
+
     i=0
     ancestral_seq = ["AAA"] * 100
     mutated_seq = ancestral_seq.copy()

@@ -15,15 +15,15 @@ initialize() {
 	// Useful when running on a cluster with jobs starting at the same time.
 	
 	initializeTreeSeq(checkCoalescence=T);
-	
+
+	defineConstant("out_file_name", "/home/tamsen/Git/DemographiKS/DemographiKS/SLiM_output/diploid_snm.txt");
+		
 	defineConstant("rep", 1);
 	
 	setSeed(rdunif(1, 0, asInteger(2^60) - 1)+asInteger(rep));
 	
 	// Number of individuals in population
-	//defineConstant("N", 1000);
-	defineConstant("N", 500);
-
+	defineConstant("N", 100);
 
 	// Length of sequence (L)
 	defineConstant("L", 1e6);
@@ -47,19 +47,29 @@ A population of diploids, neutral evolution
 */
 
 1 early() {
-	sim.addSubpop("p1", N);
+
+	writeFile(out_file_name, "cycle,Ne,Coalesced,numMutations,pi_site,theoretical_theta",F);
 	
+	sim.addSubpop("p1", N);
+
 	community.rescheduleScriptBlock(
 		s2,
-		asInteger(1));
+		asInteger(400));
+		
+
+	//community.rescheduleScriptBlock(
+	//	s3,
+	//	asInteger(40000));
+		
+		
 }
 
 // Print output every 50 generations.
-//late() {
-//	if (sim.cycle % 50 == 0){
-//		catn(sim.cycle);
-//	}
-//}
+late() {
+	if (sim.cycle % 50 == 0){
+		catn(sim.cycle);
+	}
+}
 
 /*
 The burn-in period is typically 10x the total number of chromosomes in the
@@ -95,18 +105,6 @@ is 20_000 generations.
 			sfs[mut] = sfs[mut] + 1;
 		}
 
-		// compute diversity at segregating sites
-		//Ne = 4 * length(pop1_ind);
-		//p = mutSum / (2 * length(pop1_ind));
-		//p = p[p > 0 & p < 1];
-		//pi = mean(2 * p * (1-p));
-		//catn("The mean diversity at segregating sites among " + length(pop1_ind) + " individuals is: " + pi);
-		//catn("The mean diversity over the whole genome is " + pi * length(p) / L);
-		//catn("... and the value expected from theory is " + 8 * p1.individualCount * mu);
-		//catn("ratio = " + (pi * length(p) / L) / (8 * p1.individualCount * mu));
-
-		// Write the file in dadi format
-		//writeFile("diploid_snm2_"+ rep + "_" +i+".fs", "21 unfolded\n" + paste(sfs, " ") + "\n");
 	}
 }
 
@@ -115,35 +113,81 @@ is 20_000 generations.
 
 /// CHECK FOR COALESCENCE ///
 s2 1: late() {
-	if(sim.cycle % 1000 == 0) {
-		if(sim.treeSeqCoalesced()) {
-			// record when coalescence happened
-			//defineConstant("t_coalescence", asInteger(sim.cycle));
-			catn(sim.cycle + ": COALESCED");
-		}
-		else
-		{
-			catn(sim.cycle+"\t: NOT COALESCED");
-		}
-		
-		
+	if(sim.cycle % 100 == 0) {
+				
 		// Sample individuals from pop1
 		pop1_ind = sample(p1.individuals, 10, T);
-		
+		//catn("pop1_ind:\t" + paste(pop1_ind, " "));
 		mutSum = rep(0, size(sim.mutations));
+		numMutations=length(sim.mutations);
+		//catn("total num mutations:\t " + paste(numMutations, " "));
 		for (ind in c(pop1_ind)) {
+			//catn("for individual ind:\t" + paste(ind, " "));
 			for (g in ind.genomes) {
+			
+				//catn("for genome g:\t" + paste(ind, " "));
+				//g.containsMutations:
+				//Returns a logical vector indicating whether each of the mutations in mutations is present in the genome; 
+				//each element in the returned vector indicates whether the corresponding mutation is present (T) or absent (F). 
+				g_containsMutations=g.containsMutations(sim.mutations); //will be T or F of length MUTATIONS
+				//catn("g_containsMutations:\t" + paste(g_containsMutations, " "));
+				//catn("len g_containsMutations:\t" + paste(length(g_containsMutations), " "));
 				mutSum = mutSum + asInteger(g.containsMutations(sim.mutations));
 			}
 		}
-		
+		//catn("total num mutations present:\t " + paste(length(mutSum), " "));	 //length(mutSum) should equal length(sim.mutations)
+		//catn("mutSum[0:5]:\t" + paste(mutSum[0:5], " "));		
 		// compute diversity at segregating sites
 		//N = 4 * length(pop1_ind);
-		p = mutSum / (4 * length(pop1_ind));
+		
+		//p= prob of each mutation happening (a vector), 
+		//is the total number of instances of that mutation / the total possible times it could happen (num chr * num individuals)
+		p = mutSum / (2 * length(pop1_ind));
+		//catn("len p:\t" + paste(length(p), " "));
+		//catn("p[0:5]:\t" + paste(p[0:5], " "));
+		
+		//this part is obvious.. are we seriously worried about negative p and p > 1?
+		//is this a computer precision concern..?
 		p = p[p > 0 & p < 1];
-		pi = mean(2 * p * (1-p));
-		catn("The mean diversity at segregating sites among " + length(pop1_ind) + " individuals is: \t" + pi);
-		catn("The mean diversity over the whole genome:\t" + pi * length(p) / L);
-		catn("The mean expected diversity (from theory):\t" + 8 * p1.individualCount * mu);
+		
+		//pi measures the average number of nucleotide differences between two randomly selected DNA sequences from a population
+		// p = chance seq 1 having the mutation 
+		// q = 1-p = chance seq 2 not having the mutation
+		// chance of difference = 2 * p * q			
+		pi_mut = mean(2 * p * (1-p)); //chance of diversity, for a given mutation
+		catn("chance of diversity, for a given mutation:\t" + paste(pi_mut, " "));
+		
+		pi_site = pi_mut * length(p) / L;
+		catn("chance of diversity, for a given site:\t" +pi_site);
+
+		theoretical_theta =4* p1.individualCount * mu;		
+		catn("theta=4Ne*mu:\t" + theoretical_theta);
+		
+		Coalesced=sim.treeSeqCoalesced();
+		catn("coalesced:\t" +Coalesced);	
+		writeFile(out_file_name, sim.cycle + "," + N + "," + Coalesced+ ","+ numMutations +  ","+
+			+ pi_site + ","  + theoretical_theta,T);
+			
+		
+		myCycle=asInteger(sim.cycle);
+		if (Coalesced){
+			catn("Got here 1 !!!");
+			community.deregisterScriptBlock(s2);
+			
+			
+			community.rescheduleScriptBlock(
+			s3,myCycle);
+		}
+		//	sim.deregisterScriptBlock()
+		//defineConstant("t_coalescence", asInteger(sim.generation));
+		//C=c(C,F);
+		//catn("C", paste(C, ","));
+			
 	}
 }
+
+/// After COALESCENCE ///
+s3 1: late() {
+	catn("Got here 2 !!!");
+	//community.deregisterScriptBlock(s3);
+}	
