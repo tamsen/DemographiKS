@@ -16,13 +16,19 @@ def run_sim():
     #if not conf:
     #    return
 
-    num_codons=5
-    gene_length=num_codons*3 #nucleotides
+    num_codons=1000
+    len_codon=3
+    gene_length=num_codons*len_codon #nucleotides
+    stop_codons=["TAA","TGA","TAG"]
+    max_num_paralogs_to_process=20 #per genome
+    focal_genomes=["n11","n45"] #pick two randomly
+
     slim_out_folder="SLiM_output"
     demographics_out_folder="demographics_output"
     sim_name="diploid_snm"
     trees_file = os.path.join(slim_out_folder,"diploid_trees.txt")
     out_fasta=os.path.join(demographics_out_folder,sim_name + ".fa")
+    out_csv=os.path.join(demographics_out_folder,sim_name + ".csv")
 
     # Run the SLiM model
     #subprocess.check_output(["slim", "-m", "-s", "0", my_SLiM_script])
@@ -42,15 +48,12 @@ def run_sim():
 
     print("Sequences written to FASTA file: " + out_fasta + ".")
 
-    sequences_we_care_about=["n11","n45"] #pick two randomly
-
-    max_num_paralogs_to_process=5
     sequences_by_paralog_name_dict={}
     with open(out_fasta) as f:
 
         for seq_record in SeqIO.parse(f, 'fasta'):
             seq_record.id = seq_record.description = seq_record.id.replace('.seq','')
-            if seq_record.id in sequences_we_care_about:
+            if seq_record.id in focal_genomes:
                 start_index_in_sequence = 0
                 num_paralogs_porcessed=0
                 genome_name = sim_name + "_" + seq_record.id
@@ -73,28 +76,72 @@ def run_sim():
                     subsequence=seq[start_index_in_sequence:end_index_in_sequence]
                     sequences_by_paralog_name_dict[start_index_in_sequence][paralog_name]=subsequence
 
-                    print("Subsequence : " + subsequence)
+                    #print("Subsequence : " + subsequence)
                     start_index_in_sequence = start_index_in_sequence+gene_length
                     out_per_genome_fasta = os.path.join(demographics_out_folder, paralog_name + ".fa")
-                    print("Writing data for : " + out_per_genome_fasta + ".")
+                    #print("Writing data for : " + out_per_genome_fasta + ".")
                     record = SeqRecord(subsequence,
                                        id=seq_record.id, name=paralog_name,
                                        description="simulated paralogous gene")
                     SeqIO.write(record, out_per_genome_fasta , "fasta")
                     num_paralogs_porcessed = num_paralogs_porcessed + 1
 
-    print("Sorting paralogs.")
-    for paralog in sequences_by_paralog_name_dict:
-        paralog_fa_file = os.path.join(demographics_out_folder, "paralog_" + str(paralog) +".fa")
 
-        codeml_input_fa_file=sequences_to_codeml_in(sequences_by_paralog_name_dict[paralog], paralog_fa_file)
+    print("Removing STOP codons. PAML needs sequences that code for AA only")
+    cleaned_sequences_by_paralog_name_dict={}
+    problem_codons_by_paralog_name_dict={}
+    for paralog_key, sequences_dict in sequences_by_paralog_name_dict.items():
+
+        cleaned_sequences_by_paralog_name_dict[paralog_key] = {}
+        print("checking paralog " + str(paralog_key))
+        problem_codon_indexes = []
+        for seq_key, sequence in sequences_dict.items():
+            #cleaned_sequences_by_paralog_name_dict[paralog_key][seq_key] ="{}"
+            #codons=[]
+            for i in range(0,num_codons):
+                codon=str(sequence[3*i:3*(i+1)])
+                if codon in stop_codons:
+                    print("problem codon:\t" + codon)
+                    #codon = "STOP"
+                    problem_codon_indexes.append(i)
+                #codons.append(codon)
+        problem_codons_by_paralog_name_dict[paralog_key]=problem_codon_indexes
+        #print("problem codons " + str(problem_codon_indexes))
+        #print("codons:\t"  + str(codons))
+
+        #get the clean sequences:
+
+    for paralog_key, cleaned_sequences_dict in cleaned_sequences_by_paralog_name_dict.items():
+        problem_codon_indexes = problem_codons_by_paralog_name_dict[paralog_key]
+        for seq_key, sequence in sequences_by_paralog_name_dict[paralog_key].items():
+            print("problem codons " + str(problem_codon_indexes))
+            print("original sequence:\t" + str(sequence))
+            revised_seq=str(sequence)
+            for problem_codon_index in problem_codon_indexes:
+                revised_seq = revised_seq[:problem_codon_index *len_codon] + "NNN" + revised_seq[(problem_codon_index  + 1)*len_codon:]
+            print("revised sequence :\t" + revised_seq)
+            cleaned_sequences_by_paralog_name_dict[paralog_key][seq_key]=revised_seq
+
+
+    print("Sorting paralogs.")
+    paml_out_files=[]
+    for paralog in cleaned_sequences_by_paralog_name_dict:
+
+        paralog_folder =os.path.join(demographics_out_folder, "paralog_" + str(paralog))
+        if not os.path.exists(paralog_folder):
+            os.makedirs(paralog_folder)
+
+        paralog_fa_file = os.path.join(paralog_folder, "paralog_" + str(paralog) +".fa")
+        codeml_input_fa_file=sequences_to_codeml_in(cleaned_sequences_by_paralog_name_dict[paralog], paralog_fa_file)
         print("codeml_input_fa_file written to " + codeml_input_fa_file)
+
         # need "conda install -c bioconda paml"
-        codeml_out_folder=""
-        result=run_codeml(codeml_input_fa_file, demographics_out_folder)
-        #paml_out_file=result.ML_dS_file
-    #results = extract_K_values(out_csv, [paml_out_file])
-    #print(results)
+        result=run_codeml(codeml_input_fa_file, paralog_folder)
+        paml_out_files.append(result.ML_dS_file)
+
+    print("Extracting Ks values from PAML.")
+    results = extract_K_values(out_csv, paml_out_files)
+    print(results)
 
     print("Done.")
     return
