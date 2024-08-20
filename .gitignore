@@ -160,4 +160,5 @@ cython_debug/
 .idea/
 test_code/test_out/*
 SLiM_output/*
+demographics_output/*
 

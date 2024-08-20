@@ -33,7 +33,9 @@ def write_codeml_control_file(template_ctl_file, sequence_file):
             new_line = line
 
             if "DUMMY.codonalign.fa" in line:
-                new_line = line.replace("DUMMY.codonalign.fa", sequence_file)
+                #new_line = line.replace("DUMMY.codonalign.fa", sequence_file)
+                new_line = line.replace("DUMMY.codonalign.fa",os.path.basename(sequence_file))
+                print(new_line)
 
             if "mlcTree_DUMMY.out" in line:
                 new_line = line.replace("DUMMY", base_name)

@@ -9,7 +9,7 @@ from ks_calculator import sequences_to_codeml_in, run_codeml
 from ks_histogramer import get_Ks_from_file, extract_K_values
 
 
-def run_sim():
+def run_sim_old():
 
     #conf = setup(sys.argv)
     #if not conf:
