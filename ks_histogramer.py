@@ -77,8 +77,8 @@ def plot_Ks_histogram(PAML_hist_out_file, species_name, Ks_results, WGD_as_Ks, S
     plt.legend()
     plt.xlabel("Ks")
     plt.ylabel("Count in Bin")
-    plt.title("Ks histogram\n" +
-              "algorithm: PAML " + alg_name)
+    plt.title("Ks histogram for " + species_name+ "\n" +
+              "algorithm: PAML " + alg_name + " num paralogs: " + str(len(Ks_results)))
     plt.savefig(PAML_hist_out_file)
     plt.clf()
     plt.close()

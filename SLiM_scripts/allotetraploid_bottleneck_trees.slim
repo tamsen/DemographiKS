@@ -16,34 +16,43 @@
 */
 
 initialize() {
-
-	defineConstant("nuBot", 0.1);	
+	
+	defineConstant("nuBot", 0.1);
 	defineConstant("T1", 0.5);
 	defineConstant("T2", 0.25);
 	defineConstant("rep", 1);
 	//defineConstant("out_file_name", "/home/tamsen/Git/DemographiKS/DemographiKS/SLiM_output/allotetraploid_steady_state.txt");
-	defineConstant("trees_file_name", "/home/tamsen/Git/DemographiKS/DemographiKS/SLiM_output/allotetraploid_trees.txt");	
+	defineConstant("trees_file_name", "/home/tamsen/Git/DemographiKS/DemographiKS/SLiM_output/allotetraploid_trees.txt");
 	initializeTreeSeq(checkCoalescence=F);
 	
 	// Use the rep number to modify the starting seed.
 	// Useful when running on a cluster with jobs starting at the same time.
 	setSeed(rdunif(1, 0, asInteger(2^60) - 1)+asInteger(rep));
-
+	
 	// Number of individuals in population
 	//defineConstant("N", 1000);
-	defineConstant("N", 50);
-
+	defineConstant("N", 1000);
+	
 	// Length of sequence (L)
 	//defineConstant("L", 1e6);
-	defineConstant("L", 1e4);
-
+	defineConstant("L", 1e5);
+	
 	// Mutation rate
 	//defineConstant("mu", 1.25e-6);
 	defineConstant("mu", 0);
+	
+	// Burnin time (generally 10 * num chr = 10 * 2 * N)
+	defineConstant("BurninTime", 10*2*N);	
 
+	// Bottleneck time (Schedule population bottleneck at generation (2N * T1)
+	defineConstant("BottleneckTime",  2*N * asFloat(T1));	
+	
+	// Sampling time (Schedule sampling time at (2N * (T1 + T2)))
+	defineConstant("SamplingTime",   2*N * (asFloat(T1) + asFloat(T2)));
+	
 	initializeMutationType("m1", 0.5, "f", 0.0);
 	m1.convertToSubstitution = T;
-
+	
 	initializeGenomicElementType("g1", m1, 1.0);
 	initializeGenomicElement(g1, 0, L - 1);
 	initializeMutationRate(mu);
@@ -58,28 +67,28 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 	sim.addSubpop("p1", N);
 	community.rescheduleScriptBlock(
 		s1,
-		asInteger(20000 + 2000 * asFloat(T1)),
-		asInteger(20000 + 2000 * asFloat(T1))
-	);
+		asInteger(BurninTime + BottleneckTime),
+		asInteger(BurninTime + BottleneckTime)
+		);
 	community.rescheduleScriptBlock(
 		s2,
-		asInteger(20000 + 2000 * (asFloat(T1) + asFloat(T2))),
-		asInteger(20000 + 2000 * (asFloat(T1) + asFloat(T2)))
-	);
+		asInteger(BurninTime + SamplingTime),
+		asInteger(BurninTime + SamplingTime)
+		);
 	community.rescheduleScriptBlock(
 		s3,
-		asInteger(20000 + 2000 * (asFloat(T1) + asFloat(T2))),
-		asInteger(20000 + 2000 * (asFloat(T1) + asFloat(T2)))
-	);
+		asInteger(BurninTime + SamplingTime),
+		asInteger(BurninTime + SamplingTime)
+		);
 }
 
 // Burn-in here is 10 * 2 * 1000 = 20_000 generations.
-20000: late() {
+BurninTime: late() {
 	catn(sim.cycle + "\t" + p1.individualCount + "\t" + p2.individualCount);
 }
 
 // Split populations after burn-in.
-20000 early() {
+BurninTime early() {
 	sim.addSubpopSplit("p2", N, p1);
 }
 
@@ -88,8 +97,9 @@ Block is rescheduled in generation 1. This block is for starting the bottleneck.
 */
 s1 10 late() {
 	catn(sim.cycle  + "\t block s1 executed");
-	p1.setSubpopulationSize(asInteger(asFloat(nuBot) * 1000));
-	p2.setSubpopulationSize(asInteger(asFloat(nuBot) * 1000));
+	catn(sim.cycle  + "\t starting the bottleneck");
+	p1.setSubpopulationSize(asInteger(asFloat(nuBot) * N));
+	p2.setSubpopulationSize(asInteger(asFloat(nuBot) * N));
 }
 
 /*
@@ -110,34 +120,36 @@ s2 10 late() {
 	for(i in 1:50){
 		// Sample individuals from pop1 with tag 1
 		pop1_ind = sample(p1.individuals, 10, T);
-
+		
 		// Get the genomes of the sampled individuals
 		pop1_g   = sapply(pop1_ind, "applyValue.genomes;");
-
+		
 		// Sample individuals from pop1 with tag 2
 		pop2_ind = sample(p2.individuals, 10, T);
-
+		
 		// Get the genomes of the pop2 individuals
 		pop2_g   = sapply(pop2_ind, "applyValue.genomes;");
-
+		
 		// Find where the mutations are on the sampled chromosomes
 		// and sort by position for convenience
 		pop1_m = sortBy(unique(pop1_g.mutations), "position");
 		pop2_m = sortBy(unique(pop2_g.mutations), "position");
-
+		
 		// Take the union of mutated positions to get all
 		// places where a mutation happened in both populations.
+		// note this will be zero if mutation rate is set to zero
 		m = setUnion(pop1_m,pop2_m);
-		print(size(m));
-
+		print(i +"'th size m. num times a mutation happened in both populations: " + size(m));
+		
 		// make a vector of 0's to store the number of individuals
 		// with mutations at each position in both populations
 		pop1_mutSum = rep(0,size(m));
 		pop2_mutSum = rep(0,size(m));
-
+		
 		// initialize the SFS
+		// 41 =  10*4 individual chr in play + 1, for the num bins in SFS.
 		sfs = rep(0,41);
-
+		
 		// Loop through each genome/chromosome and see if it has a mutations
 		// at a given position. If it does, add it to the count (this is adding vectors).
 		for(genome in pop1_g){
@@ -148,26 +160,46 @@ s2 10 late() {
 			hasMuts = (match(m, genome.mutations) >= 0);
 			pop2_mutSum = pop2_mutSum + asInteger(hasMuts);
 		}
-
+		
 		// Add the mutation count vectors for pop1 and pop2 together
 		mutSum = pop1_mutSum + pop2_mutSum;
-
+		
 		// Get the SFS by tabulating how often we see mutations with
 		// different frequencies.
 		for(mut in mutSum){
 			sfs[mut] = sfs[mut] + 1;
 		}
-
+		
 		// Write the file in dadi format
 		writeFile(
 			"allotetraploid_bottleneck_"+nuBot+"_"+T1+"_"+T2+"_"+rep+"_"+i+".fs",
-			"41 unfolded\n"+paste(sfs, " ")+"\n"
-		);
+			"41 unfolded\n"+paste(sfs,sep=" ")+"\n"
+			);
 	}
 }
 
 s3 10 late() {
 	catn(sim.cycle + "\t block s3 executed");
 	sim.treeSeqOutput(trees_file_name);
-	catn("wrote trees file to:\t" + trees_file_name);	
+	catn("wrote trees file to:\t" + trees_file_name);
+}
+
+/// print out population size///
+1: late() {
+	if(sim.cycle % 100 == 0) {
+		
+		num_p1 = size(p1.individuals);
+		catn("size p1:\t" + num_p1 );
+	}
+}
+
+
+asInteger(BurninTime + (2*N * asFloat(T1))): late() {
+	if(sim.cycle % 100 == 0) {
+		
+		num_p1 = size(p1.individuals);
+		num_p2 = size(p2.individuals);
+		catn("size p1:\t" + num_p1 );
+		catn("size p2:\t" + num_p2 );
+	}
 }
