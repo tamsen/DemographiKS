@@ -25,8 +25,10 @@ def run_sim():
 
     slim_out_folder="SLiM_output"
     demographics_out_folder="demographics_output"
-    sim_name="diploid_snm"
-    trees_file = os.path.join(slim_out_folder,"diploid_trees.txt")
+    #sim_name="diploid_snm"
+    #trees_file = os.path.join(slim_out_folder,"diploid_trees.txt")
+    sim_name = "allotetraploid_bottleneck"
+    trees_file = os.path.join(slim_out_folder,"allotetraploid_trees.txt")
     out_fasta=os.path.join(demographics_out_folder,sim_name + ".fa")
     out_csv=os.path.join(demographics_out_folder,sim_name + ".csv")
     out_png=os.path.join(demographics_out_folder,sim_name + "_hist.png")
@@ -36,6 +38,12 @@ def run_sim():
 
 
     ts = tskit.load(trees_file)
+    metadata=ts.metadata["SLiM"]
+    n_populations=ts.nodes_population[1:10]
+    n_individuals=ts.nodes_individual[1:10]
+    print("SLiM metadata dict:\t" + str(metadata))
+    print("SLiM populations:\t" + str(n_populations))
+    print("SLiM individuals:\t" + str(n_individuals))
 
     #overlays neutral mutations
     mts = msprime.sim_mutations(ts, rate=1e-5, random_seed=42, keep=True)
@@ -44,6 +52,7 @@ def run_sim():
 
     #giant string...
     result =mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length))
+    return
     with open(out_fasta, "w") as f:
         f.write(result)
 
@@ -102,7 +111,7 @@ def run_sim():
             for i in range(0,num_codons):
                 codon=str(sequence[3*i:3*(i+1)])
                 if codon in stop_codons:
-                    print("problem codon:\t" + codon)
+                    #print("problem codon:\t" + codon)
                     #codon = "STOP"
                     problem_codon_indexes.append(i)
                 #codons.append(codon)
@@ -116,11 +125,11 @@ def run_sim():
         problem_codon_indexes = problem_codons_by_paralog_name_dict[paralog_key]
         for seq_key, sequence in sequences_by_paralog_name_dict[paralog_key].items():
             print("problem codons " + str(problem_codon_indexes))
-            print("original sequence:\t" + str(sequence))
+            #print("original sequence:\t" + str(sequence))
             revised_seq=str(sequence)
             for problem_codon_index in problem_codon_indexes:
                 revised_seq = revised_seq[:problem_codon_index *len_codon] + "NNN" + revised_seq[(problem_codon_index  + 1)*len_codon:]
-            print("revised sequence :\t" + revised_seq)
+            #print("revised sequence :\t" + revised_seq)
             cleaned_sequences_by_paralog_name_dict[paralog_key][seq_key]=revised_seq
 
 
