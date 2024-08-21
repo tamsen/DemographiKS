@@ -34,6 +34,9 @@ def run_sim():
     out_csv=os.path.join(demographics_out_folder,sim_name + ".csv")
     out_png=os.path.join(demographics_out_folder,sim_name + "_hist.png")
 
+    #TODO:
+    # mk slim_out_folder, demographics_out_folder if they dont exist already
+
     # Run the SLiM model
     print("Running SLiM:\t" + str(my_SLiM_script))
     subprocess.check_output(["slim", "-m", "-s", "0", my_SLiM_script])

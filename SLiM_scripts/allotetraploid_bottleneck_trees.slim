@@ -22,7 +22,9 @@ initialize() {
 	defineConstant("T2", 0.25);
 	defineConstant("rep", 1);
 	//defineConstant("out_file_name", "/home/tamsen/Git/DemographiKS/DemographiKS/SLiM_output/allotetraploid_steady_state.txt");
-	defineConstant("trees_file_name", "/home/tamsen/Git/DemographiKS/DemographiKS/SLiM_output/allotetraploid_trees.txt");
+	//defineConstant("trees_file_name", "/home/tamsen/Git/DemographiKS/DemographiKS/SLiM_output/allotetraploid_trees.txt");
+	defineConstant("trees_file_name", "SLiM_output/allotetraploid_trees.txt");
+
 	initializeTreeSeq(checkCoalescence=F);
 	
 	// Use the rep number to modify the starting seed.
@@ -171,10 +173,10 @@ s2 10 late() {
 		}
 		
 		// Write the file in dadi format
-		writeFile(
-			"allotetraploid_bottleneck_"+nuBot+"_"+T1+"_"+T2+"_"+rep+"_"+i+".fs",
-			"41 unfolded\n"+paste(sfs,sep=" ")+"\n"
-			);
+		//writeFile(
+		//	"allotetraploid_bottleneck_"+nuBot+"_"+T1+"_"+T2+"_"+rep+"_"+i+".fs",
+		//	"41 unfolded\n"+paste(sfs,sep=" ")+"\n"
+		//	);
 	}
 }
 
