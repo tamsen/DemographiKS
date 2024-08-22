@@ -39,6 +39,7 @@ def run_sim():
 
     # Run the SLiM model
     print("Running SLiM:\t" + str(my_SLiM_script))
+    #slim - d    "T1=0.5" - d "T2=0.25" - d "dij=0.001" - d  "rep=1"
     subprocess.check_output(["slim", "-m", "-s", "0", my_SLiM_script])
 
     print("Loading:\t" + str(trees_file))
@@ -183,6 +184,27 @@ def run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_
         paml_out_files.append(result.ML_dS_file)
     return paml_out_files
 
+def run_slim(Tdiv,out_folder):
+
+	#Parameters:
+	#	nuBot: Proportion of the ancestral population size remaining after bottleneck.
+	#	T1: The amount of time in dadi units (# of 2N generations) that the parents
+	#		are isolated before forming the allotetraploid.
+	#	T2: The amount of time the allotetraploid lineage has existed before we sample
+	#		it.
+	#	rep: Simulation replicate number (for running things in a for loop or
+	#		 an array job on an HPC).
+    #slim - d    "T1=0.5" - d "T2=0.25" - d "dij=0.001" - d  "rep=1"
+
+    cmd = ["slim","-d",o"T1=0.5" - d "T2=0.25" - d "dij=0.001" - d  "rep=1"]
+    print("\t cmd: " + " ".join(cmd))
+    print("\t cwd: " + out_folder)
+    print("\t calculating Ks.. ")
+    process_wrapper.run_and_wait_on_process(cmd, out_folder)
+    print("\t Ks determined...")
+    result= codeml_result(out_folder)
+
+    return result
 
 if __name__ == '__main__':
     run_sim()

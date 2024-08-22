@@ -22,11 +22,11 @@ def run_and_wait_with_retry(cmd, folder, excuse, num_retries_allowed, sleepy_tim
 
     return out_string,error_string
 
-def run_and_wait_on_process(cmd, folder):
+def run_and_wait_on_process(cmd, cwd_folder):
 
     program=cmd[0]
     print(" ".join(cmd) )
-    process_completed_result = subprocess.run(cmd, capture_output=True, cwd=folder)
+    process_completed_result = subprocess.run(cmd, capture_output=True, cwd=cwd_folder)
     error_string=process_completed_result.stderr.decode()
     out_string=process_completed_result.stdout.decode()
 
@@ -40,9 +40,9 @@ def run_and_wait_on_process(cmd, folder):
     #print(program+" stderr:\t" + error_string)
     #print(program+" stdout:\t" + out_string)
 
-    with open(os.path.join(folder, program+ "_stderr.txt"), 'w') as f:
+    with open(os.path.join(cwd_folder, program + "_stderr.txt"), 'w') as f:
         f.writelines(error_string)
-    with open(os.path.join(folder, program+"_stdout.txt"), 'w') as f:
+    with open(os.path.join(cwd_folder, program + "_stdout.txt"), 'w') as f:
         f.writelines(out_string)
 
     return out_string,error_string
