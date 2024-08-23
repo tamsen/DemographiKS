@@ -6,12 +6,15 @@ import tskit
 from cairosvg import svg2png
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
+
+import process_wrapper
 from ks_calculator import sequences_to_codeml_in, run_codeml
 from ks_histogramer import get_Ks_from_file, extract_K_values, plot_Ks_histogram
 
 
 def run_sim():
 
+    # TODO ~ setup config and log file
     #conf = setup(sys.argv)
     #if not conf:
     #    return
@@ -21,12 +24,10 @@ def run_sim():
     gene_length=num_codons_in_a_gene*len_codon #nucleotides
     stop_codons=["TAA","TGA","TAG"]
     max_num_paralogs_to_process=20 #per genome
-    focal_genomes=["n11","n245"] #pick two randomly
-
-    slim_out_folder="SLiM_output"
-    demographics_out_folder="demographiKS_output"
-    #sim_name="diploid_snm"
-    #trees_file = os.path.join(slim_out_folder,"diploid_trees.txt")
+    focal_genomes=["n11","n245"] #pick two randomly from each parent
+    out_folder="/home/tamsen/Data/DemographiKS/"
+    slim_out_folder=os.path.join(out_folder,"SLiM_output")
+    demographics_out_folder=os.path.join(out_folder,"demographiKS_output")
     sim_name = "allotetraploid_bottleneck"
     trees_file = os.path.join(slim_out_folder,"allotetraploid_trees.txt")
     my_SLiM_script= os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
@@ -36,11 +37,14 @@ def run_sim():
 
     #TODO:
     # mk slim_out_folder, demographics_out_folder if they dont exist already
+    folders_needed=[out_folder,demographics_out_folder,slim_out_folder]
+    for f in folders_needed:
+        if not os.path.exists(f):
+            os.mkdir(f)
 
     # Run the SLiM model
     print("Running SLiM:\t" + str(my_SLiM_script))
-    #slim - d    "T1=0.5" - d "T2=0.25" - d "dij=0.001" - d  "rep=1"
-    subprocess.check_output(["slim", "-m", "-s", "0", my_SLiM_script])
+    run_slim('Tdiv',trees_file, my_SLiM_script,out_folder)
 
     print("Loading:\t" + str(trees_file))
     ts = tskit.load(trees_file)
@@ -184,7 +188,9 @@ def run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_
         paml_out_files.append(result.ML_dS_file)
     return paml_out_files
 
-def run_slim(Tdiv,out_folder):
+def run_slim(Tdiv,trees_file_name, my_SLiM_script,out_folder):
+
+    full_path_to_slim_script=os.path.join(os.getcwd(),my_SLiM_script)
 
 	#Parameters:
 	#	nuBot: Proportion of the ancestral population size remaining after bottleneck.
@@ -194,17 +200,19 @@ def run_slim(Tdiv,out_folder):
 	#		it.
 	#	rep: Simulation replicate number (for running things in a for loop or
 	#		 an array job on an HPC).
-    #slim - d    "T1=0.5" - d "T2=0.25" - d "dij=0.001" - d  "rep=1"
 
-    cmd = ["slim","-d",o"T1=0.5" - d "T2=0.25" - d "dij=0.001" - d  "rep=1"]
+    cmd = ["slim",
+           "-d", "trees_file_name='"+str(trees_file_name)+"'",
+           "-d", "nuBot=" + str(0.1),
+           "-d", "T2=" + str(0.5),
+           "-d", "T1=" + str(0.25),
+           "-d", "rep=" + str(1),
+           "-m", "-s", "0", full_path_to_slim_script]
+
     print("\t cmd: " + " ".join(cmd))
     print("\t cwd: " + out_folder)
-    print("\t calculating Ks.. ")
-    process_wrapper.run_and_wait_on_process(cmd, out_folder)
-    print("\t Ks determined...")
-    result= codeml_result(out_folder)
-
-    return result
+    out_string,error_string = process_wrapper.run_and_wait_on_process(cmd, out_folder)
+    return
 
 if __name__ == '__main__':
     run_sim()
