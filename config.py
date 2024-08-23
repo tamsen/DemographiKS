@@ -1,0 +1,94 @@
+# eventually this should be read in from an xml config or similar
+import math
+import xml.etree.ElementTree as ET
+
+
+class DemographiKS_config:
+
+    output_folder_root = "/home/DemographiKS_output"
+
+    test_burnin = False
+    stop_codons=["TAA","TGA","TAG"]
+    num_codons_in_a_gene=1000
+    len_codon=3
+    gene_length=num_codons_in_a_gene*len_codon #nucleotides
+    stop_codons=["TAA","TGA","TAG"]
+    max_num_paralogs_to_process=20 #per genome
+    log_file_name = "log.txt"
+    total_num_bases = 2000
+
+    def __init__(self, config_file):
+
+        mytree = ET.parse(config_file)
+        myroot = mytree.getroot()
+
+        for top_layer in myroot:
+
+            for top_layer in myroot:
+                incoming_tag = top_layer.tag.strip()
+                incoming_txt = top_layer.text.strip()
+
+                if (incoming_tag == "Paths"):
+                    for inner_layer in top_layer:
+                        incoming_txt = inner_layer.text.strip()
+                        incoming_tag = inner_layer.tag.strip()
+                        if (incoming_tag == "output_folder_root"):
+                            self.output_folder_root = incoming_txt
+
+
+                if (incoming_tag == "Chromosome"):
+                    for inner_layer in top_layer:
+                        incoming_txt = inner_layer.text.strip()
+                        incoming_tag = inner_layer.tag.strip()
+
+                        if (incoming_tag == "total_num_bases"):
+                            self.total_num_bases = int(incoming_txt)
+                        if (incoming_tag == "num_codons_in_a_gene"):
+                            self.num_codons_in_a_gene = int(incoming_txt)
+                        if (incoming_tag == "max_num_paralogs_to_process"):
+                            self.max_num_paralogs_to_process = parse_int_or_false(incoming_txt)
+
+
+                if (incoming_tag == "SequenceEvolution"):
+                    for inner_layer in top_layer:
+                        incoming_txt = inner_layer.text.strip()
+                        incoming_tag = inner_layer.tag.strip()
+                        if (incoming_tag == "num_replicates_per_gene_tree"):
+                            self.num_replicates_per_gene_tree = int(incoming_txt)
+                        if (incoming_tag == "num_codons"):
+                            self.num_codons = int(incoming_txt)
+                        if (incoming_tag == "Ks_per_Myr"):
+                            self.Ks_per_Myr = float(incoming_txt)
+                        if (incoming_tag == "per_site_evolutionary_distance"):
+                            self.per_site_evolutionary_distance = float(incoming_txt)
+                        if (incoming_tag == "evolver_random_seed"):
+                            self.evolver_random_seed = int(incoming_txt)
+
+def parse_tuple_string(tuple_string):
+    if tuple_string.upper() == "FALSE":
+        return False
+    else:
+        splat = tuple_string.replace("(", "").replace(")", "").split(",")
+        data = [float(s) for s in splat]
+        return data
+
+def parse_float_or_false(input_string):
+    if input_string.upper() == "FALSE":
+        return False
+    else:
+        return float(input_string)
+
+def parse_int_or_false(input_string):
+    if input_string.upper() == "FALSE":
+        return False
+    else:
+        return int(input_string)
+
+
+def parse_comma_separated_values(input_string):
+    if input_string.upper() == "FALSE":
+        return False
+    else:
+        cleaned_string=input_string.replace("(", "").replace(")", "")
+        splat = cleaned_string.split(",")
+        return splat

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import glob
 import shutil
-import ks_calculator
+from modules import ks_calculator
 
 
 def get_Ks_from_file(paml_out_file):

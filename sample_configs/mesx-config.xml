@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <Paths>
+          <output_folder_root>/usr/scratch2/userdata2/tdunn/DemographiKS_output/DemographiKS</output_folder_root>
+    </Paths>
+    <Chromosome>
+        <total_num_bases>1000000</total_num_bases>
+        <num_codons_in_a_gene>1000</num_codons_in_a_gene>
+        <max_num_paralogs_to_process>False</max_num_paralogs_to_process>
+        <!--<max_num_paralogs_to_process>40</max_num_paralogs_to_process>-->
+    </Chromosome>
+    <StopAtStep>999</StopAtStep>
+    <LogFileName>DemographiKS_log.txt</LogFileName>
+    <IncludeVisuals>False</IncludeVisuals>
+</metadata>

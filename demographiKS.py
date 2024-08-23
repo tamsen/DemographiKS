@@ -1,33 +1,31 @@
+import datetime
 import os
-import subprocess, pyslim
+import shutil
 import msprime
-import numpy as np
+import sys
 import tskit
-from cairosvg import svg2png
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 
-import process_wrapper
-from ks_calculator import sequences_to_codeml_in, run_codeml
-from ks_histogramer import get_Ks_from_file, extract_K_values, plot_Ks_histogram
-
+import config
+import version
+from datetime import datetime
+from modules import SLiM_runner,ks_calculator, FASTA_extracta,ks_histogramer
 
 def run_sim():
 
-    # TODO ~ setup config and log file
-    #conf = setup(sys.argv)
-    #if not conf:
-    #    return
+    conf = setup(sys.argv)
+    if not conf:
+        return
 
-    num_codons_in_a_gene=1000
-    len_codon=3
-    gene_length=num_codons_in_a_gene*len_codon #nucleotides
-    stop_codons=["TAA","TGA","TAG"]
-    max_num_paralogs_to_process=20 #per genome
+    #num_codons_in_a_gene=1000
+    #len_codon=3
+    #gene_length=num_codons_in_a_gene*len_codon #nucleotides
+    #stop_codons=["TAA","TGA","TAG"]
+    #max_num_paralogs_to_process=20 #per genome
     focal_genomes=["n11","n245"] #pick two randomly from each parent
-    out_folder="/home/tamsen/Data/DemographiKS/"
-    slim_out_folder=os.path.join(out_folder,"SLiM_output")
-    demographics_out_folder=os.path.join(out_folder,"demographiKS_output")
+    slim_out_folder=os.path.join(conf.output_folder,"SLiM_output")
+    demographics_out_folder=os.path.join(conf.output_folder,"demographiKS_output")
     sim_name = "allotetraploid_bottleneck"
     trees_file = os.path.join(slim_out_folder,"allotetraploid_trees.txt")
     my_SLiM_script= os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
@@ -35,22 +33,18 @@ def run_sim():
     out_csv=os.path.join(demographics_out_folder,sim_name + ".csv")
     out_png=os.path.join(demographics_out_folder,sim_name + "_hist.png")
 
-    #TODO:
-    # mk slim_out_folder, demographics_out_folder if they dont exist already
-    folders_needed=[out_folder,demographics_out_folder,slim_out_folder]
+    folders_needed=[conf.output_folder,demographics_out_folder,slim_out_folder]
     for f in folders_needed:
         if not os.path.exists(f):
             os.mkdir(f)
 
     # Run the SLiM model
     print("Running SLiM:\t" + str(my_SLiM_script))
-    run_slim('Tdiv',trees_file, my_SLiM_script,out_folder)
+    SLiM_runner.run_slim(conf,trees_file, my_SLiM_script)
 
     print("Loading:\t" + str(trees_file))
     ts = tskit.load(trees_file)
     metadata=ts.metadata["SLiM"]
-    n_populations=ts.nodes_population[1:10]
-    n_individuals=ts.nodes_individual[1:10]
     print("SLiM metadata dict:\t" + str(metadata))
     print("size SLiM population:\t" + str((ts.individuals_population.size)))
     print("size SLiM samples:\t" + str((ts.num_samples)))
@@ -63,156 +57,55 @@ def run_sim():
     v_list = [v for v in mts.variants()]
     print(str(len(v_list)) + " mutations added.")
 
-    #giant string...
-    result =mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length))
-    with open(out_fasta, "w") as f:
-        f.write(result)
-
-    print("Sequences written to FASTA file: " + out_fasta + ".")
-
-    sequences_by_paralog_name_dict = write_per_genome_per_paralog_fastas(demographics_out_folder, focal_genomes,
-                                                                         gene_length, max_num_paralogs_to_process,
-                                                                         out_fasta, sim_name)
-
-    print("Removing STOP codons. PAML needs sequences that code for AA only")
-
-    problem_codon_indexes_by_paralog_name_dict = get_index_of_any_STOP_codons(num_codons_in_a_gene,
-                                                                              sequences_by_paralog_name_dict,
-                                                                              stop_codons)
-
-    cleaned_sequences_by_paralog_name_dict = set_STOP_codons_to_NNN(len_codon,
-                                                                    problem_codon_indexes_by_paralog_name_dict,
-                                                                    sequences_by_paralog_name_dict)
+    print("Getting paralog sequences from TS data.")
+    cleaned_sequences_by_paralog_name_dict = FASTA_extracta.extract_paralog_sequences(demographics_out_folder,
+                                                                                      focal_genomes,
+                                                                       conf, mts, out_fasta, sim_name)
 
     print("Runnning CODEML on paralogs.")
-    paml_out_files = run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_out_folder)
+    paml_out_files = ks_calculator.run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_out_folder)
 
     print("Extracting Ks values from PAML.")
-    results = extract_K_values(out_csv, paml_out_files)
-    plot_Ks_histogram(out_png, sim_name,results ,
+    results = ks_histogramer.extract_K_values(out_csv, paml_out_files)
+    ks_histogramer.plot_Ks_histogram(out_png, sim_name,results ,
                       None,None,None,None,"ML","b", 0.001)
     print(results)
 
     print("Done.")
     return
 
+def setup(arguments):
 
-def write_per_genome_per_paralog_fastas(demographics_out_folder, focal_genomes, gene_length,
-                                        max_num_paralogs_to_process, out_fasta, sim_name):
-    sequences_by_paralog_name_dict = {}
-    with open(out_fasta) as f:
+    print('Command Arguments Given: %s' % arguments)
+    if len(arguments) < 2:
+        print('Please give an input file path.')
+        return False
 
-        for seq_record in SeqIO.parse(f, 'fasta'):
-            seq_record.id = seq_record.description = seq_record.id.replace('.seq', '')
-            if seq_record.id in focal_genomes:
-                start_index_in_sequence = 0
-                num_paralogs_processed = 0
-                genome_name = sim_name + "_" + seq_record.id
-                seq = seq_record.seq
-                full_seq_length = len(seq)
+    config_file=arguments[1]
+    now = datetime.now()
+    date_time = now.strftime("m%md%dy%Y_h%Hm%Ms%S")
+    conf = config.DemographiKS_config(config_file)
+    conf.output_folder = conf.output_folder_root + "_" + date_time
+    conf.log_file_name = date_time + "_" + conf.log_file_name
+    conf.version_info = version.version_info()
+    cwd=os.getcwd()
 
-                while True:
+    print('Config file: %s' % config_file)
+    print("Current environment: %s" + str(os.environ))
+    print("Current Working Directory:\t" + cwd)
+    if conf.output_folder[0:2]== "./":
+        conf.output_folder = os.path.join(os.getcwd(),conf.output_folder.replace("./",""))
 
-                    paralog_name = genome_name + "_paralog_" + str(start_index_in_sequence)
-                    end_index_in_sequence = start_index_in_sequence + gene_length
+    config_file_used=os.path.basename(config_file).replace(".xml",".used.xml")
+    print("Output folder:\t" + conf.output_folder)
+    if not os.path.exists(conf.output_folder):
+        os.makedirs(conf.output_folder)
 
-                    if end_index_in_sequence >= full_seq_length:
-                        break
-                    if num_paralogs_processed >= max_num_paralogs_to_process:
-                        break
+    #move a copy of the config file into the output folder so we remember what was run
+    dst = os.path.join(conf.output_folder,config_file_used)
+    shutil.copyfile(config_file, dst)
 
-                    if start_index_in_sequence not in sequences_by_paralog_name_dict:
-                        sequences_by_paralog_name_dict[start_index_in_sequence] = {}
-
-                    subsequence = seq[start_index_in_sequence:end_index_in_sequence]
-                    sequences_by_paralog_name_dict[start_index_in_sequence][paralog_name] = subsequence
-
-                    # print("Subsequence : " + subsequence)
-                    start_index_in_sequence = start_index_in_sequence + gene_length
-                    out_per_genome_per_paralog_fasta = os.path.join(demographics_out_folder, paralog_name + ".fa")
-                    # print("Writing data for : " + out_per_genome_fasta + ".")
-                    record = SeqRecord(subsequence,
-                                       id=seq_record.id, name=paralog_name,
-                                       description="simulated paralogous gene")
-                    SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
-                    num_paralogs_processed = num_paralogs_processed + 1
-    return sequences_by_paralog_name_dict
-
-
-def set_STOP_codons_to_NNN(len_codon, problem_codon_indexes_by_paralog_name_dict, sequences_by_paralog_name_dict):
-    cleaned_sequences_by_paralog_name_dict = {}
-    for paralog_key, sequences_dict in sequences_by_paralog_name_dict.items():
-        cleaned_sequences_by_paralog_name_dict[paralog_key] = {}
-    for paralog_key, cleaned_sequences_dict in cleaned_sequences_by_paralog_name_dict.items():
-        problem_codon_indexes = problem_codon_indexes_by_paralog_name_dict[paralog_key]
-        for seq_key, sequence in sequences_by_paralog_name_dict[paralog_key].items():
-            # print("problem codons " + str(problem_codon_indexes))
-            # print("original sequence:\t" + str(sequence))
-            revised_seq = str(sequence)
-            for problem_codon_index in problem_codon_indexes:
-                revised_seq = revised_seq[:problem_codon_index * len_codon] + "NNN" + revised_seq[(
-                                                                                                              problem_codon_index + 1) * len_codon:]
-            # print("revised sequence :\t" + revised_seq)
-            cleaned_sequences_by_paralog_name_dict[paralog_key][seq_key] = revised_seq
-    return cleaned_sequences_by_paralog_name_dict
-
-
-def get_index_of_any_STOP_codons(num_codons_in_a_gene, sequences_by_paralog_name_dict, stop_codons):
-    problem_codon_indexes_by_paralog_name_dict = {}
-    for paralog_key, sequences_dict in sequences_by_paralog_name_dict.items():
-        print("checking paralog " + str(paralog_key))
-        problem_codon_indexes = []
-        for seq_key, sequence in sequences_dict.items():
-            for i in range(0, num_codons_in_a_gene):
-                codon = str(sequence[3 * i:3 * (i + 1)])
-                if codon in stop_codons:
-                    problem_codon_indexes.append(i)
-        problem_codon_indexes_by_paralog_name_dict[paralog_key] = problem_codon_indexes
-    return problem_codon_indexes_by_paralog_name_dict
-
-
-def run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_out_folder):
-    paml_out_files = []
-    for paralog in cleaned_sequences_by_paralog_name_dict:
-
-        paralog_folder = os.path.join(demographics_out_folder, "paralog_" + str(paralog))
-        if not os.path.exists(paralog_folder):
-            os.makedirs(paralog_folder)
-
-        paralog_fa_file = os.path.join(paralog_folder, "paralog_" + str(paralog) + ".fa")
-        codeml_input_fa_file = sequences_to_codeml_in(cleaned_sequences_by_paralog_name_dict[paralog], paralog_fa_file)
-        print("codeml_input_fa_file written to " + codeml_input_fa_file)
-
-        # need "conda install -c bioconda paml"
-        result = run_codeml(codeml_input_fa_file, paralog_folder)
-        paml_out_files.append(result.ML_dS_file)
-    return paml_out_files
-
-def run_slim(Tdiv,trees_file_name, my_SLiM_script,out_folder):
-
-    full_path_to_slim_script=os.path.join(os.getcwd(),my_SLiM_script)
-
-	#Parameters:
-	#	nuBot: Proportion of the ancestral population size remaining after bottleneck.
-	#	T1: The amount of time in dadi units (# of 2N generations) that the parents
-	#		are isolated before forming the allotetraploid.
-	#	T2: The amount of time the allotetraploid lineage has existed before we sample
-	#		it.
-	#	rep: Simulation replicate number (for running things in a for loop or
-	#		 an array job on an HPC).
-
-    cmd = ["slim",
-           "-d", "trees_file_name='"+str(trees_file_name)+"'",
-           "-d", "nuBot=" + str(0.1),
-           "-d", "T2=" + str(0.5),
-           "-d", "T1=" + str(0.25),
-           "-d", "rep=" + str(1),
-           "-m", "-s", "0", full_path_to_slim_script]
-
-    print("\t cmd: " + " ".join(cmd))
-    print("\t cwd: " + out_folder)
-    out_string,error_string = process_wrapper.run_and_wait_on_process(cmd, out_folder)
-    return
+    return conf
 
 if __name__ == '__main__':
     run_sim()

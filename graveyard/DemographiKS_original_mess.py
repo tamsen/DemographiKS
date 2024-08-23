@@ -1,12 +1,11 @@
 import os
-import subprocess, pyslim
+import subprocess
 import msprime
 import numpy as np
 import tskit
-from cairosvg import svg2png
 
-from ks_calculator import sequences_to_codeml_in, run_codeml
-from ks_histogramer import get_Ks_from_file, extract_K_values
+from modules.ks_calculator import sequences_to_codeml_in, run_codeml
+from modules.ks_histogramer import extract_K_values
 
 
 def run_sim_old():

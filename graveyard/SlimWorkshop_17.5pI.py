@@ -8,7 +8,7 @@ import numpy as np
 
 slim_folder = "/home/tamsen/Data/SLiM_scripts/"
 slim_folder = "/home/tamsen/Data/SLiM_scripts/"
-my_SLiM_script = os.path.join("SLiM_scripts", "SlimWorkshop_17.5p1.slim")
+my_SLiM_script = os.path.join("../SLiM_scripts", "SlimWorkshop_17.5p1.slim")
 
 # Run the SLiM model and load the resulting .trees file
 #subprocess.check_output(["slim", "-m", "-s", "0", "./admix.slim"])

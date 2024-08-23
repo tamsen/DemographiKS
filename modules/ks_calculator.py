@@ -5,6 +5,23 @@ import process_wrapper
 
 
 
+def run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_out_folder):
+    paml_out_files = []
+    for paralog in cleaned_sequences_by_paralog_name_dict:
+
+        paralog_folder = os.path.join(demographics_out_folder, "paralog_" + str(paralog))
+        if not os.path.exists(paralog_folder):
+            os.makedirs(paralog_folder)
+
+        paralog_fa_file = os.path.join(paralog_folder, "paralog_" + str(paralog) + ".fa")
+        codeml_input_fa_file = sequences_to_codeml_in(cleaned_sequences_by_paralog_name_dict[paralog], paralog_fa_file)
+        print("codeml_input_fa_file written to " + codeml_input_fa_file)
+
+        # need "conda install -c bioconda paml"
+        result = run_codeml(codeml_input_fa_file, paralog_folder)
+        paml_out_files.append(result.ML_dS_file)
+    return paml_out_files
+
 
 def sequences_to_codeml_in(sequences, fa_out_file):
 
@@ -71,7 +88,7 @@ def run_codeml(fa_out_file,out_folder):
 
 
 def get_codeml_ctl_template():
-    par_dir = Path(__file__).parent
+    par_dir = Path(__file__).parent.parent
     template_codeml_ctl_file = os.path.join(par_dir, "paml_input_templates",
                                             "codeml_input_example.ctl")
     return template_codeml_ctl_file
