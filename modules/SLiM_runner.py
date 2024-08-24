@@ -1,11 +1,15 @@
 import os
+import shutil
 
 import process_wrapper
 
 
 def run_slim(config,trees_file_name, my_SLiM_script):
 
-    full_path_to_slim_script=os.path.join(os.getcwd(),my_SLiM_script)
+    #TODO - path issiue here
+    shutil.copy(my_SLiM_script,config.output_folder,)
+    #full_path_to_slim_script=os.path.join(os.getcwd(),my_SLiM_script)
+    full_path_to_slim_script = os.path.join(config.output_folder, my_SLiM_script)
 
 	#Parameters:
 	#	nuBot: Proportion of the ancestral population size remaining after bottleneck.
