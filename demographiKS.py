@@ -4,9 +4,7 @@ import shutil
 import msprime
 import sys
 import tskit
-from Bio import SeqIO
-from Bio.SeqRecord import SeqRecord
-
+import random
 import config
 import version
 import log
@@ -23,7 +21,6 @@ def run_sim():
     log.write_start_to_log(conf.output_folder,conf.log_file_name, conf.version_info)
     log.write_to_log('Command Arguments Given: %s' % sys.argv)
 
-    focal_genomes=["n11","n245"] #pick two randomly from each parent
     slim_out_folder=os.path.join(conf.output_folder,"SLiM_output")
     demographics_out_folder=os.path.join(conf.output_folder,"demographiKS_output")
     sim_name = "allotetraploid_bottleneck"
@@ -40,9 +37,8 @@ def run_sim():
 
     # Run the SLiM model
 
-    #TODO - path issiue here
+
     path_to_current_py_script = os.path.abspath(__file__)
-    log.write_to_log("path to py script:\t" + path_to_current_py_script)
     full_slim_script = os.path.join( os.path.dirname(path_to_current_py_script), my_SLiM_script)
     log.write_to_log("Running SLiM:\t" + str(full_slim_script))
     SLiM_runner.run_slim(conf,trees_file, full_slim_script)
@@ -55,8 +51,13 @@ def run_sim():
     log.write_to_log("size SLiM samples:\t" + str((ts.num_samples)))
     #print("size SLiM individuals:\t" + str((ts.individuals_population)))
     #print("Tree Seq Max Root Time:\t" + str(ts.max_root_time))
-    individuals_to_population_map= dict(zip([i for i in range(0,len(ts.individuals_population))], ts.individuals_population))
-    #print("individuals_to_population_map:\t" + str(individuals_to_population_map))
+    individuals_in_p1=[i for i in range(0,len(ts.individuals_population)) if ts.individuals_population[i] ==1 ]
+    individuals_in_p2 = [i for i in range(0, len(ts.individuals_population)) if ts.individuals_population[i] == 2]
+
+    # pick a random polyploid indiviual (ie, two random subgenomes from the two populaitons of parental subgenomes)
+    focal_genomes = ["n" +str(random.choice(individuals_in_p1)),"n" +str(random.choice(individuals_in_p2))]
+    log.write_to_log("focal polyploid individual:\t" + str(focal_genomes))
+
     #overlays neutral mutations
     mts = msprime.sim_mutations(ts, rate=1e-5, random_seed=42, keep=True)
     v_list = [v for v in mts.variants()]

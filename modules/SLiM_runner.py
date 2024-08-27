@@ -30,10 +30,11 @@ def run_slim(config,trees_file_name, my_SLiM_script):
 	#	rep: Simulation replicate number (for running things in a for loop or
 	#		 an array job on an HPC).
 
+    #slim -d "nuBot=0.1" -d "T1=0.5" -d "T2=0.25" -d "rep=1" allotetraploid_bottleneck.slim
 
     T2 =  float(config.WGD_time_Ge) / float(config.ancestral_Ne)
     T1_plus_T2 = float(config.DIV_time_Ge) / float(config.ancestral_Ne)
-    T1 = T1_plus_T2 - T2
+    T1 = T1_plus_T2 - T2 #delta T
 
     cmd = ["slim",
            "-d", "trees_file_name='"+str(trees_file_name)+"'",
