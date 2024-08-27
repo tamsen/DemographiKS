@@ -1,10 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-import glob
-import shutil
-from modules import ks_calculator
-
+import log
 
 def get_Ks_from_file(paml_out_file):
 
@@ -41,7 +38,7 @@ def extract_K_values(csv_file_out, res_files):
         #f.writelines("SpecKS " + version_string + "\n")  # version_info.to_string())
         #f.writelines("GeneTree,leaf names,Ks,path to original output file\n")
         for paml_out_file in res_files:
-            print(paml_out_file)
+            log.write_to_log(paml_out_file)
             base_name = os.path.basename(paml_out_file)
             Ks_for_og = get_Ks_from_file(paml_out_file)
             for Ks_data in Ks_for_og:

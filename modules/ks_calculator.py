@@ -1,8 +1,7 @@
 import os
-import shutil
 from pathlib import Path
 import process_wrapper
-
+import log
 
 
 def run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_out_folder):
@@ -15,7 +14,7 @@ def run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_
 
         paralog_fa_file = os.path.join(paralog_folder, "paralog_" + str(paralog) + ".fa")
         codeml_input_fa_file = sequences_to_codeml_in(cleaned_sequences_by_paralog_name_dict[paralog], paralog_fa_file)
-        print("codeml_input_fa_file written to " + codeml_input_fa_file)
+        log.write_to_log("codeml_input_fa_file written to " + codeml_input_fa_file)
 
         # need "conda install -c bioconda paml"
         result = run_codeml(codeml_input_fa_file, paralog_folder)
@@ -50,9 +49,7 @@ def write_codeml_control_file(template_ctl_file, sequence_file):
             new_line = line
 
             if "DUMMY.codonalign.fa" in line:
-                #new_line = line.replace("DUMMY.codonalign.fa", sequence_file)
                 new_line = line.replace("DUMMY.codonalign.fa",os.path.basename(sequence_file))
-                print(new_line)
 
             if "mlcTree_DUMMY.out" in line:
                 new_line = line.replace("DUMMY", base_name)
@@ -77,11 +74,11 @@ def run_codeml(fa_out_file,out_folder):
     control_file = write_codeml_control_file(template_codeml_ctl_file, fa_out_file)
 
     cmd = ["codeml",os.path.basename(control_file)]
-    print("\t cmd: " + " ".join(cmd))
-    print("\t cwd: " + out_folder)
-    print("\t calculating Ks.. ")
+    log.write_to_log("\t cmd: " + " ".join(cmd))
+    log.write_to_log("\t cwd: " + out_folder)
+    log.write_to_log("\t calculating Ks.. ")
     process_wrapper.run_and_wait_on_process(cmd, out_folder)
-    print("\t Ks determined...")
+    log.write_to_log("\t Ks determined...")
     result= codeml_result(out_folder)
 
     return result

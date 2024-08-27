@@ -1,6 +1,7 @@
 import os
 import subprocess
 import time
+import log
 
 def run_and_wait_with_retry(cmd, folder, excuse, num_retries_allowed, sleepy_time):
 
@@ -25,7 +26,7 @@ def run_and_wait_with_retry(cmd, folder, excuse, num_retries_allowed, sleepy_tim
 def run_and_wait_on_process(cmd, cwd_folder):
 
     program=cmd[0]
-    print(" ".join(cmd) )
+    log.write_to_log(" ".join(cmd) )
     process_completed_result = subprocess.run(cmd, capture_output=True, cwd=cwd_folder)
     error_string=process_completed_result.stderr.decode()
     out_string=process_completed_result.stdout.decode()
@@ -35,7 +36,7 @@ def run_and_wait_on_process(cmd, cwd_folder):
     colored_error_string = '\033[93m' + "ERROR:  " + error_string + '\x1b[0m'
 
     if len(error_string)> 0:
-        print(colored_error_string )
+        log.write_to_log(colored_error_string )
 
     #print(program+" stderr:\t" + error_string)
     #print(program+" stdout:\t" + out_string)

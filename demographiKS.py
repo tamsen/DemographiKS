@@ -9,6 +9,7 @@ from Bio.SeqRecord import SeqRecord
 
 import config
 import version
+import log
 from datetime import datetime
 from modules import SLiM_runner,ks_calculator, FASTA_extracta,ks_histogramer
 
@@ -18,11 +19,10 @@ def run_sim():
     if not conf:
         return
 
-    #num_codons_in_a_gene=1000
-    #len_codon=3
-    #gene_length=num_codons_in_a_gene*len_codon #nucleotides
-    #stop_codons=["TAA","TGA","TAG"]
-    #max_num_paralogs_to_process=20 #per genome
+    #start the log
+    log.write_start_to_log(conf.output_folder,conf.log_file_name, conf.version_info)
+    log.write_to_log('Command Arguments Given: %s' % sys.argv)
+
     focal_genomes=["n11","n245"] #pick two randomly from each parent
     slim_out_folder=os.path.join(conf.output_folder,"SLiM_output")
     demographics_out_folder=os.path.join(conf.output_folder,"demographiKS_output")
@@ -39,39 +39,44 @@ def run_sim():
             os.mkdir(f)
 
     # Run the SLiM model
-    print("Running SLiM:\t" + str(my_SLiM_script))
-    SLiM_runner.run_slim(conf,trees_file, my_SLiM_script)
 
-    print("Loading:\t" + str(trees_file))
+    #TODO - path issiue here
+    path_to_current_py_script = os.path.abspath(__file__)
+    log.write_to_log("path to py script:\t" + path_to_current_py_script)
+    full_slim_script = os.path.join( os.path.dirname(path_to_current_py_script), my_SLiM_script)
+    log.write_to_log("Running SLiM:\t" + str(full_slim_script))
+    SLiM_runner.run_slim(conf,trees_file, full_slim_script)
+
+    log.write_to_log("Loading:\t" + str(trees_file))
     ts = tskit.load(trees_file)
     metadata=ts.metadata["SLiM"]
-    print("SLiM metadata dict:\t" + str(metadata))
-    print("size SLiM population:\t" + str((ts.individuals_population.size)))
-    print("size SLiM samples:\t" + str((ts.num_samples)))
+    #log.write_to_log("SLiM metadata dict:\t" + str(metadata))
+    log.write_to_log("size SLiM population:\t" + str((ts.individuals_population.size)))
+    log.write_to_log("size SLiM samples:\t" + str((ts.num_samples)))
     #print("size SLiM individuals:\t" + str((ts.individuals_population)))
     #print("Tree Seq Max Root Time:\t" + str(ts.max_root_time))
     individuals_to_population_map= dict(zip([i for i in range(0,len(ts.individuals_population))], ts.individuals_population))
-    print("individuals_to_population_map:\t" + str(individuals_to_population_map))
+    #print("individuals_to_population_map:\t" + str(individuals_to_population_map))
     #overlays neutral mutations
     mts = msprime.sim_mutations(ts, rate=1e-5, random_seed=42, keep=True)
     v_list = [v for v in mts.variants()]
-    print(str(len(v_list)) + " mutations added.")
+    log.write_to_log(str(len(v_list)) + " mutations added.")
 
-    print("Getting paralog sequences from TS data.")
+    log.write_to_log("Getting paralog sequences from TS data.")
     cleaned_sequences_by_paralog_name_dict = FASTA_extracta.extract_paralog_sequences(demographics_out_folder,
                                                                                       focal_genomes,
                                                                        conf, mts, out_fasta, sim_name)
 
-    print("Runnning CODEML on paralogs.")
+    log.write_to_log("Runnning CODEML on paralogs.")
     paml_out_files = ks_calculator.run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_out_folder)
 
-    print("Extracting Ks values from PAML.")
+    log.write_to_log("Extracting Ks values from PAML.")
     results = ks_histogramer.extract_K_values(out_csv, paml_out_files)
     ks_histogramer.plot_Ks_histogram(out_png, sim_name,results ,
                       None,None,None,None,"ML","b", 0.001)
-    print(results)
 
-    print("Done.")
+    log.write_end_to_log()
+
     return
 
 def setup(arguments):

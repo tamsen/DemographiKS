@@ -2,19 +2,19 @@ import os
 import tskit
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
-
+import log
 def extract_paralog_sequences(demographics_out_folder, focal_genomes, config, mts, out_fasta, sim_name):
     # giant string...
 
     result = mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length))
     with open(out_fasta, "w") as f:
         f.write(result)
-    print("Sequences written to FASTA file: " + out_fasta + ".")
+    log.write_to_log("Sequences written to FASTA file: " + out_fasta + ".")
     sequences_by_paralog_name_dict = write_per_genome_per_paralog_fastas(demographics_out_folder, focal_genomes,
                                                                          config.gene_length,
                                                                          config.max_num_paralogs_to_process,
                                                                          out_fasta, sim_name)
-    print("Removing STOP codons. PAML needs sequences that code for AA only")
+    log.write_to_log("Removing STOP codons. PAML needs sequences that code for AA only")
     problem_codon_indexes_by_paralog_name_dict = get_index_of_any_STOP_codons(config.num_codons_in_a_gene,
                                                                               sequences_by_paralog_name_dict,
                                                                               config.stop_codons)
@@ -88,7 +88,7 @@ def set_STOP_codons_to_NNN(len_codon, problem_codon_indexes_by_paralog_name_dict
 def get_index_of_any_STOP_codons(num_codons_in_a_gene, sequences_by_paralog_name_dict, stop_codons):
     problem_codon_indexes_by_paralog_name_dict = {}
     for paralog_key, sequences_dict in sequences_by_paralog_name_dict.items():
-        print("checking paralog " + str(paralog_key))
+        log.write_to_log("checking paralog " + str(paralog_key))
         problem_codon_indexes = []
         for seq_key, sequence in sequences_dict.items():
             for i in range(0, num_codons_in_a_gene):
