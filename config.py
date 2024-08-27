@@ -16,7 +16,11 @@ class DemographiKS_config:
     max_num_paralogs_to_process=20 #per genome
     log_file_name = "log.txt"
     total_num_bases = 2000
-
+    ancestral_Ne = 100
+    bottleneck_Ne = 20
+    DIV_time_Ge=4000
+    WGD_time_Ge=2000
+    SLiM_rep =1
     def __init__(self, config_file):
 
         mytree = ET.parse(config_file)
@@ -63,6 +67,32 @@ class DemographiKS_config:
                             self.per_site_evolutionary_distance = float(incoming_txt)
                         if (incoming_tag == "evolver_random_seed"):
                             self.evolver_random_seed = int(incoming_txt)
+
+                if (incoming_tag == "Population"):
+                    for inner_layer in top_layer:
+                        incoming_txt = inner_layer.text.strip()
+                        incoming_tag = inner_layer.tag.strip()
+                        if (incoming_tag == "ancestral_ne"):
+                            self.ancestral_Ne= int(incoming_txt)
+                        if (incoming_tag == "bottleneck_ne"):
+                            self.bottleneck_Ne = int(incoming_txt)
+
+                if (incoming_tag == "Speciation"):
+                    for inner_layer in top_layer:
+                        incoming_txt = inner_layer.text.strip()
+                        incoming_tag = inner_layer.tag.strip()
+                        if (incoming_tag == "DIV_time_Ge"):
+                            self.DIV_time_Ge = float(incoming_txt)
+                        if (incoming_tag == "WGD_time_Ge"):
+                            self.WGD_time_Ge = float(incoming_txt)
+
+                if (incoming_tag == "Randomization"):
+                    for inner_layer in top_layer:
+                        incoming_txt = inner_layer.text.strip()
+                        incoming_tag = inner_layer.tag.strip()
+                        if (incoming_tag == "SLiM_rep"):
+                            self.SLiM_rep = int(incoming_txt)
+
 
 def parse_tuple_string(tuple_string):
     if tuple_string.upper() == "FALSE":

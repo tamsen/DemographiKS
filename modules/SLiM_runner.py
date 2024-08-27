@@ -4,7 +4,18 @@ import log
 import process_wrapper
 
 
+def print_slim_version(config):
+    cmd = ["slim","-v", ]
+
+    log.write_to_log("\t cmd: " + " ".join(cmd))
+    log.write_to_log("\t cwd: " + config.output_folder)
+    out_string, error_string = process_wrapper.run_and_wait_on_process(cmd, config.output_folder)
+    log.write_to_log("\t slim -v out_string: " + out_string)
+    log.write_to_log("\t slim -v error_string: " + error_string)
+    return
 def run_slim(config,trees_file_name, my_SLiM_script):
+
+    print_slim_version(config)
 
     log.write_to_log("copy slim script:\t" + my_SLiM_script)
     shutil.copy(my_SLiM_script,config.output_folder)
@@ -19,13 +30,19 @@ def run_slim(config,trees_file_name, my_SLiM_script):
 	#	rep: Simulation replicate number (for running things in a for loop or
 	#		 an array job on an HPC).
 
+
+    T2 =  float(config.WGD_time_Ge) / float(config.ancestral_Ne)
+    T1_plus_T2 = float(config.DIV_time_Ge) / float(config.ancestral_Ne)
+    T1 = T1_plus_T2 - T2
+
     cmd = ["slim",
            "-d", "trees_file_name='"+str(trees_file_name)+"'",
            "-d", "L=" + str(config.total_num_bases),
-           "-d", "nuBot=" + str(0.1),
-           "-d", "T2=" + str(0.5),
-           "-d", "T1=" + str(0.25),
-           "-d", "rep=" + str(1),
+           "-d", "Na=" + str(config.ancestral_Ne),
+           "-d", "Nb=" + str(config.bottleneck_Ne),
+           "-d", "T2=" + str(T2),
+           "-d", "T1=" + str(T1),
+           "-d", "rep=" + str(config.SLiM_rep),
            "-m", "-s", "0", full_path_to_slim_script_destination]
 
     log.write_to_log("\t cmd: " + " ".join(cmd))

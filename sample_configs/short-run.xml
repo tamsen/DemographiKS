@@ -9,6 +9,17 @@
         <max_num_paralogs_to_process>False</max_num_paralogs_to_process>
         <!--<max_num_paralogs_to_process>40</max_num_paralogs_to_process>-->
     </Chromosome>
+    <Population>
+        <ancestral_ne>100</ancestral_ne>
+        <bottleneck_ne>50</bottleneck_ne>
+    </Population>
+    <Speciation>
+        <DIV_time_Ge>4000</DIV_time_Ge>
+        <WGD_time_Ge>2000</WGD_time_Ge>
+    </Speciation>
+    <Randomization>
+        <SLiM_rep>1</SLiM_rep>
+    </Randomization>
     <StopAtStep>999</StopAtStep>
     <LogFileName>DemographiKS_log.txt</LogFileName>
     <IncludeVisuals>False</IncludeVisuals>

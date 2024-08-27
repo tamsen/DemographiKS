@@ -23,26 +23,24 @@ initialize() {
 	// Useful when running on a cluster with jobs starting at the same time.
 	setSeed(rdunif(1, 0, asInteger(2^60) - 1)+asInteger(rep));
 	
-	// Number of individuals in population
-	//defineConstant("N", 1000);
-	defineConstant("N", 1000);
-	
+	// Number of ancestral individuals in population
+	//defineConstant("Na", 1000);
+
 	// Length of sequence (L)
 	//defineConstant("L", 1e6);
-	//defineConstant("L", 1e5);
 	
 	// Mutation rate
 	//defineConstant("mu", 1.25e-6);
 	defineConstant("mu", 0);
 	
 	// Burnin time (generally 10 * num chr = 10 * 2 * N)
-	defineConstant("BurninTime", 10*2*N);	
+	defineConstant("BurninTime", 10*2*Na);	
 
 	// Bottleneck time (Schedule population bottleneck at generation (2N * T1)
-	defineConstant("BottleneckTime",  2*N * asFloat(T1));	
+	defineConstant("BottleneckTime",  2*Na * asFloat(T1));	
 	
 	// Sampling time (Schedule sampling time at (2N * (T1 + T2)))
-	defineConstant("SamplingTime",   2*N * (asFloat(T1) + asFloat(T2)));
+	defineConstant("SamplingTime",   2*Na * (asFloat(T1) + asFloat(T2)));
 	
 	initializeMutationType("m1", 0.5, "f", 0.0);
 	m1.convertToSubstitution = T;
@@ -51,6 +49,8 @@ initialize() {
 	initializeGenomicElement(g1, 0, L - 1);
 	initializeMutationRate(mu);
 	initializeRecombinationRate(1.25e-6);
+
+	catn("BurninTime\t" + BurninTime);
 }
 
 /*
@@ -58,7 +58,7 @@ Setup initial diploid ancestral population with N individuals. Schedule populati
 bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 */
 1 early() {
-	sim.addSubpop("p1", N);
+	sim.addSubpop("p1", Na);
 	community.rescheduleScriptBlock(
 		s1,
 		asInteger(BurninTime + BottleneckTime),
@@ -78,7 +78,7 @@ BurninTime: late() {
 
 // Split populations after burn-in.
 BurninTime early() {
-	sim.addSubpopSplit("p2", N, p1);
+	sim.addSubpopSplit("p2", Na, p1);
 }
 
 /*
@@ -87,8 +87,8 @@ Block is rescheduled in generation 1. This block is for starting the bottleneck.
 s1 10 late() {
 	catn(sim.cycle  + "\t block s1 executed");
 	catn(sim.cycle  + "\t starting the bottleneck");
-	p1.setSubpopulationSize(asInteger(asFloat(nuBot) * N));
-	p2.setSubpopulationSize(asInteger(asFloat(nuBot) * N));
+	p1.setSubpopulationSize(asInteger(Nb));
+	p2.setSubpopulationSize(asInteger(Nb));
 }
 
 s3 10 late() {
@@ -107,7 +107,7 @@ s3 10 late() {
 }
 
 
-asInteger(BurninTime + (2*N * asFloat(T1))): late() {
+asInteger(BurninTime + (2*Na * asFloat(T1))): late() {
 	if(sim.cycle % 100 == 0) {
 		
 		num_p1 = size(p1.individuals);
