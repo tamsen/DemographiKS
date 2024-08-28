@@ -1,38 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
     <Paths>
-          <output_folder_root>/home/tamsen/Data/SpecKS_output/specks</output_folder_root>
+          <output_folder_root>/home/tamsen/Data/DemographiKS_output/DemographiKS</output_folder_root>
+       <pre_existing_trees_file>/home/tamsen/Data/DemographiKS_output/allotetraploid_trees_Ne_1000.txt
+        </pre_existing_trees_file><!-- -->
     </Paths>
-    <SpeciesTree>
-        <polyploid>
-                <name>Allo1_S070W065</name>
-                <DIV_time_MYA>70</DIV_time_MYA>
-                <WGD_time_MYA>65</WGD_time_MYA>
-                <gene_div_time_distribution_parameters>expon,0,10</gene_div_time_distribution_parameters>
-        </polyploid>
-        <polyploid>
-                <name>Auto1_S070W070</name>
-                <SPC_time_MYA>70.5</SPC_time_MYA>
-                <WGD_time_MYA>70.5</WGD_time_MYA>
-                <gene_div_time_distribution_parameters>lognorm,0.5,5.27,0.33</gene_div_time_distribution_parameters>
-                <gene_div_time_distribution_parameters>impulse,0,1,0.66</gene_div_time_distribution_parameters>
-        </polyploid>
-        <full_sim_time>100</full_sim_time>
-    </SpeciesTree>
-    <GeneTree>
- <mean_gene_birth_rate_GpMY>0.01</mean_gene_birth_rate_GpMY>
-        <SSD_half_life_MY>10</SSD_half_life_MY>
-        <WGD_half_life_MY>10</WGD_half_life_MY>
-        <num_gene_trees_per_species_tree>1000</num_gene_trees_per_species_tree>
-       <num_gene_trees_per_species_tree>5</num_gene_trees_per_species_tree>
-    </GeneTree>
-    <SequenceEvolution>
-        <num_replicates_per_gene_tree>3</num_replicates_per_gene_tree>
-        <num_codons>5</num_codons>
-        <Ks_per_Myr>0.01</Ks_per_Myr>
-    </SequenceEvolution>
-    <Histogram>
-        <maxKs>5</maxKs>
-    </Histogram>
+    <Chromosome>
+        <total_num_bases>1000000</total_num_bases>
+        <num_codons_in_a_gene>1000</num_codons_in_a_gene>
+        <max_num_paralogs_to_process>False</max_num_paralogs_to_process>
+        <!--<max_num_paralogs_to_process>20</max_num_paralogs_to_process>-->
+    </Chromosome>
+    <Population>
+        <ancestral_ne>1000</ancestral_ne>
+        <bottleneck_ne>100</bottleneck_ne>
+    </Population>
+    <Speciation>
+        <DIV_time_Ge>75</DIV_time_Ge><!--"T2=TDIV/Na -->
+        <WGD_time_Ge>25</WGD_time_Ge>
+    </Speciation>
+    <Randomization>
+        <SLiM_rep>1</SLiM_rep>
+        <Msprime_random_seed>1</Msprime_random_seed>
+    </Randomization>
     <StopAtStep>999</StopAtStep>
+    <LogFileName>DemographiKS_log.txt</LogFileName>
+    <IncludeVisuals>False</IncludeVisuals>
 </metadata>

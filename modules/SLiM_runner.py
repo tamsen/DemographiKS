@@ -36,6 +36,9 @@ def run_slim(config,trees_file_name, my_SLiM_script):
     T1_plus_T2 = float(config.DIV_time_Ge) / float(config.ancestral_Ne)
     T1 = T1_plus_T2 - T2 #delta T
 
+    log.write_to_log("\t T1: " + str(T1))
+    log.write_to_log("\t T2: " + str(T2))
+
     cmd = ["slim",
            "-d", "trees_file_name='"+str(trees_file_name)+"'",
            "-d", "L=" + str(config.total_num_bases),
@@ -45,6 +48,7 @@ def run_slim(config,trees_file_name, my_SLiM_script):
            "-d", "T1=" + str(T1),
            "-d", "rep=" + str(config.SLiM_rep),
            "-m", "-s", "0", full_path_to_slim_script_destination]
+
 
     log.write_to_log("\t cmd: " + " ".join(cmd))
     log.write_to_log("\t cwd: " + config.output_folder)

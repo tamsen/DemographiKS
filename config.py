@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 class DemographiKS_config:
 
     output_folder_root = "/home/DemographiKS_output"
-
+    pre_existing_trees_file =  False
     test_burnin = False
     stop_codons=["TAA","TGA","TAG"]
     num_codons_in_a_gene=1000
@@ -21,6 +21,7 @@ class DemographiKS_config:
     DIV_time_Ge=4000
     WGD_time_Ge=2000
     SLiM_rep =1
+    Msprime_random_seed = 42
     def __init__(self, config_file):
 
         mytree = ET.parse(config_file)
@@ -28,9 +29,14 @@ class DemographiKS_config:
 
         for top_layer in myroot:
 
-            for top_layer in myroot:
                 incoming_tag = top_layer.tag.strip()
                 incoming_txt = top_layer.text.strip()
+
+                if (incoming_tag == "LogFileName"):
+                    if incoming_txt.upper() == "FALSE":
+                        self.log_file_name = False
+                    else:
+                        self.log_file_name = incoming_txt
 
                 if (incoming_tag == "Paths"):
                     for inner_layer in top_layer:
@@ -38,7 +44,8 @@ class DemographiKS_config:
                         incoming_tag = inner_layer.tag.strip()
                         if (incoming_tag == "output_folder_root"):
                             self.output_folder_root = incoming_txt
-
+                        if (incoming_tag == "pre_existing_trees_file"):
+                            self.pre_existing_trees_file = incoming_txt
 
                 if (incoming_tag == "Chromosome"):
                     for inner_layer in top_layer:
@@ -92,7 +99,8 @@ class DemographiKS_config:
                         incoming_tag = inner_layer.tag.strip()
                         if (incoming_tag == "SLiM_rep"):
                             self.SLiM_rep = int(incoming_txt)
-
+                        if (incoming_tag == "Msprime_random_seed"):
+                            self.Msprime_random_seed = int(incoming_txt)
 
 def parse_tuple_string(tuple_string):
     if tuple_string.upper() == "FALSE":

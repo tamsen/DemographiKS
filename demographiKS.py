@@ -25,10 +25,12 @@ def run_sim():
     demographics_out_folder=os.path.join(conf.output_folder,"demographiKS_output")
     sim_name = "allotetraploid_bottleneck"
     trees_file = os.path.join(slim_out_folder,"allotetraploid_trees.txt")
-    my_SLiM_script= os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
+    #my_SLiM_script= os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
+    my_SLiM_script = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_v2.slim")
+
     out_fasta=os.path.join(demographics_out_folder,sim_name + ".fa")
     out_csv=os.path.join(demographics_out_folder,sim_name + ".csv")
-    out_png=os.path.join(demographics_out_folder,sim_name + "_hist.png")
+    out_png=os.path.join(conf.output_folder,sim_name + "_hist.png")
 
     folders_needed=[conf.output_folder,demographics_out_folder,slim_out_folder]
     for f in folders_needed:
@@ -37,11 +39,14 @@ def run_sim():
 
     # Run the SLiM model
 
-
-    path_to_current_py_script = os.path.abspath(__file__)
-    full_slim_script = os.path.join( os.path.dirname(path_to_current_py_script), my_SLiM_script)
-    log.write_to_log("Running SLiM:\t" + str(full_slim_script))
-    SLiM_runner.run_slim(conf,trees_file, full_slim_script)
+    if conf.pre_existing_trees_file:
+        trees_file=conf.pre_existing_trees_file
+        log.write_to_log("Using pre-exisitng trees file:\t" + str(conf.pre_existing_trees_file))
+    else:
+        path_to_current_py_script = os.path.abspath(__file__)
+        full_slim_script = os.path.join( os.path.dirname(path_to_current_py_script), my_SLiM_script)
+        log.write_to_log("Running SLiM:\t" + str(full_slim_script))
+        SLiM_runner.run_slim(conf,trees_file, full_slim_script)
 
     log.write_to_log("Loading:\t" + str(trees_file))
     ts = tskit.load(trees_file)
@@ -49,17 +54,15 @@ def run_sim():
     #log.write_to_log("SLiM metadata dict:\t" + str(metadata))
     log.write_to_log("size SLiM population:\t" + str((ts.individuals_population.size)))
     log.write_to_log("size SLiM samples:\t" + str((ts.num_samples)))
-    #print("size SLiM individuals:\t" + str((ts.individuals_population)))
-    #print("Tree Seq Max Root Time:\t" + str(ts.max_root_time))
-    individuals_in_p1=[i for i in range(0,len(ts.individuals_population)) if ts.individuals_population[i] ==1 ]
-    individuals_in_p2 = [i for i in range(0, len(ts.individuals_population)) if ts.individuals_population[i] == 2]
+    # pick a random polyploid indiviual (ie, two random subgenomes from the two populations of parental subgenomes)
+    num_genomes=conf.bottleneck_Ne*2 #because diploid individuals
+    focal_genomes = ["n" +str(random.randint(1,num_genomes)),
+                     "n" +str(random.randint(1+num_genomes, 2*num_genomes))]
+    log.write_to_log("random focal polyploid individual:\t" + str(focal_genomes))
 
-    # pick a random polyploid indiviual (ie, two random subgenomes from the two populaitons of parental subgenomes)
-    focal_genomes = ["n" +str(random.choice(individuals_in_p1)),"n" +str(random.choice(individuals_in_p2))]
-    log.write_to_log("focal polyploid individual:\t" + str(focal_genomes))
 
     #overlays neutral mutations
-    mts = msprime.sim_mutations(ts, rate=1e-5, random_seed=42, keep=True)
+    mts = msprime.sim_mutations(ts, rate=1e-5, random_seed=conf.Msprime_random_seed, keep=True)
     v_list = [v for v in mts.variants()]
     log.write_to_log(str(len(v_list)) + " mutations added.")
 
