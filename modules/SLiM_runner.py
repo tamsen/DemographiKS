@@ -32,20 +32,16 @@ def run_slim(config,trees_file_name, my_SLiM_script):
 
     #slim -d "nuBot=0.1" -d "T1=0.5" -d "T2=0.25" -d "rep=1" allotetraploid_bottleneck.slim
 
-    T2 =  float(config.WGD_time_Ge) / float(config.ancestral_Ne)
-    T1_plus_T2 = float(config.DIV_time_Ge) / float(config.ancestral_Ne)
-    T1 = T1_plus_T2 - T2 #delta T
-
-    log.write_to_log("\t T1: " + str(T1))
-    log.write_to_log("\t T2: " + str(T2))
-
+    delta_t=  ( float(config.DIV_time_Ge) - float(config.WGD_time_Ge) )
+    burnin_time = 2 * 10 * config.ancestral_Ne
     cmd = ["slim",
            "-d", "trees_file_name='"+str(trees_file_name)+"'",
            "-d", "L=" + str(config.total_num_bases),
            "-d", "Na=" + str(config.ancestral_Ne),
            "-d", "Nb=" + str(config.bottleneck_Ne),
-           "-d", "T2=" + str(T2),
-           "-d", "T1=" + str(T1),
+           "-d", "delta_t=" + str(delta_t),
+           "-d", "Tdiv_gen=" + str(config.DIV_time_Ge),
+           "-d", "BurninTime=" + str(burnin_time),
            "-d", "rep=" + str(config.SLiM_rep),
            "-m", "-s", "0", full_path_to_slim_script_destination]
 

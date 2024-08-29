@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 class DemographiKS_config:
 
     output_folder_root = "/home/DemographiKS_output"
+    sim_name = "allotetraploid_bottleneck"
     pre_existing_trees_file =  False
     test_burnin = False
     stop_codons=["TAA","TGA","TAG"]

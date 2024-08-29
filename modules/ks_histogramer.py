@@ -49,7 +49,7 @@ def extract_K_values(csv_file_out, res_files):
                 KS_values.append(Ks_value)
     return KS_values
 
-def plot_Ks_histogram(PAML_hist_out_file, species_name, Ks_results, WGD_as_Ks, SPEC_as_Ks,
+def plot_Ks_histogram(PAML_hist_out_file, config, Ks_results, WGD_as_Ks, SPEC_as_Ks,
                       max_Ks, max_y, alg_name, color, bin_size):
 
     fig = plt.figure(figsize=(10, 10), dpi=100)
@@ -74,8 +74,10 @@ def plot_Ks_histogram(PAML_hist_out_file, species_name, Ks_results, WGD_as_Ks, S
     plt.legend()
     plt.xlabel("Ks")
     plt.ylabel("Count in Bin")
-    plt.title("Ks histogram for " + species_name+ "\n" +
-              "algorithm: PAML " + alg_name + " num paralogs: " + str(len(Ks_results)))
+    plt.title("Ks histogram for " + config.sim_name + "\n" +
+              "algorithm: PAML " + alg_name + "; num paralogs: " + str(len(Ks_results)) + "; " + \
+              "Na: " + str(config.ancestral_Ne) + "; Nb: " + str(config.bottleneck_Ne))
+
     plt.savefig(PAML_hist_out_file)
     plt.clf()
     plt.close()

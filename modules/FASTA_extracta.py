@@ -3,7 +3,7 @@ import tskit
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 import log
-def extract_paralog_sequences(demographics_out_folder, focal_genomes, config, mts, out_fasta, sim_name):
+def extract_paralog_sequences(demographics_out_folder, focal_genomes, config, mts, out_fasta):
     # giant string...
 
     result = mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length))
@@ -13,7 +13,7 @@ def extract_paralog_sequences(demographics_out_folder, focal_genomes, config, mt
     sequences_by_paralog_name_dict = write_per_genome_per_paralog_fastas(demographics_out_folder, focal_genomes,
                                                                          config.gene_length,
                                                                          config.max_num_paralogs_to_process,
-                                                                         out_fasta, sim_name)
+                                                                         out_fasta, config.sim_name)
     log.write_to_log("Removing STOP codons. PAML needs sequences that code for AA only")
     problem_codon_indexes_by_paralog_name_dict = get_index_of_any_STOP_codons(config.num_codons_in_a_gene,
                                                                               sequences_by_paralog_name_dict,

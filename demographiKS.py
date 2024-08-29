@@ -23,14 +23,12 @@ def run_sim():
 
     slim_out_folder=os.path.join(conf.output_folder,"SLiM_output")
     demographics_out_folder=os.path.join(conf.output_folder,"demographiKS_output")
-    sim_name = "allotetraploid_bottleneck"
-    trees_file = os.path.join(slim_out_folder,"allotetraploid_trees.txt")
-    #my_SLiM_script= os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
-    my_SLiM_script = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_v2.slim")
+    trees_file = os.path.join(slim_out_folder,conf.sim_name + "_trees.txt")
+    my_SLiM_script= os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
 
-    out_fasta=os.path.join(demographics_out_folder,sim_name + ".fa")
-    out_csv=os.path.join(demographics_out_folder,sim_name + ".csv")
-    out_png=os.path.join(conf.output_folder,sim_name + "_hist.png")
+    out_fasta=os.path.join(demographics_out_folder,conf.sim_name + ".fa")
+    out_csv=os.path.join(demographics_out_folder,conf.sim_name + ".csv")
+    out_png=os.path.join(conf.output_folder,conf.sim_name + "_hist.png")
 
     folders_needed=[conf.output_folder,demographics_out_folder,slim_out_folder]
     for f in folders_needed:
@@ -69,14 +67,14 @@ def run_sim():
     log.write_to_log("Getting paralog sequences from TS data.")
     cleaned_sequences_by_paralog_name_dict = FASTA_extracta.extract_paralog_sequences(demographics_out_folder,
                                                                                       focal_genomes,
-                                                                       conf, mts, out_fasta, sim_name)
+                                                                       conf, mts, out_fasta)
 
     log.write_to_log("Runnning CODEML on paralogs.")
     paml_out_files = ks_calculator.run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_out_folder)
 
     log.write_to_log("Extracting Ks values from PAML.")
     results = ks_histogramer.extract_K_values(out_csv, paml_out_files)
-    ks_histogramer.plot_Ks_histogram(out_png, sim_name,results ,
+    ks_histogramer.plot_Ks_histogram(out_png, conf,results ,
                       None,None,None,None,"ML","b", 0.001)
 
     log.write_end_to_log()
