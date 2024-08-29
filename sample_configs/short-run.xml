@@ -12,10 +12,10 @@
     </Chromosome>
     <Population>
         <ancestral_ne>1000</ancestral_ne>
+        <bottleneck_ne>100</bottleneck_ne>
       </Population>
     <Speciation>
-        <!--<DIV_time_Ge>150000</DIV_time_Ge>-->
-        <DIV_time_Ge>75</DIV_time_Ge><!--"T2=TDIV/Na-->
+        <DIV_time_Ge>75</DIV_time_Ge>
         <WGD_time_Ge>25</WGD_time_Ge>
     </Speciation>
     <Randomization>
