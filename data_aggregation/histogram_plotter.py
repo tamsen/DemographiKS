@@ -7,20 +7,35 @@ from matplotlib import pyplot as plt
 
 class Test_Plot_Histogram(unittest.TestCase):
     def test_plot_histogram(self):
-        specks_full_path='foo'
-        specks_ks_results = read_Ks_csv(specks_full_path)
-        out_png1 = os.path.join("hist_comparison_", "specks_DemographiKS_out.png")
 
-        specks_hist_data = make_simple_histogram(specks_ks_results, species_run_name, bin_size, color, WGD_ks,
-                                                 max_Ks, density, out_png1)
-
-        self.assertEqual(True, False)  # add assertion here
+        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
+        run_name='DGKS_1000_1000_m08d29y2024_h16m08s09'
+        #DGKS_1000_1000_m08d29y2024_h16m08s09
+        #DGKS_100_100_m08d29y2024_h16m09s38
+        #DGKS_1000_100_m08d29y2024_h15m27s59
+        #DGKS_10_10_m08d29y2024_h16m13s27
+        #DGKS_1000_10_m08d29y2024_h16m12s08
+        run_name_splat=run_name.split("_")
+        nickname="_".join(run_name_splat[0:3])
+        run_path=os.path.join(demographiKS_out_path,run_name)
+        csv_file_name='allotetraploid_bottleneck.csv'
+        demographiKS_ks_results = read_Ks_csv(os.path.join(run_path,csv_file_name))
+        out_png1 = os.path.join(run_path,"DemographiKS_out.png")
+        WGD_time_in_Ks=25*0.01*10**-6
+        DIV_time_in_Ks=75*0.01*10**-6
+        max_Ks = 0.1
+        bin_size = 0.001
+        make_simple_histogram(demographiKS_ks_results,nickname, bin_size,
+        'k', WGD_time_in_Ks,DIV_time_in_Ks,
+                                                 max_Ks, 0.5, out_png1)
+        self.assertEqual(os.path.exists(out_png1), True)  # add assertion here
 
 
 if __name__ == '__main__':
     unittest.main()
 
-def make_simple_histogram(Ks_results, species_name, bin_size, color,WGD_ks, max_Ks, density, out_png):
+def make_simple_histogram(Ks_results, title, bin_size, color,WGD_ks,
+                          DIV_ks, max_Ks, density, out_png):
 
     # MBE says: 600 - 1200 dpi for line drawings
     # and 350 dpi for color and half-tone artwork)
@@ -28,26 +43,30 @@ def make_simple_histogram(Ks_results, species_name, bin_size, color,WGD_ks, max_
     x = Ks_results
     # print(PAML_hist_out_file)
     label="hist for " + os.path.basename(out_png).replace("_out.png","")
+
+    plt.axvline(x=WGD_ks, color='b', linestyle='-', label="WGD (" +str(WGD_ks)+ ")")
+    plt.axvline(x=DIV_ks, color='r', linestyle='-', label="DIV (" +str(DIV_ks) + ")")
+
     if max_Ks:
-        bins = np.arange(bin_size, max_Ks + 0.1, bin_size)
+        bins = np.arange(0, max_Ks + 0.1, bin_size)
         n, bins, patches = plt.hist(x, bins=bins, facecolor=color, alpha=0.25,
                                     label=label, density=density)
         plt.xlim([0, max_Ks * (1.1)])
 
-
-    plt.axvline(x=WGD_ks, color='b', linestyle='-', label="WGD paralog start")
-    num_pairs=sum(n)
-    num_after_wgd=sum([n[i] for i in range(0,len(n)) if bins[i] > WGD_ks])
+    #n, bins, patches = plt.hist(x, bins=100,facecolor=color, alpha=0.25,
+    #                            label=label, density=density)
+    plt.title(title)
+    plt.xlim([0, max_Ks])
+    plt.ylim([0, 700])
     plt.legend()
     plt.xlabel("Ks")
     plt.ylabel("Count in Bin")
-    plt.title("Ks histogram for {0}.\n{1} pairs of genes. ~{2} retained from WGD.".format(
-        species_name,num_pairs,num_after_wgd))
+
     plt.savefig(out_png)
     plt.clf()
     plt.close()
 
-    return [n,bins]
+    return
 
 def read_Ks_csv(csv_file):
 
