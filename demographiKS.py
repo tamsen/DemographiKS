@@ -9,6 +9,9 @@ import config
 import version
 import log
 from datetime import datetime
+from scipy.stats import expon
+
+from gene_shedder import shed_genes
 from modules import SLiM_runner,ks_calculator, FASTA_extracta,ks_histogramer
 
 def run_sim():
@@ -69,7 +72,13 @@ def run_sim():
                                                                                       focal_genomes,
                                                                        conf, mts, out_fasta)
 
-    log.write_to_log("Runnning CODEML on paralogs.")
+    time_since_WGD=5
+    avg_WGD_gene_lifespan=7
+    log.write_to_log("Shedding paralogs lost to dpiloidization & fractionation")
+    remaining_sequences_by_paralog_name_dict  = shed_genes(avg_WGD_gene_lifespan, cleaned_sequences_by_paralog_name_dict,
+                                                      time_since_WGD)
+
+    log.write_to_log("Runnning CODEML on remaining paralogs.")
     paml_out_files = ks_calculator.run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_out_folder)
 
     log.write_to_log("Extracting Ks values from PAML.")
