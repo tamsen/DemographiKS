@@ -15,6 +15,8 @@ def print_slim_version(config):
     return
 def run_slim(config,trees_file_name, my_SLiM_script):
 
+    #TODO, expose parameter: config.recombination_rate
+
     print_slim_version(config)
 
     log.write_to_log("copy slim script:\t" + my_SLiM_script)

@@ -2,15 +2,19 @@ import random
 from scipy.stats import expon
 
 
-def shed_genes(avg_WGD_gene_lifespan, sequences_by_paralog_name_dict, time_since_WGD):
+def shed_genes(sequences_by_paralog_name_dict, config):
+
+    seed=config.DemographiKS_random_seed
+    avg_WGD_gene_lifespan=config.avg_WGD_gene_lifespan_in_GE
+    time_since_WGD=config.WGD_time_Ge
 
     fraction_WGD_genes_remaining_at_time_since_WGD = avg_WGD_gene_lifespan * expon.pdf(
         time_since_WGD, loc=0, scale=avg_WGD_gene_lifespan)
+
     all_sequences = list(sequences_by_paralog_name_dict.keys())
     num_original_sequences = float(len(all_sequences))
     num_genes_to_shed = int(num_original_sequences * (1.0 - fraction_WGD_genes_remaining_at_time_since_WGD))
-    # random.seed(polyploid.general_sim_config.specks_random_seed)
-    random.seed(42)
+    random.seed(seed + 1)
     gene_trees_to_loose_a_duplicate_gene = random.sample(all_sequences, num_genes_to_shed)
 
     print("original num genes: " + str(num_original_sequences))

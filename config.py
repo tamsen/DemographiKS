@@ -12,6 +12,8 @@ class DemographiKS_config:
     stop_codons=["TAA","TGA","TAG"]
     num_codons_in_a_gene=1000
     len_codon=3
+    recombination_rate=1.25*10**(-6)
+    mutation_rate=1*10**(-5)
     gene_length=num_codons_in_a_gene*len_codon #nucleotides
     stop_codons=["TAA","TGA","TAG"]
     max_num_paralogs_to_process=20 #per genome
@@ -21,8 +23,17 @@ class DemographiKS_config:
     bottleneck_Ne = 20
     DIV_time_Ge=4000
     WGD_time_Ge=2000
+    
+    #In specs WGD_half_life_MY was 31 my.
+    #A half-life of 31 MY = mean life span of 44.723 MY
+    #So, thats 44.723*10**6 GE if one year = 1 generation
+    avg_WGD_gene_lifespan_in_GE= 44.723*10**6
+
+    #randomness
     SLiM_rep =1
     Msprime_random_seed = 42
+    DemographiKS_random_seed = 17
+
     def __init__(self, config_file):
 
         mytree = ET.parse(config_file)

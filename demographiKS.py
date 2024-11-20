@@ -55,15 +55,16 @@ def run_sim():
     #log.write_to_log("SLiM metadata dict:\t" + str(metadata))
     log.write_to_log("size SLiM population:\t" + str((ts.individuals_population.size)))
     log.write_to_log("size SLiM samples:\t" + str((ts.num_samples)))
+
     # pick a random polyploid indiviual (ie, two random subgenomes from the two populations of parental subgenomes)
     num_genomes=conf.bottleneck_Ne*2 #because diploid individuals
+    random.seed(conf.DemographiKS_random_seed)
     focal_genomes = ["n" +str(random.randint(1,num_genomes)),
                      "n" +str(random.randint(1+num_genomes, 2*num_genomes))]
     log.write_to_log("random focal polyploid individual:\t" + str(focal_genomes))
 
-
     #overlays neutral mutations
-    mts = msprime.sim_mutations(ts, rate=1e-5, random_seed=conf.Msprime_random_seed, keep=True)
+    mts = msprime.sim_mutations(ts, rate=conf.mutation_rate, random_seed=conf.Msprime_random_seed, keep=True)
     v_list = [v for v in mts.variants()]
     log.write_to_log(str(len(v_list)) + " mutations added.")
 
@@ -72,14 +73,12 @@ def run_sim():
                                                                                       focal_genomes,
                                                                        conf, mts, out_fasta)
 
-    time_since_WGD=5
-    avg_WGD_gene_lifespan=7
     log.write_to_log("Shedding paralogs lost to dpiloidization & fractionation")
-    remaining_sequences_by_paralog_name_dict  = shed_genes(avg_WGD_gene_lifespan, cleaned_sequences_by_paralog_name_dict,
-                                                      time_since_WGD)
+    remaining_sequences_by_paralog_name_dict  = shed_genes(cleaned_sequences_by_paralog_name_dict,conf)
 
     log.write_to_log("Runnning CODEML on remaining paralogs.")
-    paml_out_files = ks_calculator.run_CODEML_on_paralogs(cleaned_sequences_by_paralog_name_dict, demographics_out_folder)
+    paml_out_files = ks_calculator.run_CODEML_on_paralogs(
+        remaining_sequences_by_paralog_name_dict, demographics_out_folder)
 
     log.write_to_log("Extracting Ks values from PAML.")
     results = ks_histogramer.extract_K_values(out_csv, paml_out_files)
