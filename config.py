@@ -64,6 +64,8 @@ class DemographiKS_config:
                         incoming_txt = inner_layer.text.strip()
                         incoming_tag = inner_layer.tag.strip()
 
+                        if (incoming_tag == "recombination_rate"):
+                            self.recombination_rate = int(incoming_txt)
                         if (incoming_tag == "total_num_bases"):
                             self.total_num_bases = int(incoming_txt)
                         if (incoming_tag == "num_codons_in_a_gene"):
@@ -71,13 +73,14 @@ class DemographiKS_config:
                         if (incoming_tag == "max_num_paralogs_to_process"):
                             self.max_num_paralogs_to_process = parse_int_or_false(incoming_txt)
 
-
                 if (incoming_tag == "SequenceEvolution"):
                     for inner_layer in top_layer:
                         incoming_txt = inner_layer.text.strip()
                         incoming_tag = inner_layer.tag.strip()
-                        if (incoming_tag == "num_replicates_per_gene_tree"):
-                            self.num_replicates_per_gene_tree = int(incoming_txt)
+                        if (incoming_tag == "mutation_rate"):
+                            self.mutation_rate = float(incoming_txt)
+                        if (incoming_tag == "avg_WGD_gene_lifespan_in_GE"):
+                            self.avg_WGD_gene_lifespan_in_GE = float(incoming_txt)
                         if (incoming_tag == "num_codons"):
                             self.num_codons = int(incoming_txt)
                         if (incoming_tag == "Ks_per_Myr"):
@@ -113,6 +116,8 @@ class DemographiKS_config:
                             self.SLiM_rep = int(incoming_txt)
                         if (incoming_tag == "Msprime_random_seed"):
                             self.Msprime_random_seed = int(incoming_txt)
+                        if (incoming_tag == "DemographiKS_random_seed"):
+                            self.DemographiKS_random_seed = int(incoming_txt)
 
 def parse_tuple_string(tuple_string):
     if tuple_string.upper() == "FALSE":

@@ -44,6 +44,7 @@ def run_slim(config,trees_file_name, my_SLiM_script):
            "-d", "delta_t=" + str(delta_t),
            "-d", "Tdiv_gen=" + str(config.DIV_time_Ge),
            "-d", "BurninTime=" + str(burnin_time),
+           "-d", "recombination_rate=" + str(config.recombination_rate),
            "-d", "rep=" + str(config.SLiM_rep),
            "-m", "-s", "0", full_path_to_slim_script_destination]
 
