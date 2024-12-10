@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <Paths>
+          <output_folder_root>/home/tamsen/Data/DemographiKS_output/DemographiKS</output_folder_root>
+         <!-- <pre_existing_trees_file>/home/tamsen/Data/DemographiKS_output/allotetraploid_trees_Ne_1000.txt
+        </pre_existing_trees_file>  -->
+    </Paths>
+    <Chromosome>
+        <total_num_bases>1000000</total_num_bases>
+        <num_codons_in_a_gene>1000</num_codons_in_a_gene>
+        <max_num_paralogs_to_process>50</max_num_paralogs_to_process>
+    </Chromosome>
+    <Population>
+        <ancestral_ne>100000</ancestral_ne>
+        <bottleneck_ne>10000</bottleneck_ne>
+      </Population>
+    <SequenceEvolution>
+        <avg_WGD_gene_lifespan_in_GE>4000</avg_WGD_gene_lifespan_in_GE>
+    </SequenceEvolution>
+
+    <Speciation>
+        <DIV_time_Ge>50</DIV_time_Ge>
+        <WGD_time_Ge>10</WGD_time_Ge>
+    </Speciation>
+    <Randomization>
+        <SLiM_rep>1</SLiM_rep>
+        <Msprime_random_seed>1</Msprime_random_seed>
+    </Randomization>
+    <StopAtStep>999</StopAtStep>
+    <LogFileName>DemographiKS_log.txt</LogFileName>
+    <IncludeVisuals>False</IncludeVisuals>
+</metadata>

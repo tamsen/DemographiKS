@@ -56,7 +56,7 @@ def run_sim():
     log.write_to_log("size SLiM population:\t" + str((ts.individuals_population.size)))
     log.write_to_log("size SLiM samples:\t" + str((ts.num_samples)))
 
-    # pick a random polyploid indiviual (ie, two random subgenomes from the two populations of parental subgenomes)
+    # pick a random polyploid individual (ie, two random subgenomes from the two populations of parental subgenomes)
     num_genomes=conf.bottleneck_Ne*2 #because diploid individuals
     random.seed(conf.DemographiKS_random_seed)
     focal_genomes = ["n" +str(random.randint(1,num_genomes)),
