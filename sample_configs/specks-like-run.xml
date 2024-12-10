@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
     <Paths>
-          <output_folder_root>/home/tamsen/Data/DemographiKS_output/DemographiKS</output_folder_root>
-         <!-- <pre_existing_trees_file>/home/tamsen/Data/DemographiKS_output/allotetraploid_trees_Ne_1000.txt
-        </pre_existing_trees_file>  -->
+          <output_folder_root>/home/tamsen/Data/DemographiKS_output/DemographiKS/Foo</output_folder_root>
+          <pre_existing_trees_file>False</pre_existing_trees_file>
     </Paths>
     <Chromosome>
         <total_num_bases>300000</total_num_bases>

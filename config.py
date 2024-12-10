@@ -57,7 +57,10 @@ class DemographiKS_config:
                         if (incoming_tag == "output_folder_root"):
                             self.output_folder_root = incoming_txt
                         if (incoming_tag == "pre_existing_trees_file"):
-                            self.pre_existing_trees_file = incoming_txt
+                            if incoming_txt.upper() == "FALSE":
+                                self.pre_existing_trees_file=False
+                            else:
+                                self.pre_existing_trees_file = incoming_txt
 
                 if (incoming_tag == "Chromosome"):
                     for inner_layer in top_layer:
