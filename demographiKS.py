@@ -9,7 +9,6 @@ import config
 import version
 import log
 from datetime import datetime
-from scipy.stats import expon
 
 from gene_shedder import shed_genes
 from modules import SLiM_runner,ks_calculator, FASTA_extracta,ks_histogramer
