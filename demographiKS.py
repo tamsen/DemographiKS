@@ -26,6 +26,7 @@ def run_sim():
     slim_out_folder=os.path.join(conf.output_folder,"SLiM_output")
     demographics_out_folder=os.path.join(conf.output_folder,"demographiKS_output")
     trees_file = os.path.join(slim_out_folder,conf.sim_name + "_trees.txt")
+    trees_file_at_div = os.path.join(slim_out_folder,conf.sim_name + "_trees_at_div.txt")
     my_SLiM_script= os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
 
     out_fasta=os.path.join(demographics_out_folder,conf.sim_name + ".fa")
@@ -46,7 +47,7 @@ def run_sim():
         path_to_current_py_script = os.path.abspath(__file__)
         full_slim_script = os.path.join( os.path.dirname(path_to_current_py_script), my_SLiM_script)
         log.write_to_log("Running SLiM:\t" + str(full_slim_script))
-        SLiM_runner.run_slim(conf,trees_file, full_slim_script)
+        SLiM_runner.run_slim(conf,trees_file,trees_file_at_div,full_slim_script)
 
     log.write_to_log("Loading:\t" + str(trees_file))
     ts = tskit.load(trees_file)

@@ -67,6 +67,12 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 	    asInteger(BurninTime +  asFloat(Tdiv_gen)),
 		asInteger(BurninTime +  asFloat(Tdiv_gen))
 	);
+	community.rescheduleScriptBlock(
+		s4,
+	    asInteger(BurninTime-1),
+		asInteger(BurninTime-1)
+	);
+
 
 }
 
@@ -92,4 +98,9 @@ s3 10 late() {
 	catn(sim.cycle + "\t block s3 executed");
 	sim.treeSeqOutput(trees_file_name);
 	catn("wrote trees file to:\t" + trees_file_name);
+}
+s4 10 early() {
+	catn(sim.cycle + "\t block s4 executed");
+	sim.treeSeqOutput(trees_file_name_at_div);
+	catn("wrote trees file to:\t" + trees_file_name_at_div);
 }

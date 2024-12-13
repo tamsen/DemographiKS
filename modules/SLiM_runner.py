@@ -13,7 +13,7 @@ def print_slim_version(config):
     log.write_to_log("\t slim -v out_string: " + out_string)
     log.write_to_log("\t slim -v error_string: " + error_string)
     return
-def run_slim(config,trees_file_name, my_SLiM_script):
+def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
 
     #TODO, expose parameter: config.recombination_rate
 
@@ -38,6 +38,7 @@ def run_slim(config,trees_file_name, my_SLiM_script):
     burnin_time = 2 * 10 * config.ancestral_Ne
     cmd = ["slim",
            "-d", "trees_file_name='"+str(trees_file_name)+"'",
+           "-d", "trees_file_name_at_div='" + str(trees_file_name_at_div) + "'",
            "-d", "L=" + str(config.total_num_bases),
            "-d", "Na=" + str(config.ancestral_Ne),
            "-d", "Nb=" + str(config.bottleneck_Ne),

@@ -6,10 +6,13 @@ from matplotlib import pyplot as plt
 
 
 class Test_Plot_Histogram(unittest.TestCase):
+
     def test_plot_histogram(self):
 
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
-        run_name='DGKS_1000_1000_m08d29y2024_h16m08s09'
+        run_name = 'DGKS_20MYR'
+        #run_name='DGKS_1MYR'
+        #run_name='DGKS_1000_1000_m08d29y2024_h16m08s09'
         #DGKS_1000_1000_m08d29y2024_h16m08s09
         #DGKS_100_100_m08d29y2024_h16m09s38
         #DGKS_1000_100_m08d29y2024_h15m27s59
@@ -21,9 +24,11 @@ class Test_Plot_Histogram(unittest.TestCase):
         csv_file_name='allotetraploid_bottleneck.csv'
         demographiKS_ks_results = read_Ks_csv(os.path.join(run_path,csv_file_name))
         out_png1 = os.path.join(run_path,"DemographiKS_out.png")
-        WGD_time_in_Ks=25*0.01*10**-6
-        DIV_time_in_Ks=75*0.01*10**-6
-        max_Ks = 0.1
+        #WGD_time_in_Ks=25*0.01*10**-6
+        #DIV_time_in_Ks=75*0.01*10**-6
+        WGD_time_in_Ks=20*0.01
+        DIV_time_in_Ks=20*0.01
+        max_Ks = 0.5
         bin_size = 0.001
         make_simple_histogram(demographiKS_ks_results,nickname, bin_size,
         'k', WGD_time_in_Ks,DIV_time_in_Ks,
@@ -57,7 +62,7 @@ def make_simple_histogram(Ks_results, title, bin_size, color,WGD_ks,
     #                            label=label, density=density)
     plt.title(title)
     plt.xlim([0, max_Ks])
-    plt.ylim([0, 700])
+    plt.ylim([0, 300])
     plt.legend()
     plt.xlabel("Ks")
     plt.ylabel("Count in Bin")
