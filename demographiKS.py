@@ -12,6 +12,8 @@ from datetime import datetime
 
 from gene_shedder import shed_genes
 from modules import SLiM_runner,ks_calculator, FASTA_extracta,ks_histogramer
+from trees_file_processor import plot_coalescent
+
 
 def run_sim():
 
@@ -25,7 +27,7 @@ def run_sim():
 
     slim_out_folder=os.path.join(conf.output_folder,"SLiM_output")
     demographics_out_folder=os.path.join(conf.output_folder,"demographiKS_output")
-    trees_file = os.path.join(slim_out_folder,conf.sim_name + "_trees.txt")
+    final_trees_file = os.path.join(slim_out_folder,conf.sim_name + "_trees.txt")
     trees_file_at_div = os.path.join(slim_out_folder,conf.sim_name + "_trees_at_div.txt")
     my_SLiM_script= os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
 
@@ -41,16 +43,23 @@ def run_sim():
     # Run the SLiM model
 
     if conf.pre_existing_trees_file:
-        trees_file=conf.pre_existing_trees_file
+        final_trees_file=conf.pre_existing_trees_file
         log.write_to_log("Using pre-exisitng trees file:\t" + str(conf.pre_existing_trees_file))
     else:
         path_to_current_py_script = os.path.abspath(__file__)
         full_slim_script = os.path.join( os.path.dirname(path_to_current_py_script), my_SLiM_script)
         log.write_to_log("Running SLiM:\t" + str(full_slim_script))
-        SLiM_runner.run_slim(conf,trees_file,trees_file_at_div,full_slim_script)
+        SLiM_runner.run_slim(conf,final_trees_file,trees_file_at_div,full_slim_script)
 
-    log.write_to_log("Loading:\t" + str(trees_file))
-    ts = tskit.load(trees_file)
+    #random ancestral genomes:
+    genome_index_1=1
+    genome_index_2=5
+
+    plot_coalescent(trees_file_at_div, genome_index_1,genome_index_2,
+                    conf, demographics_out_folder)
+
+    log.write_to_log("Loading:\t" + str(final_trees_file))
+    ts = tskit.load(final_trees_file)
     metadata=ts.metadata["SLiM"]
     #log.write_to_log("SLiM metadata dict:\t" + str(metadata))
     log.write_to_log("size SLiM population:\t" + str((ts.individuals_population.size)))

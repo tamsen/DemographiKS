@@ -11,6 +11,12 @@ class TestTreesFile(unittest.TestCase):
 
 
     def test_getting_started(self):
+
+        test_output_folder="../test_out"
+        if not os.path.exists(test_output_folder):
+            os.makedirs(test_output_folder)
+
+        test_output_folder
         pop_size=10_000
         seq_length=10_000_000
 
@@ -69,7 +75,8 @@ class TestTreesFile(unittest.TestCase):
         print(f"Tree number {swept_tree.index}, which runs from position {intvl.left} to {intvl.right}:")
         # Draw it at a wide size, to make room for all 40 tips
         tree_pic= swept_tree.draw_svg(size=(1000, 200))
-        with open("/home/tamsen/Data/DemographiKS_output/tree.svg", "w") as f:
+        svg_out=os.path.join(test_output_folder,"tree.svg")
+        with open(svg_out, "w") as f:
             f.write(tree_pic)
         tree_txt = swept_tree.draw_text()
         print(tree_txt)
@@ -88,7 +95,7 @@ class TestTreesFile(unittest.TestCase):
         
         fig = plt.figure(figsize=(10, 10), dpi=350)
         x = mrcas
-        out_png =  "/home/tamsen/Data/DemographiKS_output/mrca_hist.png"
+        png_out=os.path.join(test_output_folder,"mrca_hist.png")
         label="hist to test coalescence plotting"
         print(label)
         max_mrca= max(mrcas)
@@ -99,9 +106,7 @@ class TestTreesFile(unittest.TestCase):
 
         print('foo')
         plt.xlim([0, max_mrca * (1.1)])
-    
-        #n, bins, patches = plt.hist(x, bins=100,facecolor=color, alpha=0.25,
-        #                            label=label, density=density)
+
         plt.title(label)
         #plt.xlim([0, max_mrca])
         #plt.ylim([0, 300])
@@ -109,7 +114,7 @@ class TestTreesFile(unittest.TestCase):
         plt.xlabel("MRCA time")
         plt.ylabel("# genes in bin")
     
-        plt.savefig(out_png)
+        plt.savefig(png_out)
         plt.clf()
         plt.close()
         

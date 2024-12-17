@@ -68,7 +68,7 @@ class DemographiKS_config:
                         incoming_tag = inner_layer.tag.strip()
 
                         if (incoming_tag == "recombination_rate"):
-                            self.recombination_rate = int(incoming_txt)
+                            self.recombination_rate = float(incoming_txt)
                         if (incoming_tag == "total_num_bases"):
                             self.total_num_bases = int(incoming_txt)
                         if (incoming_tag == "num_codons_in_a_gene"):
