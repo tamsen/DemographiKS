@@ -4,6 +4,7 @@ import unittest
 import msprime
 import numpy as np
 import tskit
+from matplotlib import pyplot as plt
 
 
 class TestTreesFile(unittest.TestCase):
@@ -72,6 +73,45 @@ class TestTreesFile(unittest.TestCase):
             f.write(tree_pic)
         tree_txt = swept_tree.draw_text()
         print(tree_txt)
+        
+        #get tree for every gene
+        num_genes=int(5_000_000/1000)
+        gene_starts=[i*1000 for i in range(0,num_genes)]
+        gene_centers=[g+500 for g in gene_starts]
+        mrcas=[]
+        for gene_center in gene_centers:
+            tree_for_gene=reduced_ts.at(gene_center)
+            mrca = reduced_ts.node(tree_for_gene.root)
+            mrcas.append(mrca.time)
+            print("gene {0}, mrca time: {1}".format(gene_center,mrca.time))
+
+        
+        fig = plt.figure(figsize=(10, 10), dpi=350)
+        x = mrcas
+        out_png =  "/home/tamsen/Data/DemographiKS_output/mrca_hist.png"
+        label="hist to test coalescence plotting"
+        print(label)
+        max_mrca= max(mrcas)
+        bin_size=1000
+        bins = np.arange(0, max_mrca, bin_size)
+        n, bins, patches = plt.hist(x, bins=bins, facecolor='b', alpha=0.25,
+                                        label='label', density=False)
+
+        print('foo')
+        plt.xlim([0, max_mrca * (1.1)])
+    
+        #n, bins, patches = plt.hist(x, bins=100,facecolor=color, alpha=0.25,
+        #                            label=label, density=density)
+        plt.title(label)
+        #plt.xlim([0, max_mrca])
+        #plt.ylim([0, 300])
+        plt.legend()
+        plt.xlabel("MRCA time")
+        plt.ylabel("# genes in bin")
+    
+        plt.savefig(out_png)
+        plt.clf()
+        plt.close()
         
     def test_load_one_tree_file(self):
 
