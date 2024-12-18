@@ -14,7 +14,7 @@ class MyDataFetcher(unittest.TestCase):
 
         output_root_folder="/usr/scratch2/userdata2/tdunn/DemographiKS_Output"
         output_root_folder="/usr/scratch2/userdata2/tdunn/DemographiKS_output/RC/"
-        run_name="RC10_m12d18y2024_h10m09s39"
+        run_name="RC10_m12d18y2024_h11m43s13"
         #DGKS_1000_1000_m08d29y2024_h16m08s09
         #DGKS_100_100_m08d29y2024_h16m09s38
         #DGKS_1000_100_m08d29y2024_h15m27s59
