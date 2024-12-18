@@ -48,7 +48,7 @@ def run_sim():
     else:
         path_to_current_py_script = os.path.abspath(__file__)
         full_slim_script = os.path.join( os.path.dirname(path_to_current_py_script), my_SLiM_script)
-        log.write_to_log("Running SLiM:\t" + str(full_slim_script))
+        log.write_to_log("Running SLiM script:\t" + str(full_slim_script))
         SLiM_runner.run_slim(conf,final_trees_file,trees_file_at_div,full_slim_script)
 
     #random ancestral genomes:
