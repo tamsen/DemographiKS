@@ -24,7 +24,6 @@
         <SLiM_rep>1</SLiM_rep>
         <Msprime_random_seed>1</Msprime_random_seed>
     </Randomization>
-    <StopAtStep>999</StopAtStep>
     <LogFileName>DemographiKS_log.txt</LogFileName>
     <IncludeVisuals>False</IncludeVisuals>
     <StopAtStep>1</StopAtStep>

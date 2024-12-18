@@ -14,6 +14,7 @@
     <Population>
         <ancestral_ne>100000</ancestral_ne>
         <bottleneck_ne>10000</bottleneck_ne>
+        <burnin_time>478</burnin_time>
       </Population>
     <SequenceEvolution>
         <avg_WGD_gene_lifespan_in_GE>4000</avg_WGD_gene_lifespan_in_GE>

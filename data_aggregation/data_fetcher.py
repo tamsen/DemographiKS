@@ -13,7 +13,8 @@ class MyDataFetcher(unittest.TestCase):
         #
 
         output_root_folder="/usr/scratch2/userdata2/tdunn/DemographiKS_Output"
-        run_name="DGKS_1000_100_m08d29y2024_h15m27s59"
+        output_root_folder="/usr/scratch2/userdata2/tdunn/DemographiKS_output/RC/"
+        run_name="RC10_m12d18y2024_h10m09s39"
         #DGKS_1000_1000_m08d29y2024_h16m08s09
         #DGKS_100_100_m08d29y2024_h16m09s38
         #DGKS_1000_100_m08d29y2024_h15m27s59
@@ -23,7 +24,8 @@ class MyDataFetcher(unittest.TestCase):
         #run_name_splat=run_name.split("_")
         run_specific_folder=run_name + "/demographiKS_output"
         #nickname="_".join(run_name_splat[0],run_name_splat[1],run_name_splat[2])
-        ks_data_file="allotetraploid_bottleneck.csv"
+        data_file="*.csv"
+        png_file="*.png"
         config_file="*.used.xml"
 
         me_at_remote_URL =  'tdunn@mesx.sdsu.edu'
@@ -33,7 +35,8 @@ class MyDataFetcher(unittest.TestCase):
         if not os.path.exists(local_output_folder):
             os.makedirs(local_output_folder)
 
-        remote_csv_file = os.path.join(output_root_folder,run_specific_folder,ks_data_file)
+        remote_png_file = os.path.join(output_root_folder,run_specific_folder,png_file)
+        remote_csv_file = os.path.join(output_root_folder,run_specific_folder,data_file)
         remote_config_file = os.path.join(output_root_folder,run_name,config_file)
 
         cmd1 = ['scp', '-r', me_at_remote_URL + ':' + remote_config_file, local_output_folder]
@@ -46,7 +49,12 @@ class MyDataFetcher(unittest.TestCase):
         out_string, error_string = process_wrapper.run_and_wait_with_retry(
             cmd2, local_output_folder, "Connection reset by peer", 2, 5)
 
-        expected_output_file=os.path.join(local_output_folder,ks_data_file)
+        cmd2 = ['scp', '-r', me_at_remote_URL + ':' + remote_png_file, local_output_folder]
+        print(" ".join(cmd2))
+        out_string, error_string = process_wrapper.run_and_wait_with_retry(
+            cmd2, local_output_folder, "Connection reset by peer", 2, 5)
+
+        expected_output_file=os.path.join(local_output_folder,data_file)
         self.assertEqual(os.path.exists(expected_output_file), True)  # add assertion here
 
 

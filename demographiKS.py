@@ -10,9 +10,9 @@ import version
 import log
 from datetime import datetime
 
-from gene_shedder import shed_genes
+from modules.gene_shedder import shed_genes
 from modules import SLiM_runner,ks_calculator, FASTA_extracta,ks_histogramer
-from trees_file_processor import plot_coalescent
+from modules.trees_file_processor import plot_coalescent
 
 
 def run_sim():

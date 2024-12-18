@@ -18,6 +18,8 @@ class TestConfigLoading(unittest.TestCase):
         self.assertEqual(conf.avg_WGD_gene_lifespan_in_GE, 4000)  # add assertion here
         self.assertEqual(conf.recombination_rate, 0)
         self.assertEqual(conf.mutation_rate, 0.001)
+        
+        self.assertEqual(conf.burnin_time, 478)
 
 if __name__ == '__main__':
     unittest.main()

@@ -23,7 +23,11 @@ class DemographiKS_config:
     bottleneck_Ne = 20
     DIV_time_Ge=4000
     WGD_time_Ge=2000
-    
+
+    # typically 2*10*Ne, but you should check how long it takes for SLiM
+    # ancestral population to be at a steady state
+    burnin_time=2*10*100 #
+
     #In specs WGD_half_life_MY was 31 my.
     #A half-life of 31 MY = mean life span of 44.723 MY
     #So, thats 44.723*10**6 GE if one year = 1 generation
@@ -105,6 +109,8 @@ class DemographiKS_config:
                             self.ancestral_Ne= int(incoming_txt)
                         if (incoming_tag == "bottleneck_ne"):
                             self.bottleneck_Ne = int(incoming_txt)
+                        if (incoming_tag == "burnin_time"):
+                            self.burnin_time = int(incoming_txt)
 
                 if (incoming_tag == "Speciation"):
                     for inner_layer in top_layer:
