@@ -47,7 +47,6 @@ def plot_mrca(slim_mrcas, theoretical_mrcas,png_out):
     #Co.T=(1/2N)*e^-((t-1)/2N))
     x = slim_mrcas
     label = "Coalescent Times For Genes From Sampled Two Ancestral Genomes"
-    print(label)
     max_mrca = max(slim_mrcas)
     num_genes=len(slim_mrcas)
     bin_size = 100

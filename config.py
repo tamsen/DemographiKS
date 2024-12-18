@@ -33,7 +33,8 @@ class DemographiKS_config:
     SLiM_rep =1
     Msprime_random_seed = 42
     DemographiKS_random_seed = 17
-
+    stop_at_step = 999
+    
     def __init__(self, config_file):
 
         mytree = ET.parse(config_file)
@@ -43,6 +44,9 @@ class DemographiKS_config:
 
                 incoming_tag = top_layer.tag.strip()
                 incoming_txt = top_layer.text.strip()
+
+                if (incoming_tag == "StopAtStep"):
+                    self.stop_at_step = int(incoming_txt)
 
                 if (incoming_tag == "LogFileName"):
                     if incoming_txt.upper() == "FALSE":

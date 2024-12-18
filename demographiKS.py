@@ -41,10 +41,10 @@ def run_sim():
             os.mkdir(f)
 
     # Run the SLiM model
-
+    log.write_to_log("Step 1: running SLiM")
     if conf.pre_existing_trees_file:
         final_trees_file=conf.pre_existing_trees_file
-        log.write_to_log("Using pre-exisitng trees file:\t" + str(conf.pre_existing_trees_file))
+        log.write_to_log("Using pre-exisiting trees file:\t" + str(conf.pre_existing_trees_file))
     else:
         path_to_current_py_script = os.path.abspath(__file__)
         full_slim_script = os.path.join( os.path.dirname(path_to_current_py_script), my_SLiM_script)
@@ -57,7 +57,11 @@ def run_sim():
 
     plot_coalescent(trees_file_at_div, genome_index_1,genome_index_2,
                     conf, demographics_out_folder)
-    return
+    
+    if conf.stop_at_step < 2:
+        return
+    
+    log.write_to_log("Step 2: Generating paralogs from trees file")
     log.write_to_log("Loading:\t" + str(final_trees_file))
     ts = tskit.load(final_trees_file)
     metadata=ts.metadata["SLiM"]
@@ -82,9 +86,17 @@ def run_sim():
                                                                                       focal_genomes,
                                                                        conf, mts, out_fasta)
 
-    log.write_to_log("Shedding paralogs lost to dpiloidization & fractionation")
+    if conf.stop_at_step < 3:
+        return
+    
+    log.write_to_log("Step 3: Shedding paralogs lost to dpiloidization & fractionation")
     remaining_sequences_by_paralog_name_dict  = shed_genes(cleaned_sequences_by_paralog_name_dict,conf)
 
+
+    if conf.stop_at_step < 4:
+        return
+
+    log.write_to_log("Step 4: Calculating Ks values")
     log.write_to_log("Runnning CODEML on remaining paralogs.")
     paml_out_files = ks_calculator.run_CODEML_on_paralogs(
         remaining_sequences_by_paralog_name_dict, demographics_out_folder)
