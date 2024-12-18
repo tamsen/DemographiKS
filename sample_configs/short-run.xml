@@ -9,7 +9,7 @@
         <total_num_bases>10000000</total_num_bases>
         <num_codons_in_a_gene>1000</num_codons_in_a_gene>
         <max_num_paralogs_to_process>50</max_num_paralogs_to_process>
-        <recombination_rate>8e-9</recombination_rate>
+        <recombination_rate>8e-12</recombination_rate>
         <!--<recombination_rate>8e-8</recombination_rate>-->
     </Chromosome>
     <Population>

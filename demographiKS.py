@@ -57,7 +57,7 @@ def run_sim():
 
     plot_coalescent(trees_file_at_div, genome_index_1,genome_index_2,
                     conf, demographics_out_folder)
-
+    return
     log.write_to_log("Loading:\t" + str(final_trees_file))
     ts = tskit.load(final_trees_file)
     metadata=ts.metadata["SLiM"]

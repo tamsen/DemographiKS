@@ -27,9 +27,12 @@ def plot_coalescent(trees_file, genome_index_1,genome_index_2, config, output_fo
         csv_file_out1 = os.path.join(output_folder, "simulated_ancestral_mrcas.csv")
         save_mrca_values(csv_file_out1, mrcas,gene_starts)
         theoretical_mrcas=theoretical_coalescent(num_genes,config.ancestral_Ne)
-        csv_file_out2 = os.path.join(output_folder, "simulated_ancestral_mrcas.csv")
+        csv_file_out2 = os.path.join(output_folder, "theoretical_ancestral_mrcas.csv")
         save_mrca_values(csv_file_out2,theoretical_mrcas,gene_starts)
-        plot_mrca(mrcas,theoretical_mrcas, output_folder)
+        png_out1 = os.path.join(output_folder, "mrca_hist1.png")
+        plot_mrca(mrcas,theoretical_mrcas, png_out1)
+        png_out2 = os.path.join(output_folder, "mrca_hist2.png")
+        plot_mrca(mrcas,[], png_out2)
 
 def theoretical_coalescent(num_genes,N):
     #Co.T=(1/2N)*e^-((t-1)/2N))
@@ -38,12 +41,11 @@ def theoretical_coalescent(num_genes,N):
     random_draws_from_distribution = expon.rvs(loc=loc, size=num_genes, scale=xscale)
     return random_draws_from_distribution
 
-def plot_mrca(slim_mrcas, theoretical_mrcas, output_folder):
+def plot_mrca(slim_mrcas, theoretical_mrcas,png_out):
     fig = plt.figure(figsize=(10, 10), dpi=350)
     
     #Co.T=(1/2N)*e^-((t-1)/2N))
     x = slim_mrcas
-    png_out = os.path.join(output_folder, "mrca_hist.png")
     label = "Coalescent Times For Genes From Sampled Two Ancestral Genomes"
     print(label)
     max_mrca = max(slim_mrcas)
