@@ -41,7 +41,7 @@ def plot_coalescent(trees_file, genome_index_1,genome_index_2, config, output_fo
         csv_file_out3 = os.path.join(output_folder, "simulated_ancestral_tree_mrcas.csv")
         save_mrca_values(csv_file_out3,mrcas_by_tree,tree_interval_starts)
         png_out1 = os.path.join(output_folder, "mrca_hist1.png")
-        plot_mrca(mrcas_by_gene,mrcas_by_tree,theoretical_mrcas, png_out1)
+        plot_mrca(mrcas_by_gene,[],theoretical_mrcas, png_out1)
         png_out2 = os.path.join(output_folder, "mrca_hist2.png")
         plot_mrca(mrcas_by_gene,[],[], png_out2)
 
