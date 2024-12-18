@@ -78,4 +78,4 @@ def save_mrca_values(csv_file_out, mrcas_values,gene_starts):
         for i in range(0,len(mrcas_values)):
             mrcas_value = mrcas_values[i]
             gene_start= gene_starts[i]
-            f.writelines(str(gene_start) + "," + str(mrcas_value))
+            f.writelines(str(gene_start) + "," + str(mrcas_value)+"\n")
