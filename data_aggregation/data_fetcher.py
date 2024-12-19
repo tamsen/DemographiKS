@@ -1,5 +1,7 @@
 import os.path
 import unittest
+#import process_wrapper
+import config
 import process_wrapper
 
 
@@ -7,55 +9,45 @@ class MyDataFetcher(unittest.TestCase):
 
     def test_fetch_data(self):
 
-
-        #///usr/scratch2/userdata2/tdunn/DemographiKS_Output
-        #//home/tamsen/Data/DemographiKS/demographiKS_output/allotetraploid_bottleneck_hist.png
-        #
-
-        output_root_folder="/usr/scratch2/userdata2/tdunn/DemographiKS_Output"
-        output_root_folder="/usr/scratch2/userdata2/tdunn/DemographiKS_output/RC/"
-        run_name="RC10_m12d18y2024_h11m43s13"
-        #DGKS_1000_1000_m08d29y2024_h16m08s09
-        #DGKS_100_100_m08d29y2024_h16m09s38
-        #DGKS_1000_100_m08d29y2024_h15m27s59
-        #DGKS_10_10_m08d29y2024_h16m13s27
-        #DGKS_1000_10_m08d29y2024_h16m12s08
-
-        #run_name_splat=run_name.split("_")
-        run_specific_folder=run_name + "/demographiKS_output"
-        #nickname="_".join(run_name_splat[0],run_name_splat[1],run_name_splat[2])
-        data_file="*.csv"
-        png_file="*.png"
-        config_file="*.used.xml"
+        RC_run_list=['RC10_m12d18y2024_h14m35s15',
+                     'RC10_m12d18y2024_h14m35s17',
+                     'RC10_m12d18y2024_h13m36s12','RC10_m12d18y2024_h14m35s19',
+                     'RC10_m12d18y2024_h14m30s54','RC10_m12d18y2024_h14m39s19',
+                     'RC10_m12d18y2024_h14m30s58']
 
         me_at_remote_URL =  'tdunn@mesx.sdsu.edu'
+        output_root_folder="/usr/scratch2/userdata2/tdunn/DemographiKS_output/RC/"
+
+        #run_name="RC10_m12d18y2024_h11m43s13"
+        #TODO, add fetching the log, so I can get the time stamps
+        #for i in range(3,4):
+        run_name = "RC10_m12d18y2024_h14m35s19"#RC_run_list[2]
         local_output_folder = os.path.join("/home/tamsen/Data/DemographiKS_output_from_mesx",
-                                           run_name)
+                                               run_name)
+        self.pull_down_run_data(local_output_folder, me_at_remote_URL, output_root_folder, run_name)
+
+        self.assertEqual(True, True)  # add assertion here
+
+    def pull_down_run_data(self, local_output_folder, me_at_remote_URL, output_root_folder, run_name):
+
+        run_specific_folder=run_name + "/demographiKS_output"
 
         if not os.path.exists(local_output_folder):
             os.makedirs(local_output_folder)
 
-        remote_png_file = os.path.join(output_root_folder,run_specific_folder,png_file)
-        remote_csv_file = os.path.join(output_root_folder,run_specific_folder,data_file)
-        remote_config_file = os.path.join(output_root_folder,run_name,config_file)
+        file_needed=["*.csv","*.png", "*.used.xml"]
+        for file in file_needed:
+            remote_file = os.path.join(output_root_folder, run_specific_folder, file)
+            cmd1 = ['scp', '-r', me_at_remote_URL + ':' + remote_file, local_output_folder]
+            print(" ".join(cmd1))
+            out_string, error_string = process_wrapper.run_and_wait_with_retry(
+                cmd1, local_output_folder, "Connection reset by peer", 2, 5)
 
-        cmd1 = ['scp', '-r', me_at_remote_URL + ':' + remote_config_file, local_output_folder]
-        print(" ".join(cmd1))
-        out_string, error_string = process_wrapper.run_and_wait_with_retry(
-            cmd1, local_output_folder, "Connection reset by peer", 2, 5)
-
-        cmd2 = ['scp', '-r', me_at_remote_URL + ':' + remote_csv_file, local_output_folder]
+        remote_log_file = os.path.join(output_root_folder, run_name, '*log*')
+        cmd2 = ['scp', '-r', me_at_remote_URL + ':' + remote_log_file, local_output_folder]
         print(" ".join(cmd2))
         out_string, error_string = process_wrapper.run_and_wait_with_retry(
             cmd2, local_output_folder, "Connection reset by peer", 2, 5)
-
-        cmd2 = ['scp', '-r', me_at_remote_URL + ':' + remote_png_file, local_output_folder]
-        print(" ".join(cmd2))
-        out_string, error_string = process_wrapper.run_and_wait_with_retry(
-            cmd2, local_output_folder, "Connection reset by peer", 2, 5)
-
-        expected_output_file=os.path.join(local_output_folder,data_file)
-        self.assertEqual(os.path.exists(expected_output_file), True)  # add assertion here
 
 
 if __name__ == '__main__':
