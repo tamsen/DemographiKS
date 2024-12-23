@@ -9,6 +9,10 @@ class MyDataFetcher(unittest.TestCase):
 
     def test_fetch_data(self):
 
+        TE_run_list=['TE01_m12d20y2024_h14m16s21','TE03_m12d20y2024_h14m26s56',
+                     'TE02_m12d20y2024_h14m22s23']#,'TE04_m12d20y2024_h14m31s31
+
+
         RC_run_list=['RC10_m12d18y2024_h14m35s15','RC10_m12d18y2024_h14m35s19']
         #             'RC10_m12d18y2024_h14m35s17',
         #             'RC10_m12d18y2024_h13m36s12','RC10_m12d18y2024_h14m35s19',
@@ -32,8 +36,8 @@ class MyDataFetcher(unittest.TestCase):
                      "GE8_m12d19y2024_h13m34s13","GE5_m12d19y2024_h11m47s58",
                      "GE7_m12d19y2024_h13m30s32"]
 
-        run_list=GE_run_list
-        run_collection_name="GE"
+        run_list=TE_run_list
+        run_collection_name="TE"
         me_at_remote_URL =  'tdunn@mesx.sdsu.edu'
         output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_output",
                                         run_collection_name)
@@ -55,7 +59,7 @@ class MyDataFetcher(unittest.TestCase):
             os.makedirs(local_output_folder)
 
         file_needed_from_demographics_folder=["*.csv","*.png", "*.used.xml"]
-        file_needed_from_run_folder=["*log*", "*.used.xml"]
+        file_needed_from_run_folder=["*log*", "*.used.xml","*.png","*.slim"]
 
         for file in file_needed_from_demographics_folder:
             remote_file = os.path.join(output_root_folder, demographics_folder, file)

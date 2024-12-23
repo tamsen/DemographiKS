@@ -8,7 +8,56 @@ from matplotlib import pyplot as plt
 
 
 class TestTCoalAggregation(unittest.TestCase):
+    
+    TE_run_list = ['TE01_m12d20y2024_h14m16s21', 'TE03_m12d20y2024_h14m26s56',
+                   'TE02_m12d20y2024_h14m22s23']  # ,'TE04_m12d20y2024_h14m31s31
+    
+    #"SpecKS like simulations, gradually increasing the population size
+    def test_TCoal_with_varying_TE(self):
 
+        #make 1 histogram.
+        aggragate_output_folder = "/home/tamsen/Data/DemographiKS_output_from_mesx"
+
+        TE_run_list = ['TE01_m12d20y2024_h14m16s21', 'TE02_m12d20y2024_h14m22s23',
+                       'TE03_m12d20y2024_h14m26s56']  # ,'TE04_m12d20y2024_h14m31s31
+
+        burnin_times_in_generations=[5e6, 5e7, 5e7]
+        Ne_in_generations=[10, 100, 1000]
+       
+        num_runs=len(TE_run_list)
+        bin_sizes = [2,20, 200]
+        xmax = False#1000
+        ymax=False
+        png_out=os.path.join(aggragate_output_folder,"mrcsa_by_TE_tests.png")
+        fig, ax = plt.subplots(1, num_runs,figsize=(20,5))
+        fig.suptitle("SLiM Tcoal by gene in ancestral species at Tdiv\n" + \
+            "Recombination rate = 8e-9, Ne varies, BI varies")
+
+        for i in range(0,num_runs):
+            run_name=TE_run_list[i]
+            local_output_folder = os.path.join("/home/tamsen/Data/DemographiKS_output_from_mesx",
+                                               run_name)
+
+            run_duration_in_m = get_run_time_in_minutes(local_output_folder)
+            slim_csv_file=os.path.join(local_output_folder,"simulated_ancestral_gene_mrcas.csv")
+            loci, slim_mrcas_by_gene=read_data_csv(slim_csv_file)
+            
+            theory_output_file = os.path.join(local_output_folder, "theoretical_ancestral_gene_mrcas.csv")
+            loci, theory_mrcas_by_gene=read_data_csv(theory_output_file)
+            plot_title="burnin time=" + str(burnin_times_in_generations[i]) + " gen\n"\
+                        + "Ne=" + str(Ne_in_generations[i])
+            plot_mrca(ax[i],slim_mrcas_by_gene, [],theory_mrcas_by_gene,
+                run_duration_in_m, plot_title,bin_sizes[i],xmax, ymax)
+        
+        ax[0].set(ylabel="# genes in bin")
+        plt.tight_layout()
+        plt.savefig(png_out, dpi=550)
+        plt.clf()
+        plt.close()
+        
+        self.assertEqual(True, True)  # add assertion here
+
+    
     def test_TCoal_with_varying_BI(self):
 
         #make 1 histogram.

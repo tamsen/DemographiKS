@@ -49,8 +49,11 @@ def make_simple_histogram(Ks_results, title, bin_size, color,WGD_ks,
     # print(PAML_hist_out_file)
     label="hist for " + os.path.basename(out_png).replace("_out.png","")
 
-    plt.axvline(x=WGD_ks, color='b', linestyle='-', label="WGD (" +str(WGD_ks)+ ")")
-    plt.axvline(x=DIV_ks, color='r', linestyle='-', label="DIV (" +str(DIV_ks) + ")")
+    if WGD_ks:
+        plt.axvline(x=WGD_ks, color='b', linestyle='-', label="WGD (" +str(WGD_ks)+ ")")
+
+    if DIV_ks:
+        plt.axvline(x=DIV_ks, color='r', linestyle='-', label="DIV (" +str(DIV_ks) + ")")
 
     if max_Ks:
         bins = np.arange(0, max_Ks + 0.1, bin_size)
