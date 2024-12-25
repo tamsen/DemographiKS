@@ -9,7 +9,11 @@ class MyDataFetcher(unittest.TestCase):
 
     def test_fetch_data(self):
 
-        TE_run_list=['TE01_m12d20y2024_h14m16s21','TE03_m12d20y2024_h14m26s56',
+        #/ usr / scratch2 / userdata2 / tdunn / DemographiKS_output / SP / SP1MY_m12d24y2024_h09m00s34
+        TE5_run_list=['TE05_m12d23y2024_h08m52s16','TE06_m12d23y2024_h09m10s28',
+                     'TE07_m12d23y2024_h09m18s26']
+        
+        TE1_run_list=['TE01_m12d20y2024_h14m16s21','TE03_m12d20y2024_h14m26s56',
                      'TE02_m12d20y2024_h14m22s23']#,'TE04_m12d20y2024_h14m31s31
 
 
@@ -36,7 +40,7 @@ class MyDataFetcher(unittest.TestCase):
                      "GE8_m12d19y2024_h13m34s13","GE5_m12d19y2024_h11m47s58",
                      "GE7_m12d19y2024_h13m30s32"]
 
-        run_list=TE_run_list
+        run_list=TE5_run_list
         run_collection_name="TE"
         me_at_remote_URL =  'tdunn@mesx.sdsu.edu'
         output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_output",

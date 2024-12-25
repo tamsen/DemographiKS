@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 from matplotlib import pyplot as plt
 
-from data_aggregation.coalescent_plot_aggregation import get_run_time_in_minutes
+from data_aggregation.coalescent_plot_aggregation import get_run_time_in_minutes, read_data_csv, plot_mrca
 from data_aggregation.histogram_plotter import read_Ks_csv,make_simple_histogram
 
 
@@ -16,39 +16,55 @@ class TestKsPlotAgg(unittest.TestCase):
 
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
 
-        TE_run_list = ['TE01_m12d20y2024_h14m16s21', 'TE02_m12d20y2024_h14m22s23',
-                       'TE03_m12d20y2024_h14m26s56'] 
+        #TE1_run_list = ['TE01_m12d20y2024_h14m16s21', 'TE02_m12d20y2024_h14m22s23',
+        #               'TE03_m12d20y2024_h14m26s56']
 
-        num_runs=len(TE_run_list)
-        png_out = os.path.join(demographiKS_out_path,"ks_hist_by_TE_test.png")
+        TE5_run_list=[
+            'TE03_m12d20y2024_h14m26s56','TE05_m12d23y2024_h08m52s16','TE07_m12d23y2024_h09m18s26']
+        #'TE06_m12d23y2024_h09m10s28',
+        #             'TE07_m12d23y2024_h09m18s26']
 
-        fig, ax = plt.subplots(1, num_runs, figsize=(20, 5))
+        Ne=[1000, 1000, 1000]
+        burnin_times_in_generations=[5e7, 5e7, 5e7]
+        time_since_DIV=[1000, 10000,100000]
+
+        run_list_num="5"
+        num_runs=len(TE5_run_list)
+        png_out = os.path.join(demographiKS_out_path,"ks_hist_by_TE{0}_test.png".format(run_list_num))
+
+        fig, ax = plt.subplots(2, num_runs, figsize=(20, 10))
         fig.suptitle("SLiM Tcoal by gene in ancestral species at Tdiv\n" + \
             "Recombination rate = 8e-9, Ne varies, BI varies")
-        max_Ks = 0.001  # max(demographiKS_ks_results)
-        ymax=100
-        bin_size = 0.00001  # max_Ks/10.0
-        Ne=[10, 100, 1000]
-        burnin_times_in_generations=[5e6, 5e7, 5e7]
+        xmax = False#0.001  # max(demographiKS_ks_results)
+        #ymax=100
+        ymax=False
+        bin_sizes_Ks = 0.00001  # max_Ks/10.0
+        bin_sizes_Tc = [200,200, 200]
+
         for i in range(0,num_runs):
-            run_name=TE_run_list[i]
+            run_name=TE5_run_list[i]
             run_name_splat=run_name.split("_")
             nickname="_".join(run_name_splat[0:3])
             run_path=os.path.join(demographiKS_out_path,run_name)
             csv_file_name='allotetraploid_bottleneck.csv'
             demographiKS_ks_results = read_Ks_csv(os.path.join(run_path,csv_file_name))
-            print("run path: " + run_path)
-            #WGD_time_in_Ks=25*0.01*10**-6
-            #DIV_time_in_Ks=75*0.01*10**-6
-            WGD_time_in_Ks=False#20*0.01
-            DIV_time_in_Ks=False#20*0.01
-            plot_title="burnin time=" + str(burnin_times_in_generations[i]) + " gen\n"\
-                        + "Ne=" + str(Ne[i])
+            plot_title="burnin time=" + str(burnin_times_in_generations[i]) + " gen,\n"\
+                        + "Ne=" + str(Ne[i]) + ", Tdiv=" + str(time_since_DIV[i])
             run_duration_in_m = get_run_time_in_minutes(run_path)
-            plot_ks(ax[i], demographiKS_ks_results,
-                    run_duration_in_m, plot_title, bin_size, max_Ks, ymax)
+            plot_ks(ax[0,i], demographiKS_ks_results,
+                    run_duration_in_m, plot_title, bin_sizes_Ks, xmax, ymax)
 
-        ax[0].set(ylabel="# genes in bin")
+            slim_csv_file = os.path.join(run_path, "simulated_ancestral_gene_mrcas.csv")
+            loci, slim_mrcas_by_gene = read_data_csv(slim_csv_file)
+
+            theory_output_file = os.path.join(run_path, "theoretical_ancestral_gene_mrcas.csv")
+            loci, theory_mrcas_by_gene = read_data_csv(theory_output_file)
+            plot_title = "burnin time=" + str(burnin_times_in_generations[i]) + " gen\n" \
+                         + "Ne=" + str(Ne[i])
+            plot_mrca(ax[1,i], slim_mrcas_by_gene, [], theory_mrcas_by_gene,
+                      run_duration_in_m, plot_title, bin_sizes_Tc[i], xmax, ymax)
+
+        ax[0,0].set(ylabel="# genes in bin")
         plt.tight_layout()
         plt.savefig(png_out, dpi=550)
         plt.clf()
