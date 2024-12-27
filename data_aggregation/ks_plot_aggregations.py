@@ -1,6 +1,6 @@
 import os
 import unittest
-
+from pathlib import Path
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.cbook import get_sample_data
@@ -35,8 +35,11 @@ class TestKsPlotAgg(unittest.TestCase):
         run_list_num="_5to9"
         num_runs=len(TE5_run_list)
         png_out = os.path.join(demographiKS_out_path,"ks_hist_by_TE{0}_test.png".format(run_list_num))
-        png_Tnow = '/home/tamsen/Downloads/Ks_now_time_slice.jpg'
-        png_Tdiv = '/home/tamsen/Downloads/Tdiv_TimeSlice.jpg'
+
+        par_dir = Path(__file__).parent.parent
+        image_folder = os.path.join(par_dir, "images")
+        png_Tnow =  os.path.join(image_folder,'Ks_now_time_slice.jpg')
+        png_Tdiv = os.path.join(image_folder,'Tdiv_TimeSlice.jpg')
 
         fig, ax = plt.subplots(2, num_runs, figsize=(20, 10))
         fig.suptitle("SLiM Tcoal by gene in ancestral species at Tdiv\n" + \
