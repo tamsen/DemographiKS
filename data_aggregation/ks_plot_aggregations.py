@@ -3,6 +3,7 @@ import unittest
 
 import numpy as np
 from matplotlib import pyplot as plt
+from matplotlib.cbook import get_sample_data
 
 from data_aggregation.coalescent_plot_aggregation import get_run_time_in_minutes, read_data_csv, plot_mrca
 from data_aggregation.histogram_plotter import read_Ks_csv,make_simple_histogram
@@ -34,6 +35,8 @@ class TestKsPlotAgg(unittest.TestCase):
         run_list_num="_5to9"
         num_runs=len(TE5_run_list)
         png_out = os.path.join(demographiKS_out_path,"ks_hist_by_TE{0}_test.png".format(run_list_num))
+        png_Tnow = '/home/tamsen/Downloads/Ks_now_time_slice.jpg'
+        png_Tdiv = '/home/tamsen/Downloads/Tdiv_TimeSlice.jpg'
 
         fig, ax = plt.subplots(2, num_runs, figsize=(20, 10))
         fig.suptitle("SLiM Tcoal by gene in ancestral species at Tdiv\n" + \
@@ -44,9 +47,29 @@ class TestKsPlotAgg(unittest.TestCase):
         #ymax=100
         ymax=False
 
+        im = plt.imread(get_sample_data(png_Tnow))
+        ax[0, 0].imshow(im)
+        ax[0, 0].get_xaxis().set_visible(False)
+        ax[0, 0].get_yaxis().set_visible(False)
+        # Selecting the axis-X making the bottom and top axes False.
+        ax[0, 0].tick_params(axis='x', which='both', bottom=False,
+                        top=False, labelbottom=False)
+        ax[0, 0].tick_params(axis='y', which='both', right=False,
+                        left=False, labelleft=False)
 
+        for pos in ['right', 'top', 'bottom', 'left']:
+            ax[0, 0].spines[pos].set_visible(False)
 
-        for i in range(0,num_runs):
+        ax[0, 0].set(title="polyploid Ks at T_now")
+        im = plt.imread(get_sample_data(png_Tdiv))
+        ax[1, 0].imshow(im)
+        ax[1, 0].get_xaxis().set_visible(False)
+        ax[1, 0].get_yaxis().set_visible(False)
+        ax[1, 0].set(title="ancestral Tc at T_div")
+        for pos in ['right', 'top', 'bottom', 'left']:
+            ax[1, 0].spines[pos].set_visible(False)
+
+        for i in range(1,num_runs):
             run_name=TE5_run_list[i]
             run_name_splat=run_name.split("_")
             nickname="_".join(run_name_splat[0:3])
@@ -69,8 +92,8 @@ class TestKsPlotAgg(unittest.TestCase):
             plot_mrca(ax[1,i], slim_mrcas_by_gene, [], theory_mrcas_by_gene,
                       run_duration_in_m, plot_title, bin_sizes_Tc[i], xmax_Tc, ymax)
 
-        ax[0,0].set(ylabel="# genes in bin")
-        ax[1,0].set(ylabel="# genes in bin")
+        ax[0,1].set(ylabel="# genes in bin")
+        ax[1,1].set(ylabel="# genes in bin")
         plt.tight_layout()
         plt.savefig(png_out, dpi=550)
         plt.clf()
