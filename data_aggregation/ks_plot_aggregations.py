@@ -16,15 +16,17 @@ class TestKsPlotAgg(unittest.TestCase):
 
 
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
+        specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
 
         #TE1_run_list = ['TE01_m12d20y2024_h14m16s21', 'TE02_m12d20y2024_h14m22s23',
         #               'TE03_m12d20y2024_h14m26s56']
 
-        TE5_run_list=[
+        demographics_TE5_run_list=[
             'TE03_m12d20y2024_h14m26s56','TE05_m12d23y2024_h08m52s16','TE07_m12d23y2024_h09m18s26',
             'TE08_m12d24y2024_h09m31s26','TE09_m12d26y2024_h09m10s55']
-        #'TE06_m12d23y2024_h09m10s28',
-        #             'TE07_m12d23y2024_h09m18s26']
+
+        specks_TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03','specks_TE08_m12d30y2024_h12m10s13',
+                     'specks_TE07_m12d30y2024_h12m10s15','specks_TE09_m12d30y2024_h12m10s11']
 
         Ne=[1000, 1000, 1000, 1000, 1000]
         burnin_times_in_generations=[5e7, 5e7, 5e7, 5e7, 5e7]
@@ -33,7 +35,7 @@ class TestKsPlotAgg(unittest.TestCase):
         #bin_sizes_Ks = [0.00005,0.0001,0.0004,0.0002,0.0001]
         bin_sizes_Ks = [0.0002, 0.0002, 0.0002, 0.0002, 0.0002]
         run_list_num="_5to9"
-        num_runs=len(TE5_run_list)
+        num_runs=len(demographics_TE5_run_list)
         png_out = os.path.join(demographiKS_out_path,"ks_hist_by_TE{0}_test.png".format(run_list_num))
 
         par_dir = Path(__file__).parent.parent
@@ -50,45 +52,30 @@ class TestKsPlotAgg(unittest.TestCase):
         #ymax=100
         ymax=False
 
-        im = plt.imread(get_sample_data(png_Tnow))
-        ax[0, 0].imshow(im)
-        ax[0, 0].get_xaxis().set_visible(False)
-        ax[0, 0].get_yaxis().set_visible(False)
-        # Selecting the axis-X making the bottom and top axes False.
-        ax[0, 0].tick_params(axis='x', which='both', bottom=False,
-                        top=False, labelbottom=False)
-        ax[0, 0].tick_params(axis='y', which='both', right=False,
-                        left=False, labelleft=False)
-
-        for pos in ['right', 'top', 'bottom', 'left']:
-            ax[0, 0].spines[pos].set_visible(False)
-
-        ax[0, 0].set(title="polyploid Ks at T_now")
-        im = plt.imread(get_sample_data(png_Tdiv))
-        ax[1, 0].imshow(im)
-        ax[1, 0].get_xaxis().set_visible(False)
-        ax[1, 0].get_yaxis().set_visible(False)
-        ax[1, 0].set(title="ancestral Tc at T_div")
-        for pos in ['right', 'top', 'bottom', 'left']:
-            ax[1, 0].spines[pos].set_visible(False)
+        plot_expository_images(ax, png_Tdiv, png_Tnow)
 
         for i in range(1,num_runs):
-            run_name=TE5_run_list[i]
-            run_name_splat=run_name.split("_")
-            nickname="_".join(run_name_splat[0:3])
-            run_path=os.path.join(demographiKS_out_path,run_name)
+
+            dgx_run_name=demographics_TE5_run_list[i]
+            dgx_run_path=os.path.join(demographiKS_out_path,dgx_run_name)
             csv_file_name='allotetraploid_bottleneck.csv'
-            demographiKS_ks_results = read_Ks_csv(os.path.join(run_path,csv_file_name))
+            demographiKS_ks_results = read_Ks_csv(os.path.join(dgx_run_path,csv_file_name))
             plot_title="burnin time=" + str(burnin_times_in_generations[i]) + " gen,\n"\
                         + "Ne=" + str(Ne[i]) + ", Tdiv=" + str(time_since_DIV[i])
-            run_duration_in_m = get_run_time_in_minutes(run_path)
+            run_duration_in_m = get_run_time_in_minutes(dgx_run_path)
             plot_ks(ax[0,i], demographiKS_ks_results,time_since_DIV[i],
                     run_duration_in_m, plot_title, bin_sizes_Ks[i], xmax_Ks, ymax)
 
-            slim_csv_file = os.path.join(run_path, "simulated_ancestral_gene_mrcas.csv")
+            #TODO ~ connect this up with Specks output
+            spx_run_name=specks_TE5_run_list[i]
+            spx_run_path=os.path.join(specks_out_path,dgx_run_name)
+            csv_file_name='Allo_TE05_ML_rep0_Ks_by_GeneTree.csv'
+            spx_ks_results = read_Ks_csv(os.path.join(spx_run_path,csv_file_name))
+
+            slim_csv_file = os.path.join(dgx_run_path, "simulated_ancestral_gene_mrcas.csv")
             loci, slim_mrcas_by_gene = read_data_csv(slim_csv_file)
 
-            theory_output_file = os.path.join(run_path, "theoretical_ancestral_gene_mrcas.csv")
+            theory_output_file = os.path.join(dgx_run_path, "theoretical_ancestral_gene_mrcas.csv")
             loci, theory_mrcas_by_gene = read_data_csv(theory_output_file)
             plot_title = "burnin time=" + str(burnin_times_in_generations[i]) + " gen\n" \
                          + "Ne=" + str(Ne[i])
@@ -103,6 +90,27 @@ class TestKsPlotAgg(unittest.TestCase):
         plt.close()
 
         self.assertEqual(True, True)  # add assertion here
+
+def plot_expository_images(ax, png_Tdiv, png_Tnow):
+        im = plt.imread(get_sample_data(png_Tnow))
+        ax[0, 0].imshow(im)
+        ax[0, 0].get_xaxis().set_visible(False)
+        ax[0, 0].get_yaxis().set_visible(False)
+        # Selecting the axis-X making the bottom and top axes False.
+        ax[0, 0].tick_params(axis='x', which='both', bottom=False,
+                             top=False, labelbottom=False)
+        ax[0, 0].tick_params(axis='y', which='both', right=False,
+                             left=False, labelleft=False)
+        for pos in ['right', 'top', 'bottom', 'left']:
+            ax[0, 0].spines[pos].set_visible(False)
+        ax[0, 0].set(title="polyploid Ks at T_now")
+        im = plt.imread(get_sample_data(png_Tdiv))
+        ax[1, 0].imshow(im)
+        ax[1, 0].get_xaxis().set_visible(False)
+        ax[1, 0].get_yaxis().set_visible(False)
+        ax[1, 0].set(title="ancestral Tc at T_div")
+        for pos in ['right', 'top', 'bottom', 'left']:
+            ax[1, 0].spines[pos].set_visible(False)
 
 
 def plot_ks(this_ax, slim_ks_by_gene, t_div,
