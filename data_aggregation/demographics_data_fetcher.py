@@ -5,9 +5,9 @@ import config
 import process_wrapper
 
 
-class MyDataFetcher(unittest.TestCase):
+class MyDGXDataFetcher(unittest.TestCase):
 
-    def test_fetch_data(self):
+    def test_fetch_demographics_data(self):
 
         #/ usr / scratch2 / userdata2 / tdunn / DemographiKS_output / SP / SP1MY_m12d24y2024_h09m00s34
         TE5_run_list=['TE09_m12d26y2024_h09m10s55']
