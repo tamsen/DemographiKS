@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.cbook import get_sample_data
-
+from PIL import Image
 from data_aggregation.coalescent_plot_aggregation import get_run_time_in_minutes, read_data_csv, plot_mrca
 from data_aggregation.histogram_plotter import read_Ks_csv,make_simple_histogram
 
@@ -25,8 +25,9 @@ class TestKsPlotAgg(unittest.TestCase):
             'TE03_m12d20y2024_h14m26s56','TE05_m12d23y2024_h08m52s16','TE07_m12d23y2024_h09m18s26',
             'TE08_m12d24y2024_h09m31s26','TE09_m12d26y2024_h09m10s55']
 
-        specks_TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03','specks_TE08_m12d30y2024_h12m10s13',
-                     'specks_TE07_m12d30y2024_h12m10s15','specks_TE09_m12d30y2024_h12m10s11']
+        specks_TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03','specks_TE05_m12d30y2024_h11m50s03',
+                             'specks_TE07_m12d30y2024_h12m10s15',
+                             'specks_TE08_m12d30y2024_h12m10s13','specks_TE09_m12d30y2024_h12m10s11']
 
         Ne=[1000, 1000, 1000, 1000, 1000]
         burnin_times_in_generations=[5e7, 5e7, 5e7, 5e7, 5e7]
@@ -62,15 +63,18 @@ class TestKsPlotAgg(unittest.TestCase):
             demographiKS_ks_results = read_Ks_csv(os.path.join(dgx_run_path,csv_file_name))
             plot_title="burnin time=" + str(burnin_times_in_generations[i]) + " gen,\n"\
                         + "Ne=" + str(Ne[i]) + ", Tdiv=" + str(time_since_DIV[i])
-            run_duration_in_m = get_run_time_in_minutes(dgx_run_path)
-            plot_ks(ax[0,i], demographiKS_ks_results,time_since_DIV[i],
-                    run_duration_in_m, plot_title, bin_sizes_Ks[i], xmax_Ks, ymax)
+            dgx_run_duration_in_m = get_run_time_in_minutes(dgx_run_path)
 
-            #TODO ~ connect this up with Specks output
+
             spx_run_name=specks_TE5_run_list[i]
-            spx_run_path=os.path.join(specks_out_path,dgx_run_name)
-            csv_file_name='Allo_TE05_ML_rep0_Ks_by_GeneTree.csv'
+            spx_run_nickname=spx_run_name.split('_')[1]
+            spx_run_path=os.path.join(specks_out_path,spx_run_name)
+            csv_file_name='Allo_'+spx_run_nickname +'_ML_rep0_Ks_by_GeneTree.csv'
             spx_ks_results = read_Ks_csv(os.path.join(spx_run_path,csv_file_name))
+            spx_run_duration_in_m = get_run_time_in_minutes(spx_run_path)
+            plot_ks(ax[0,i], demographiKS_ks_results,spx_ks_results, time_since_DIV[i],
+                    dgx_run_duration_in_m, spx_run_duration_in_m,
+                    plot_title, bin_sizes_Ks[i], xmax_Ks, ymax)
 
             slim_csv_file = os.path.join(dgx_run_path, "simulated_ancestral_gene_mrcas.csv")
             loci, slim_mrcas_by_gene = read_data_csv(slim_csv_file)
@@ -80,7 +84,7 @@ class TestKsPlotAgg(unittest.TestCase):
             plot_title = "burnin time=" + str(burnin_times_in_generations[i]) + " gen\n" \
                          + "Ne=" + str(Ne[i])
             plot_mrca(ax[1,i], slim_mrcas_by_gene, [], theory_mrcas_by_gene,
-                      run_duration_in_m, plot_title, bin_sizes_Tc[i], xmax_Tc, ymax)
+                      dgx_run_duration_in_m, plot_title, bin_sizes_Tc[i], xmax_Tc, ymax)
 
         ax[0,1].set(ylabel="# genes in bin")
         ax[1,1].set(ylabel="# genes in bin")
@@ -92,7 +96,10 @@ class TestKsPlotAgg(unittest.TestCase):
         self.assertEqual(True, True)  # add assertion here
 
 def plot_expository_images(ax, png_Tdiv, png_Tnow):
+
+        img = Image.open(png_Tnow)
         im = plt.imread(get_sample_data(png_Tnow))
+        img.close()
         ax[0, 0].imshow(im)
         ax[0, 0].get_xaxis().set_visible(False)
         ax[0, 0].get_yaxis().set_visible(False)
@@ -104,7 +111,11 @@ def plot_expository_images(ax, png_Tdiv, png_Tnow):
         for pos in ['right', 'top', 'bottom', 'left']:
             ax[0, 0].spines[pos].set_visible(False)
         ax[0, 0].set(title="polyploid Ks at T_now")
+
+        img = Image.open(png_Tdiv)
         im = plt.imread(get_sample_data(png_Tdiv))
+        img.close()
+
         ax[1, 0].imshow(im)
         ax[1, 0].get_xaxis().set_visible(False)
         ax[1, 0].get_yaxis().set_visible(False)
@@ -113,10 +124,11 @@ def plot_expository_images(ax, png_Tdiv, png_Tnow):
             ax[1, 0].spines[pos].set_visible(False)
 
 
-def plot_ks(this_ax, slim_ks_by_gene, t_div,
-            run_duration_in_m, title, bin_size, xmax, ymax):
+def plot_ks(this_ax, slim_ks_by_gene, spx_ks_by_gene, t_div,
+            slim_run_duration_in_m, specks_run_duration_in_m, title, bin_size, xmax, ymax):
 
-    num_genes = len(slim_ks_by_gene)
+    num_slim_genes = len(slim_ks_by_gene)
+    num_specks_genes = len(spx_ks_by_gene)
 
     if not xmax:
         xmax = max(slim_ks_by_gene)
@@ -125,15 +137,21 @@ def plot_ks(this_ax, slim_ks_by_gene, t_div,
     if len(slim_ks_by_gene) > 0:
         this_ax.hist(slim_ks_by_gene, bins=bins, facecolor='b', alpha=0.25,
                      label='SLiM Ks by gene\n'
-                           + "(" + str(num_genes) + " genes in genome)",
+                           + "(" + str(num_slim_genes) + " paralogs in genome)",
+                     density=False)
+
+    if len(spx_ks_by_gene) > 0:
+        this_ax.hist(spx_ks_by_gene, bins=bins, facecolor='c', alpha=0.25,
+                     label='SpecKS Ks by gene\n'
+                           + "(" + str(num_specks_genes) + " paralogs in genome)",
                      density=False)
 
     if t_div:
         t_div_as_ks= t_div * 0.01 * 10**-6
         this_ax.axvline(x=t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
 
-    x_axis_label = "Ks \n" + "run time: " + str(round(run_duration_in_m, 2)) + " min"
-
+    x_axis_label = "Ks \n" + "SLiM run time: " + str(round(slim_run_duration_in_m, 2)) + " min\n" + \
+                   "SpecKS run time: " + str(round(specks_run_duration_in_m,2)) + " min"
     if ymax:
         this_ax.set(ylim=[0, ymax])
     this_ax.set(xlim=[0, xmax])

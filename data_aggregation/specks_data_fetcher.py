@@ -10,10 +10,9 @@ class MySPXDataFetcher(unittest.TestCase):
     def test_fetch_specks_data(self):
 
         #/ usr / scratch2 / userdata2 / tdunn / DemographiKS_output / SP / SP1MY_m12d24y2024_h09m00s34
-        TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03']
-                      #,)
-                      #'specks_TE08_m12d30y2024_h12m10s13',
-                     #'specks_TE07_m12d30y2024_h12m10s15','specks_TE09_m12d30y2024_h12m10s11']
+        TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03',
+                      'specks_TE08_m12d30y2024_h12m10s13',
+                      'specks_TE07_m12d30y2024_h12m10s15','specks_TE09_m12d30y2024_h12m10s11']
 
 
         run_list=TE5_run_list

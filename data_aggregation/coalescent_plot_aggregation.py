@@ -299,7 +299,7 @@ def get_run_time_in_minutes(local_output_folder):
 
         print("folder: \n" + local_output_folder)
         print("ls: \n" + out_string)
-        log_file = [s for s in out_string.split() if 'log' in s][0]
+        log_file = [s for s in out_string.split() if 'log.txt' in s][0]
         print("log file: " + log_file)
         head_string, error_string = process_wrapper.run_and_wait_with_retry(
             ['head', log_file], local_output_folder, "Connection reset by peer", 2, 5)
