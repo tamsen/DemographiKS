@@ -13,13 +13,15 @@ class MySPXDataFetcher(unittest.TestCase):
         TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03',
                       'specks_TE08_m12d30y2024_h12m10s13',
                       'specks_TE07_m12d30y2024_h12m10s15','specks_TE09_m12d30y2024_h12m10s11']
-
-
+        TE5_run_list = ['specks_TE05_m12d31y2024_h09m10s39','specks_TE07_m12d31y2024_h09m10s28',
+                      'specks_TE08_m12d31y2024_h09m10s32',
+                      'specks_TE09_m12d31y2024_h09m10s34']
+        TE5_run_list = ['specks_TE10_m12d31y2024_h09m30s26']#specks_TE11_m12d31y2024_h09m30s22']#specks_TE10_m12d31y2024_h09m30s26']
         run_list=TE5_run_list
         run_collection_name="TE"
         #me_at_remote_URL =  'tdunn@mesx.sdsu.edu'
         me_at_remote_URL =  'mesx_cluster'
-        output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/SpecKS_Output",
+        output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/SpecKS_Output/",
                                         run_collection_name)
 
         for i in range(0,len(run_list)):

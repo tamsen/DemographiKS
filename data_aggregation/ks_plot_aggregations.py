@@ -3,7 +3,8 @@ import unittest
 from pathlib import Path
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.cbook import get_sample_data
+#from matplotlib.cbook import get_sample_data
+import matplotlib.image as mpimg
 from PIL import Image
 from data_aggregation.coalescent_plot_aggregation import get_run_time_in_minutes, read_data_csv, plot_mrca
 from data_aggregation.histogram_plotter import read_Ks_csv,make_simple_histogram
@@ -25,9 +26,15 @@ class TestKsPlotAgg(unittest.TestCase):
             'TE03_m12d20y2024_h14m26s56','TE05_m12d23y2024_h08m52s16','TE07_m12d23y2024_h09m18s26',
             'TE08_m12d24y2024_h09m31s26','TE09_m12d26y2024_h09m10s55']
 
-        specks_TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03','specks_TE05_m12d30y2024_h11m50s03',
-                             'specks_TE07_m12d30y2024_h12m10s15',
-                             'specks_TE08_m12d30y2024_h12m10s13','specks_TE09_m12d30y2024_h12m10s11']
+        #specks_TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03','specks_TE05_m12d30y2024_h11m50s03',
+        #                     'specks_TE07_m12d30y2024_h12m10s15',
+        #                     'specks_TE08_m12d30y2024_h12m10s13','specks_TE09_m12d30y2024_h12m10s11']
+
+
+        specks_TE5_run_list=['specks_TE05_m12d31y2024_h09m10s39','specks_TE05_m12d31y2024_h09m10s39',
+                             'specks_TE07_m12d31y2024_h09m10s28',
+                            'specks_TE08_m12d31y2024_h09m10s32',
+                            'specks_TE09_m12d31y2024_h09m10s34']
 
         Ne=[1000, 1000, 1000, 1000, 1000]
         burnin_times_in_generations=[5e7, 5e7, 5e7, 5e7, 5e7]
@@ -86,7 +93,7 @@ class TestKsPlotAgg(unittest.TestCase):
             plot_mrca(ax[1,i], slim_mrcas_by_gene, [], theory_mrcas_by_gene,
                       dgx_run_duration_in_m, plot_title, bin_sizes_Tc[i], xmax_Tc, ymax)
 
-        ax[0,1].set(ylabel="# genes in bin")
+        ax[0,1].set(ylabel="# paralog pairs in bin")
         ax[1,1].set(ylabel="# genes in bin")
         plt.tight_layout()
         plt.savefig(png_out, dpi=550)
@@ -97,9 +104,14 @@ class TestKsPlotAgg(unittest.TestCase):
 
 def plot_expository_images(ax, png_Tdiv, png_Tnow):
 
-        img = Image.open(png_Tnow)
-        im = plt.imread(get_sample_data(png_Tnow))
-        img.close()
+        #img = Image.open(png_Tnow)
+        #im = plt.imread(get_sample_data(png_Tnow))
+        #img.close()
+
+        #file = open(png_Tnow, "rb")  # Open file in binary read mode
+        #im = file.read()
+        #file.close()  # Close the file
+        im = mpimg.imread(png_Tnow)
         ax[0, 0].imshow(im)
         ax[0, 0].get_xaxis().set_visible(False)
         ax[0, 0].get_yaxis().set_visible(False)
@@ -112,10 +124,10 @@ def plot_expository_images(ax, png_Tdiv, png_Tnow):
             ax[0, 0].spines[pos].set_visible(False)
         ax[0, 0].set(title="polyploid Ks at T_now")
 
-        img = Image.open(png_Tdiv)
-        im = plt.imread(get_sample_data(png_Tdiv))
-        img.close()
-
+        #img = Image.open(png_Tdiv)
+        #im = plt.imread(get_sample_data(png_Tdiv))
+        #img.close()
+        im = mpimg.imread(png_Tdiv)
         ax[1, 0].imshow(im)
         ax[1, 0].get_xaxis().set_visible(False)
         ax[1, 0].get_yaxis().set_visible(False)
