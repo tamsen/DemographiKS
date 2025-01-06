@@ -19,30 +19,63 @@ class TestKsPlotAgg(unittest.TestCase):
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
         specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
 
-        #TE1_run_list = ['TE01_m12d20y2024_h14m16s21', 'TE02_m12d20y2024_h14m22s23',
-        #               'TE03_m12d20y2024_h14m26s56']
+        #TE 5 to 9 parameters
+        #start
 
         demographics_TE5_run_list=[
-            'TE03_m12d20y2024_h14m26s56','TE05_m12d23y2024_h08m52s16','TE07_m12d23y2024_h09m18s26',
+            'TE03_m12d20y2024_h14m26s56','TE05fix__m01d03y2025_h11m36s57','TE07_fix__m01d05y2025_h09m07s41',
             'TE08_m12d24y2024_h09m31s26','TE09_m12d26y2024_h09m10s55']
 
-        #specks_TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03','specks_TE05_m12d30y2024_h11m50s03',
-        #                     'specks_TE07_m12d30y2024_h12m10s15',
-        #                     'specks_TE08_m12d30y2024_h12m10s13','specks_TE09_m12d30y2024_h12m10s11']
+        specks_TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03','specks_TE05_m12d30y2024_h11m50s03',
+                             'specks_TE07_m12d30y2024_h12m10s15',
+                             'specks_TE08_m12d30y2024_h12m10s13','specks_TE09_m12d30y2024_h12m10s11']
 
 
-        specks_TE5_run_list=['specks_TE05_m12d31y2024_h09m10s39','specks_TE05_m12d31y2024_h09m10s39',
-                             'specks_TE07_m12d31y2024_h09m10s28',
-                            'specks_TE08_m12d31y2024_h09m10s32',
-                            'specks_TE09_m12d31y2024_h09m10s34']
+        #specks_TE5_run_list=['specks_TE05_m12d31y2024_h09m10s39','specks_TE05_m12d31y2024_h09m10s39',
+        #                     'specks_TE07_m12d31y2024_h09m10s28',
+        #                    'specks_TE08_m12d31y2024_h09m10s32',
+        #                    'specks_TE09_m12d31y2024_h09m10s34']
 
-        Ne=[1000, 1000, 1000, 1000, 1000]
-        burnin_times_in_generations=[5e7, 5e7, 5e7, 5e7, 5e7]
-        time_since_DIV=[1000, 10000,100000,500000,1000000]
+        Ne = [1000, 1000, 1000, 1000, 1000]
+        burnin_times_in_generations = [5e7, 5e7, 5e7, 5e7, 5e7]
+        time_since_DIV = [1000, 10000, 100000, 500000, 1000000]
+
         bin_sizes_Tc = [200,200, 200, 200,200]
-        #bin_sizes_Ks = [0.00005,0.0001,0.0004,0.0002,0.0001]
         bin_sizes_Ks = [0.0002, 0.0002, 0.0002, 0.0002, 0.0002]
+        xmax_Ks = 0.025#0.001  # max(demographiKS_ks_results)
+        xmax_Tc = False
         run_list_num="_5to9"
+        #end
+
+        # TE 9 to 11 parameters
+        # start
+
+        #demographics_TE9_run_list = ['TE10_m12d26y2024_h10m35s41','TE10_m12d26y2024_h10m35s41',
+        #    'TE09_m12d26y2024_h09m10s55', 'TE11_m12d26y2024_h10m35s44']
+
+        #demographics_TE9_run_list = ['TE11_m12d26y2024_h10m35s44','TE11_m12d26y2024_h10m35s44',
+        #    'TE09_m12d26y2024_h09m10s55']
+
+        #specks_TE9_run_list = ['specks_TE10_m12d31y2024_h09m30s26', 'specks_TE10_m12d31y2024_h09m30s26',
+        #                       'specks_TE09_m12d31y2024_h09m10s34',
+        #                       'specks_TE11_m12d31y2024_h09m30s22']
+
+        #specks_TE9_run_list = ['specks_TE11_m12d31y2024_h09m30s22', 'specks_TE11_m12d31y2024_h09m30s22',
+        #                       'specks_TE09_m12d31y2024_h09m10s34']
+
+
+        #Ne=[500, 500, 1000]
+        #burnin_times_in_generations=[5e7, 5e7, 5e7, 5e7, 5e7]
+        #time_since_DIV=[1000000, 1000000,1000000]
+
+        #bin_sizes_Tc = [200, 200, 200, 200, 200]
+        #bin_sizes_Ks = [0.0002, 0.0002, 0.0002, 0.0002, 0.0002]
+        #xmax_Ks = 0.025#0.001  # max(demographiKS_ks_results)
+        #xmax_Tc = 10000
+        #run_list_num = "_9to11"
+        # end
+
+
         num_runs=len(demographics_TE5_run_list)
         png_out = os.path.join(demographiKS_out_path,"ks_hist_by_TE{0}_test.png".format(run_list_num))
 
@@ -55,8 +88,8 @@ class TestKsPlotAgg(unittest.TestCase):
         fig.suptitle("SLiM Tcoal by gene in ancestral species at Tdiv\n" + \
                      "Recombination rate = 8e-9, Ne and BI constant")
         #    "Recombination rate = 8e-9, Ne varies, BI varies")
-        xmax_Ks = 0.025#0.001  # max(demographiKS_ks_results)
-        xmax_Tc = False
+        #xmax_Ks = 0.025#0.001  # max(demographiKS_ks_results)
+        #xmax_Tc = False
         #ymax=100
         ymax=False
 

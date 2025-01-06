@@ -10,7 +10,10 @@ class MyDGXDataFetcher(unittest.TestCase):
     def test_fetch_demographics_data(self):
 
         #/ usr / scratch2 / userdata2 / tdunn / DemographiKS_output / SP / SP1MY_m12d24y2024_h09m00s34
-        TE5_run_list=['TE09_m12d26y2024_h09m10s55']
+        TE9_run_list=['TE07_fix__m01d05y2025_h09m07s41']
+        #    'TE05fix__m01d03y2025_h11m36s57']
+        #[ 'TE10_m12d26y2024_h10m35s41']
+        #    'TE09_m12d26y2024_h09m10s55', 'TE11_m12d26y2024_h10m35s44']
 
         #'TE05_m12d23y2024_h08m52s16','TE06_m12d23y2024_h09m10s28',
         #             'TE07_m12d23y2024_h09m18s26','TE08_m12d24y2024_h09m31s26']
@@ -42,7 +45,7 @@ class MyDGXDataFetcher(unittest.TestCase):
                      "GE8_m12d19y2024_h13m34s13","GE5_m12d19y2024_h11m47s58",
                      "GE7_m12d19y2024_h13m30s32"]
 
-        run_list=TE5_run_list
+        run_list=TE9_run_list
         run_collection_name="TE"
         #me_at_remote_URL =  'tdunn@mesx.sdsu.edu'
         me_at_remote_URL =  'mesx_cluster'

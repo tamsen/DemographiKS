@@ -31,7 +31,7 @@ class DemographiKS_config:
     #In specs WGD_half_life_MY was 31 my.
     #A half-life of 31 MY = mean life span of 44.723 MY
     #So, thats 44.723*10**6 GE if one year = 1 generation
-    avg_WGD_gene_lifespan_in_GE= 44.723*10**6
+    mean_WGD_life_span_in_GE= 44.723*10**6
 
     #randomness
     SLiM_rep =1
@@ -90,8 +90,8 @@ class DemographiKS_config:
                         incoming_tag = inner_layer.tag.strip()
                         if (incoming_tag == "mutation_rate"):
                             self.mutation_rate = float(incoming_txt)
-                        if (incoming_tag == "avg_WGD_gene_lifespan_in_GE"):
-                            self.avg_WGD_gene_lifespan_in_GE = float(incoming_txt)
+                        if (incoming_tag == "WGD_gene_half_life_in_GE"):
+                            self.mean_WGD_life_span_in_GE = half_life_to_mean_life(incoming_txt)
                         if (incoming_tag == "num_codons"):
                             self.num_codons = int(incoming_txt)
                         if (incoming_tag == "Ks_per_Myr"):
@@ -152,6 +152,14 @@ def parse_int_or_false(input_string):
     else:
         return int(input_string)
 
+def half_life_to_mean_life(input_string):
+
+    half_life=parse_float_or_false(input_string)
+    if not half_life:
+        return False
+    else:
+        ln2=math.log(2)
+        return half_life/ln2
 
 def parse_comma_separated_values(input_string):
     if input_string.upper() == "FALSE":
