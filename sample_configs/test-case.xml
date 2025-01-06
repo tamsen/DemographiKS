@@ -17,7 +17,7 @@
         <burnin_time>478</burnin_time>
       </Population>
     <SequenceEvolution>
-        <avg_WGD_gene_lifespan_in_GE>4000</avg_WGD_gene_lifespan_in_GE>
+        <WGD_gene_half_life_in_GE>4000</WGD_gene_half_life_in_GE>
         <mutation_rate>0.001</mutation_rate>
     </SequenceEvolution>
 

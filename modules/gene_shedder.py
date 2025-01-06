@@ -5,7 +5,7 @@ import log
 def shed_genes(sequences_by_paralog_name_dict, config):
 
     seed=config.DemographiKS_random_seed
-    avg_WGD_gene_lifespan=config.avg_WGD_gene_lifespan_in_GE
+    avg_WGD_gene_lifespan=config.mean_WGD_life_span_in_GE
     time_since_WGD=config.WGD_time_Ge
     log.write_to_log("time since WGD (generations): " + str(time_since_WGD))
     log.write_to_log("avg_WGD_gene_lifespan (generations): " + str(avg_WGD_gene_lifespan))
