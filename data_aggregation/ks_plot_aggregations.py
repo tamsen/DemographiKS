@@ -12,20 +12,122 @@ from data_aggregation.histogram_plotter import read_Ks_csv,make_simple_histogram
 
 class TestKsPlotAgg(unittest.TestCase):
 
-    def test_Ks_for_TE_sims(self):
+    def test_Ks_for_varying_Ne_early_runs(self):
+
+        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
+        specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
+
+        #<mutation_rate>1.2e-8</mutation_rate>,<WGD_time_Ge>1000</WGD_time_Ge>
+        demographics_TE_run_list=[False, "DGKS_10_10_v2_m01d06y2025_h15m35s38",
+                        "DGKS_100_100_v2_m01d06y2025_h15m35s43",
+                            "DGKS_1000_1000_v2_m01d06y2025_h15m35s46"]
+
+
+        #<recombination_rate>1.26e-6</recombination_rate>, <DIV_time_Ge>75</DIV_time_Ge>
+        demographics_TE_run_list=[False, "DGKS_10_10_v2_m01d06y2025_h13m09s31",
+                        "DGKS_100_100_v2_m01d06y2025_h13m09s35",
+                            "DGKS_1000_1000_v2_m01d06y2025_h13m05s18"]
+
+        specks_TE_run_list=[False,False,False,False]
+
+        Ks_per_YR = 0.01 * 10**-6
+        Ne = [10,10, 100, 1000]
+        #Ne=[500, 500, 1000]
+        burnin_times_in_generations=[2e4,2e4, 2e4,2e4, 2e4]
+        time_since_DIV=[1000,1000,1000,1000]
+
+        bin_sizes_Tc = [80, 80, 80, 80, 80]#looks good
+
+        #xmax_Ks = 0.1 for mut rate e-5
+        #bin_sizes_Ks = [0.001, 0.001,0.001, 0.001, 0.001]
+
+
+        xmax_Ks =  0.00001  #for mut rate 1.2e-8
+        bin_sizes_Ks = [0.000001, 0.000001, 0.000001, 0.000001, 0.000001]
+        xmax_Tc = 10000
+        run_list_num = "_early_DGKS_by_Ne"
+        ymax = False
+
+        suptitle = "SLiM Tcoal by gene in ancestral species at Tdiv\n" + \
+                                  "Recombination rate = 1.26e-6, Ne and BI constant"
+
+        make_Tc_Ks_fig_with_subplots(Ne, bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
+                                          demographiKS_out_path, demographics_TE_run_list, run_list_num,
+                                          specks_TE_run_list, specks_out_path, time_since_DIV,Ks_per_YR,
+                                          xmax_Ks, xmax_Tc, ymax,suptitle)
+
+        self.assertEqual(True, True)  # add assertion here
+
+    def test_Ks_for_varying_Ne(self):
+
+        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
+        specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
+
+
+        demographics_TE_run_list=['DGKS_10_10_v2_m01d06y2025_h13m09s31','DGKS_10_10_v2_m01d06y2025_h13m09s31',
+                                   'DGKS_100_100_v2_m01d06y2025_h13m09s35',
+                                  'DGKS_1000_1000_v2_m01d06y2025_h13m05s18']
+
+        specks_TE_run_list=['specks_TE07_m12d30y2024_h12m10s15','specks_TE07_m12d30y2024_h12m10s15',
+                             'specks_TE07_m12d30y2024_h12m10s15']
+
+
+        specks_TE_run_list=[False,False,False,False]
+
+        #demographics_TE_run_list=['TE15_m01d03y2025_h10m23s32',
+        #                           'TE15_m01d03y2025_h10m23s32','TE07_fix__m01d05y2025_h09m07s41']
+        #demographics_TE9_run_list = ['TE10_m12d26y2024_h10m35s41','TE10_m12d26y2024_h10m35s41',
+        #    'TE09_m12d26y2024_h09m10s55', 'TE11_m12d26y2024_h10m35s44']
+
+        #demographics_TE9_run_list = ['TE11_m12d26y2024_h10m35s44','TE11_m12d26y2024_h10m35s44',
+        #    'TE09_m12d26y2024_h09m10s55']
+
+        #specks_TE9_run_list=['specks_TE07_m12d30y2024_h12m10s15','specks_TE07_m12d30y2024_h12m10s15',
+        #                     'specks_TE07_m12d30y2024_h12m10s15']
+        #specks_TE9_run_list = ['specks_TE10_m12d31y2024_h09m30s26', 'specks_TE10_m12d31y2024_h09m30s26',
+        #                       'specks_TE09_m12d31y2024_h09m10s34',
+        #                       'specks_TE11_m12d31y2024_h09m30s22']
+
+        #specks_TE9_run_list = ['specks_TE11_m12d31y2024_h09m30s22', 'specks_TE11_m12d31y2024_h09m30s22',
+        #                       'specks_TE09_m12d31y2024_h09m10s34']
+
+        Ne = [10,10, 100, 1000]
+        #Ne=[500, 500, 1000]
+        burnin_times_in_generations=[5e7, 5e7, 5e7, 5e7, 5e7]
+        time_since_DIV=[25,100000, 100000,100000]
+
+        bin_sizes_Tc = [40, 40, 40, 40, 40]#looks good
+        bin_sizes_Ks = [0.005, 0.005,0.005, 0.005, 0.005]
+        xmax_Ks = 0.1#0.001  # max(demographiKS_ks_results)
+        xmax_Tc = 10000
+        run_list_num = "_9to11_by_Ne"
+        # end
+        ymax = False
+
+        make_Tc_Ks_fig_with_subplots(Ne, bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
+                                          demographiKS_out_path, demographics_TE_run_list, run_list_num,
+                                          specks_TE_run_list, specks_out_path, time_since_DIV, xmax_Ks, xmax_Tc, ymax)
+
+        self.assertEqual(True, True)  # add assertion here
+
+
+    def test_show_Ks_for_varying_Tdiv_times(self):
 
 
 
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
         specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
 
-        #TE 5 to 9 parameters
+        #TE 5 to 9 parameters - varies across time since DIV
         #start
 
-        demographics_TE5_run_list=[
-            'TE03_m12d20y2024_h14m26s56','TE05fix__m01d03y2025_h11m36s57','TE07_fix__m01d05y2025_h09m07s41',
-            'TE08_m12d24y2024_h09m31s26','TE09_m12d26y2024_h09m10s55']
+        demographics_TE5_run_list=['TE15_m01d03y2025_h10m23s32',
+                                   'TE15_m01d03y2025_h10m23s32','TE07_fix__m01d05y2025_h09m07s41']
+        demographics_TE5_run_list=['TE03_m12d20y2024_h14m26s56','TE05fix__m01d03y2025_h11m36s57','TE07_fix__m01d05y2025_h09m07s41',
+           'TE08_m12d24y2024_h09m31s26','TE09_m12d26y2024_h09m10s55']
 
+        #specks_TE5_run_list=['specks_TE07_m12d30y2024_h12m10s15','specks_TE07_m12d30y2024_h12m10s15',
+        #                     'specks_TE07_m12d30y2024_h12m10s15']
         specks_TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03','specks_TE05_m12d30y2024_h11m50s03',
                              'specks_TE07_m12d30y2024_h12m10s15',
                              'specks_TE08_m12d30y2024_h12m10s13','specks_TE09_m12d30y2024_h12m10s11']
@@ -44,96 +146,81 @@ class TestKsPlotAgg(unittest.TestCase):
         bin_sizes_Ks = [0.0002, 0.0002, 0.0002, 0.0002, 0.0002]
         xmax_Ks = 0.025#0.001  # max(demographiKS_ks_results)
         xmax_Tc = False
-        run_list_num="_5to9"
+        run_list_num="_5to9_vary_Tdiv"
         #end
 
-        # TE 9 to 11 parameters
-        # start
 
-        #demographics_TE9_run_list = ['TE10_m12d26y2024_h10m35s41','TE10_m12d26y2024_h10m35s41',
-        #    'TE09_m12d26y2024_h09m10s55', 'TE11_m12d26y2024_h10m35s44']
+        ymax = False
 
-        #demographics_TE9_run_list = ['TE11_m12d26y2024_h10m35s44','TE11_m12d26y2024_h10m35s44',
-        #    'TE09_m12d26y2024_h09m10s55']
-
-        #specks_TE9_run_list = ['specks_TE10_m12d31y2024_h09m30s26', 'specks_TE10_m12d31y2024_h09m30s26',
-        #                       'specks_TE09_m12d31y2024_h09m10s34',
-        #                       'specks_TE11_m12d31y2024_h09m30s22']
-
-        #specks_TE9_run_list = ['specks_TE11_m12d31y2024_h09m30s22', 'specks_TE11_m12d31y2024_h09m30s22',
-        #                       'specks_TE09_m12d31y2024_h09m10s34']
-
-
-        #Ne=[500, 500, 1000]
-        #burnin_times_in_generations=[5e7, 5e7, 5e7, 5e7, 5e7]
-        #time_since_DIV=[1000000, 1000000,1000000]
-
-        #bin_sizes_Tc = [200, 200, 200, 200, 200]
-        #bin_sizes_Ks = [0.0002, 0.0002, 0.0002, 0.0002, 0.0002]
-        #xmax_Ks = 0.025#0.001  # max(demographiKS_ks_results)
-        #xmax_Tc = 10000
-        #run_list_num = "_9to11"
-        # end
-
-
-        num_runs=len(demographics_TE5_run_list)
-        png_out = os.path.join(demographiKS_out_path,"ks_hist_by_TE{0}_test.png".format(run_list_num))
-
-        par_dir = Path(__file__).parent.parent
-        image_folder = os.path.join(par_dir, "images")
-        png_Tnow =  os.path.join(image_folder,'Ks_now_time_slice.jpg')
-        png_Tdiv = os.path.join(image_folder,'Tdiv_TimeSlice.jpg')
-
-        fig, ax = plt.subplots(2, num_runs, figsize=(20, 10))
-        fig.suptitle("SLiM Tcoal by gene in ancestral species at Tdiv\n" + \
-                     "Recombination rate = 8e-9, Ne and BI constant")
-        #    "Recombination rate = 8e-9, Ne varies, BI varies")
-        #xmax_Ks = 0.025#0.001  # max(demographiKS_ks_results)
-        #xmax_Tc = False
-        #ymax=100
-        ymax=False
-
-        plot_expository_images(ax, png_Tdiv, png_Tnow)
-
-        for i in range(1,num_runs):
-
-            dgx_run_name=demographics_TE5_run_list[i]
-            dgx_run_path=os.path.join(demographiKS_out_path,dgx_run_name)
-            csv_file_name='allotetraploid_bottleneck.csv'
-            demographiKS_ks_results = read_Ks_csv(os.path.join(dgx_run_path,csv_file_name))
-            plot_title="burnin time=" + str(burnin_times_in_generations[i]) + " gen,\n"\
-                        + "Ne=" + str(Ne[i]) + ", Tdiv=" + str(time_since_DIV[i])
-            dgx_run_duration_in_m = get_run_time_in_minutes(dgx_run_path)
-
-
-            spx_run_name=specks_TE5_run_list[i]
-            spx_run_nickname=spx_run_name.split('_')[1]
-            spx_run_path=os.path.join(specks_out_path,spx_run_name)
-            csv_file_name='Allo_'+spx_run_nickname +'_ML_rep0_Ks_by_GeneTree.csv'
-            spx_ks_results = read_Ks_csv(os.path.join(spx_run_path,csv_file_name))
-            spx_run_duration_in_m = get_run_time_in_minutes(spx_run_path)
-            plot_ks(ax[0,i], demographiKS_ks_results,spx_ks_results, time_since_DIV[i],
-                    dgx_run_duration_in_m, spx_run_duration_in_m,
-                    plot_title, bin_sizes_Ks[i], xmax_Ks, ymax)
-
-            slim_csv_file = os.path.join(dgx_run_path, "simulated_ancestral_gene_mrcas.csv")
-            loci, slim_mrcas_by_gene = read_data_csv(slim_csv_file)
-
-            theory_output_file = os.path.join(dgx_run_path, "theoretical_ancestral_gene_mrcas.csv")
-            loci, theory_mrcas_by_gene = read_data_csv(theory_output_file)
-            plot_title = "burnin time=" + str(burnin_times_in_generations[i]) + " gen\n" \
-                         + "Ne=" + str(Ne[i])
-            plot_mrca(ax[1,i], slim_mrcas_by_gene, [], theory_mrcas_by_gene,
-                      dgx_run_duration_in_m, plot_title, bin_sizes_Tc[i], xmax_Tc, ymax)
-
-        ax[0,1].set(ylabel="# paralog pairs in bin")
-        ax[1,1].set(ylabel="# genes in bin")
-        plt.tight_layout()
-        plt.savefig(png_out, dpi=550)
-        plt.clf()
-        plt.close()
+        make_Tc_Ks_fig_with_subplots(Ne, bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
+                                          demographiKS_out_path, demographics_TE5_run_list, run_list_num,
+                                          specks_TE5_run_list, specks_out_path, time_since_DIV, xmax_Ks, xmax_Tc, ymax)
 
         self.assertEqual(True, True)  # add assertion here
+
+
+def make_Tc_Ks_fig_with_subplots(Ne_for_plots, bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
+                                 demographiKS_out_path, demographics_TE9_run_list, run_list_num,
+                                 specks_TE9_run_list, specks_out_path, time_since_DIV,Ks_per_YR,
+                                 xmax_Ks, xmax_Tc, ymax, suptitle):
+    num_runs = len(demographics_TE9_run_list)
+    png_out = os.path.join(demographiKS_out_path, "ks_hist_by_TE{0}_test.png".format(run_list_num))
+    par_dir = Path(__file__).parent.parent
+    image_folder = os.path.join(par_dir, "images")
+    png_Tnow = os.path.join(image_folder, 'Ks_now_time_slice.jpg')
+    png_Tdiv = os.path.join(image_folder, 'Tdiv_TimeSlice.jpg')
+    fig, ax = plt.subplots(2, num_runs, figsize=(20, 10))
+    fig.suptitle(suptitle)
+    plot_expository_images(ax, png_Tdiv, png_Tnow)
+    for i in range(1, num_runs):
+        dgx_run_name = demographics_TE9_run_list[i]
+
+        if dgx_run_name:
+            dgx_run_path = os.path.join(demographiKS_out_path, dgx_run_name)
+            csv_file_name = 'allotetraploid_bottleneck.csv'
+            ks_file = os.path.join(dgx_run_path, csv_file_name)
+            print("reading " + ks_file)
+            demographiKS_ks_results = read_Ks_csv(ks_file)
+            dgx_run_duration_in_m = get_run_time_in_minutes(dgx_run_path)
+        else:
+            demographiKS_ks_results = []
+            dgx_run_duration_in_m = 0
+        plot_title = "burnin time=" + str(burnin_times_in_generations[i]) + " gen,\n" \
+                     + "Ne=" + str(Ne_for_plots[i]) + ", Tdiv=" + str(time_since_DIV[i])
+
+        spx_run_name = specks_TE9_run_list[i]
+        if spx_run_name:
+            spx_run_nickname = spx_run_name.split('_')[1]
+            spx_run_path = os.path.join(specks_out_path, spx_run_name)
+            csv_file_name = 'Allo_' + spx_run_nickname + '_ML_rep0_Ks_by_GeneTree.csv'
+            # spx_ks_results = read_Ks_csv(os.path.join(spx_run_path,csv_file_name))
+            spx_run_duration_in_m = get_run_time_in_minutes(spx_run_path)
+            spx_ks_results = []
+        else:
+            spx_ks_results = []
+            spx_run_duration_in_m = 0
+
+        plot_ks(ax[0, i], demographiKS_ks_results, spx_ks_results, time_since_DIV[i],
+                Ks_per_YR,
+                dgx_run_duration_in_m, spx_run_duration_in_m,
+                plot_title, bin_sizes_Ks[i], xmax_Ks, ymax)
+
+        slim_csv_file = os.path.join(dgx_run_path, "simulated_ancestral_gene_mrcas.csv")
+        loci, slim_mrcas_by_gene = read_data_csv(slim_csv_file)
+
+        theory_output_file = os.path.join(dgx_run_path, "theoretical_ancestral_gene_mrcas.csv")
+        loci, theory_mrcas_by_gene = read_data_csv(theory_output_file)
+        plot_title = "burnin time=" + str(burnin_times_in_generations[i]) + " gen\n" \
+                     + "Ne=" + str(Ne_for_plots[i])
+        plot_mrca(ax[1, i], slim_mrcas_by_gene, [], theory_mrcas_by_gene,
+                  dgx_run_duration_in_m, plot_title, bin_sizes_Tc[i], xmax_Tc, ymax)
+    ax[0, 1].set(ylabel="# paralog pairs in bin")
+    ax[1, 1].set(ylabel="# genes in bin")
+    plt.tight_layout()
+    plt.savefig(png_out, dpi=550)
+    plt.clf()
+    plt.close()
+
 
 def plot_expository_images(ax, png_Tdiv, png_Tnow):
 
@@ -169,7 +256,7 @@ def plot_expository_images(ax, png_Tdiv, png_Tnow):
             ax[1, 0].spines[pos].set_visible(False)
 
 
-def plot_ks(this_ax, slim_ks_by_gene, spx_ks_by_gene, t_div,
+def plot_ks(this_ax, slim_ks_by_gene, spx_ks_by_gene, t_div,Ks_per_YR,
             slim_run_duration_in_m, specks_run_duration_in_m, title, bin_size, xmax, ymax):
 
     num_slim_genes = len(slim_ks_by_gene)
@@ -192,7 +279,7 @@ def plot_ks(this_ax, slim_ks_by_gene, spx_ks_by_gene, t_div,
                      density=False)
 
     if t_div:
-        t_div_as_ks= t_div * 0.01 * 10**-6
+        t_div_as_ks= t_div * Ks_per_YR
         this_ax.axvline(x=t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
 
     x_axis_label = "Ks \n" + "SLiM run time: " + str(round(slim_run_duration_in_m, 2)) + " min\n" + \

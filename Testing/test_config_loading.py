@@ -16,7 +16,7 @@ class TestConfigLoading(unittest.TestCase):
         self.assertEqual(conf.WGD_time_Ge, 10)
 
         self.assertAlmostEqual(conf.mean_WGD_life_span_in_GE, 5770.78,2)  # add assertion here
-        self.assertEqual(conf.recombination_rate, 0)
+        self.assertEqual(conf.recombination_rate, 1.26e-06)
         self.assertEqual(conf.mutation_rate, 0.001)
         
         self.assertEqual(conf.burnin_time, 478)
