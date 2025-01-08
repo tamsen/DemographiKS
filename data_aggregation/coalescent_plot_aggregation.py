@@ -1,4 +1,5 @@
 import datetime
+import math
 import os
 import unittest
 import process_wrapper
@@ -250,23 +251,34 @@ def read_data_csv(csv_file):
 
 
 def plot_mrca(this_ax,slim_mrcas_by_gene, slim_mrcas_by_tree, theoretical_mrcas_by_gene,
-              run_duration_in_m, title, bin_size,xmax, ymax):
+              run_duration_in_m, title, Ne, Ks_per_YR, bin_size,xmax, ymax):
 
     #fig = plt.figure(figsize=(10, 10), dpi=350
     #Co.T=(1/2N)*e^-((t-1)/2N))
 
     #max_mrca = max(slim_mrcas_by_gene)
-    num_genes=len(slim_mrcas_by_gene)
+    num_slim_genes=len(slim_mrcas_by_gene)
+    num_theory_genes=len(theoretical_mrcas_by_gene)
+    avg_slim_Tc=sum(slim_mrcas_by_gene)/num_slim_genes
+    avg_theory_Tc=sum(theoretical_mrcas_by_gene)/num_theory_genes
     num_segments=len(slim_mrcas_by_tree)
 
     if not xmax:
         xmax = max(slim_mrcas_by_gene)
     bins = np.arange(0, xmax , bin_size)
 
+    two_Ne=2.0*Ne
+    print("Tc plot bin_size_in_time: " + str(bin_size))
+    kingman = [min(num_theory_genes,
+                   (bin_size*num_theory_genes/two_Ne) * math.e ** ((-1 * i) / two_Ne))
+               for i in bins]
+
+
     if len(slim_mrcas_by_gene) > 0:
         this_ax.hist(slim_mrcas_by_gene, bins=bins, facecolor='b', alpha=0.25,
                                 label='SLiM Tcoal by gene\n'
-                                + "(" +str(num_genes) + " genes in genome)",
+                                + "(" +str(num_slim_genes) + " genes in genome,\n"
+                                 +"avg Tc " +str(int(avg_slim_Tc)) + " generations.",
                                 density=False)
     #label = 'SLiM Tcoal by gene (total: ' + str(num_genes) + ')',
 
@@ -278,9 +290,25 @@ def plot_mrca(this_ax,slim_mrcas_by_gene, slim_mrcas_by_tree, theoretical_mrcas_
     if len(theoretical_mrcas_by_gene) > 0:
         this_ax.hist(theoretical_mrcas_by_gene, bins=bins, facecolor='c', alpha=0.25,
                  label='Theoretical Tcoal by gene\n'
-                                + "(" +str(num_genes) + " genes in genome)",
+                                + "(" +str(num_theory_genes) + " genes in genome,\n"
+                                 +"avg Tc " +str(int(avg_theory_Tc)) + " generations.",
                  density=False)
 
+    this_ax.plot(bins,kingman,c='red', label='Expectations under Kingman')
+    #Tc_to_Ks = avg_theory_Tc * Ks_per_YR
+    Tc_to_Ks = avg_slim_Tc * Ks_per_YR
+    Tc_info='   mean Tc by Kingman = ' + \
+        str(2.0*Ne)
+
+    ks_info='   simulated mean Ks at Tdiv = ' + \
+        "{:.2E}".format(Tc_to_Ks )
+
+    ks_info_2='   2*Ne*Ks_per_YR = ' + \
+        "{:.2E}".format(2.0*Ne*Ks_per_YR)
+
+    mut_info = '   simulated num mutations per gene = ' + \
+        "{:.2E}".format(Tc_to_Ks*3.0*1000.0)
+    this_ax.text(0,0, "\n".join([Tc_info,ks_info,ks_info_2,mut_info])+"\n", fontsize = 12)
     x_axis_label="MRCA time\n" + "run time: " +str(round(run_duration_in_m,2)) + " min"
 
     if ymax:
