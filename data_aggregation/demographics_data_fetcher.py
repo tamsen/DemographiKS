@@ -10,7 +10,7 @@ class MyDGXDataFetcher(unittest.TestCase):
     def test_fetch_demographics_data(self):
 
         #/ usr / scratch2 / userdata2 / tdunn / DemographiKS_output / SP / SP1MY_m12d24y2024_h09m00s34
-        TE9_run_list=["TE07_fix__m01d06y2025_h11m18s25"]
+        TE9_run_list=["TE07_fix__m01d08y2025_h15m09s22"]
         #    "TE05fix__m01d06y2025_h11m17s15","TE07_fix__m01d06y2025_h11m18s25"]
         #     "DGKS_10_10_v2_m01d06y2025_h15m35s38",
         #                 "DGKS_100_100_v2_m01d06y2025_h15m35s43",
