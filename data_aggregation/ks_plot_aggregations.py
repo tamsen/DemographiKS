@@ -14,84 +14,6 @@ from data_aggregation.histogram_plotter import read_Ks_csv,make_simple_histogram
 
 class TestKsPlotAgg(unittest.TestCase):
 
-
-    def test_Ks_for_varying_Ne_Tdiv_75(self):
-
-        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
-        specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
-
-        #<mutation_rate>1.0e-5</mutation_rate>, <DIV_time_Ge>75</DIV_time_Ge>
-        demographics_TE_run_list=[False, "DGKS_10_10_v2_m01d06y2025_h13m09s31",
-                        "DGKS_100_100_v2_m01d06y2025_h13m09s35",
-                            "DGKS_1000_1000_v2_m01d06y2025_h13m05s18"]
-
-        specks_TE_run_list=[False,False,False,False]
-        Ks_per_YR = 10 ** -5
-        Ne = [10,10, 100, 1000]
-        burnin_times_in_generations=[2e4,2e4, 2e4,2e4, 2e4]
-        time_since_DIV = [75, 75, 75, 75]
-        bin_sizes_Tc = [80, 80, 80, 80, 80]#looks good
-        xmax_Ks = 0.05 #for mut rate e-5
-        bin_sizes_Ks = [0.001, 0.001,0.001, 0.001, 0.001]
-        xmax_Tc = 5000
-        run_list_num = "_early_DGKS_75_gen_by_Ne"
-        ymax = False
-
-        suptitle = "SLiM Tcoal by gene in ancestral species at Tdiv\n" + \
-                                  "Recombination rate = 1.26e-6, Ne and BI constant"
-
-        make_Tc_Ks_fig_with_subplots(Ne, bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
-                                          demographiKS_out_path, demographics_TE_run_list, run_list_num,
-                                          specks_TE_run_list, specks_out_path, time_since_DIV,Ks_per_YR,
-                                          xmax_Ks, xmax_Tc, ymax,suptitle)
-
-        self.assertEqual(True, True)  # add assertion here
-
-
-
-    def test_Ks_for_varying_Ne_Tdiv_1000(self):
-
-        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
-        specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
-
-        #<mutation_rate>1.0e-5</mutation_rate>, <DIV_time_Ge>1000</DIV_time_Ge>
-        demographics_TE_run_list=[False, "DGKS_10_10_v2_m01d06y2025_h14m09s31",
-                        "DGKS_100_100_v2_m01d06y2025_h14m09s27",
-                            "DGKS_1000_1000_v2_m01d06y2025_h14m09s23"]
-
-        specks_TE_run_list=[False,False,False,False]
-
-        #Ks_per_YR = 0.01 * 10**-6
-        Ks_per_YR = 10 ** -5
-        Ne = [10,10, 100, 1000]
-        #Ne=[500, 500, 1000]
-        burnin_times_in_generations=[2e4,2e4, 2e4,2e4, 2e4]
-        #time_since_DIV=[1000,1000,1000,1000]
-        time_since_DIV = [75, 75, 75, 75]
-
-        bin_sizes_Tc = [80, 80, 80, 80, 80]#looks good
-
-        xmax_Ks = 0.08 #for mut rate e-5
-        bin_sizes_Ks = [0.001, 0.001,0.001, 0.001, 0.001]
-
-
-        #xmax_Ks = False # 0.00001  #for mut rate 1.2e-8
-        #bin_sizes_Ks = [0.000001, 0.000001, 0.000001, 0.000001, 0.000001]
-        xmax_Tc = 5000
-        run_list_num = "_early_DGKS_1000_gen_by_Ne"
-        ymax = False
-
-        suptitle = "SLiM Tcoal by gene in ancestral species at Tdiv\n" + \
-                                  "Recombination rate = 1.26e-6, Ne and BI constant"
-
-        make_Tc_Ks_fig_with_subplots(Ne, bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
-                                          demographiKS_out_path, demographics_TE_run_list, run_list_num,
-                                          specks_TE_run_list, specks_out_path, time_since_DIV,Ks_per_YR,
-                                          xmax_Ks, xmax_Tc, ymax,suptitle)
-
-        self.assertEqual(True, True)  # add assertion here
-
-
     def test_Ks_for_varying_Ne_early_runs(self):
 
         print('foo')
@@ -230,23 +152,29 @@ class TestKsPlotAgg(unittest.TestCase):
         bin_sizes_Ks = [0.0002, 0.0002, 0.0002, 0.0002, 0.0002]
         xmax_Ks = 0.025#0.001  # max(demographiKS_ks_results)
         xmax_Tc = False
-        run_list_num="_5to9_vary_Tdiv"
+        run_list_num="_5to9_vary_Tdiv_fix2"
+        Ks_per_YR = 0.01 * 10**-6
         #end
 
 
         ymax = False
 
+        suptitle = "SLiM Tcoal and Ks\n" + \
+                                  "Recombination rate = 1.26e-6, Ne and BI constant"
         make_Tc_Ks_fig_with_subplots(Ne, bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
                                           demographiKS_out_path, demographics_TE5_run_list, run_list_num,
-                                          specks_TE5_run_list, specks_out_path, time_since_DIV, xmax_Ks, xmax_Tc, ymax)
+                                          specks_TE5_run_list, specks_out_path, time_since_DIV,
+                                            Ks_per_YR, xmax_Ks, xmax_Tc, ymax, suptitle)
+
+
 
         self.assertEqual(True, True)  # add assertion here
 
 
-def make_Tc_Ks_fig_with_subplots(Ne_for_plots, bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
+def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
                                  demographiKS_out_path, demographics_TE9_run_list, run_list_num,
                                  specks_TE9_run_list, specks_out_path, time_since_DIV,Ks_per_YR,
-                                 xmax_Ks, xmax_Tc, ymax, suptitle):
+                                 xmax_Ks, xmax_Tc, ymax, suptitle,show_KS_predictions):
     num_runs = len(demographics_TE9_run_list)
     png_out = os.path.join(demographiKS_out_path, "ks_hist_by_TE{0}_test.png".format(run_list_num))
     par_dir = Path(__file__).parent.parent
@@ -267,7 +195,7 @@ def make_Tc_Ks_fig_with_subplots(Ne_for_plots, bin_sizes_Ks, bin_sizes_Tc, burni
             csv_file_name = 'allotetraploid_bottleneck.csv'
             ks_file = os.path.join(dgx_run_path, csv_file_name)
             print("reading " + ks_file)
-            demographiKS_ks_results = read_Ks_csv(ks_file)
+            demographiKS_ks_results = read_Ks_csv(ks_file, False)
             dgx_run_duration_in_m = get_run_time_in_minutes(dgx_run_path)
             plot_title = "burnin time=" + str(config_used.burnin_time) + " gen,\n" \
                      + "Ne=" + str(config_used.ancestral_Ne) +\
@@ -284,9 +212,8 @@ def make_Tc_Ks_fig_with_subplots(Ne_for_plots, bin_sizes_Ks, bin_sizes_Tc, burni
             spx_run_nickname = spx_run_name.split('_')[1]
             spx_run_path = os.path.join(specks_out_path, spx_run_name)
             csv_file_name = 'Allo_' + spx_run_nickname + '_ML_rep0_Ks_by_GeneTree.csv'
-            # spx_ks_results = read_Ks_csv(os.path.join(spx_run_path,csv_file_name))
+            spx_ks_results = read_Ks_csv(os.path.join(spx_run_path,csv_file_name), True)
             spx_run_duration_in_m = get_run_time_in_minutes(spx_run_path)
-            spx_ks_results = []
         else:
             spx_ks_results = []
             spx_run_duration_in_m = 0
@@ -294,7 +221,7 @@ def make_Tc_Ks_fig_with_subplots(Ne_for_plots, bin_sizes_Ks, bin_sizes_Tc, burni
         plot_ks(ax[0, i], config_used, demographiKS_ks_results, spx_ks_results, time_since_DIV[i],
                 config_used.ancestral_Ne, Ks_per_YR,
                 dgx_run_duration_in_m, spx_run_duration_in_m,
-                plot_title, bin_sizes_Ks[i], xmax_Ks, ymax)
+                plot_title, bin_sizes_Ks[i], xmax_Ks, ymax, show_KS_predictions)
 
         slim_csv_file = os.path.join(dgx_run_path, "simulated_ancestral_gene_mrcas.csv")
         loci, slim_mrcas_by_gene = read_data_csv(slim_csv_file)
@@ -302,9 +229,9 @@ def make_Tc_Ks_fig_with_subplots(Ne_for_plots, bin_sizes_Ks, bin_sizes_Tc, burni
         theory_output_file = os.path.join(dgx_run_path, "theoretical_ancestral_gene_mrcas.csv")
         loci, theory_mrcas_by_gene = read_data_csv(theory_output_file)
         plot_title = "Tcoal at Tdiv\nburnin time=" + str(burnin_times_in_generations[i]) + " gen, " \
-                     + "Ne=" + str(Ne_for_plots[i])
+                     + "Ne=" + str(config_used.ancestral_Ne)
         plot_mrca(ax[1, i], slim_mrcas_by_gene, [], theory_mrcas_by_gene,
-                  dgx_run_duration_in_m, plot_title, Ne_for_plots[i],
+                  dgx_run_duration_in_m, plot_title, config_used.ancestral_Ne,
                    Ks_per_YR, bin_sizes_Tc[i], xmax_Tc, ymax)
 
     ax[0, 1].set(ylabel="# paralog pairs in bin")
@@ -350,7 +277,8 @@ def plot_expository_images(ax, png_Tdiv, png_Tnow):
 
 
 def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_per_YR,
-            slim_run_duration_in_m, specks_run_duration_in_m, title, bin_size, xmax, ymax):
+            slim_run_duration_in_m, specks_run_duration_in_m, title, bin_size, xmax, ymax,
+            show_KS_predictions):
 
     num_slim_genes = len(slim_ks_by_gene)
     num_specks_genes = len(spx_ks_by_gene)
@@ -378,10 +306,13 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
     ks_prediction_Tnow, ks_prediction_Tdiv, ks_model_with_dispersion = (
         predict_Ks(Ne, bin_size, bins, config_used, num_slim_genes))
 
-    this_ax.plot(bins,ks_prediction_Tdiv,c='red', label='Ks_exp at Tdiv (Kingman assumption)',alpha=0.25)
-    #this_ax.plot(bins,ks_prediction_Tnow[0:len(bins)],
-    #             c='gray', label='Ks_exp at Tnow (raw)',alpha=0.25)
-    this_ax.plot(bins, ks_model_with_dispersion[0:len(bins)], c='k',
+    if show_KS_predictions[0]:
+        this_ax.plot(bins,ks_prediction_Tdiv,c='red', label='Ks_exp at Tdiv (Kingman assumption)',alpha=0.25)
+    if show_KS_predictions[1]:
+        this_ax.plot(bins,ks_prediction_Tnow[0:len(bins)],
+                 c='gray', label='Ks_exp at Tnow (raw)',alpha=0.25)
+    if show_KS_predictions[2]:
+        this_ax.plot(bins, ks_model_with_dispersion[0:len(bins)], c='k',
                  label='Ks_exp at Tnow (with dispersion)',alpha=0.25)
 
     x_axis_label = "Ks \n" + "SLiM run time: " + str(round(slim_run_duration_in_m, 2)) + " min\n" + \

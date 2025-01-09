@@ -76,12 +76,12 @@ def make_simple_histogram(Ks_results, title, bin_size, color,WGD_ks,
 
     return
 
-def read_Ks_csv(csv_file):
+def read_Ks_csv(csv_file, expect_header):
 
     ks_results = []
     with open(csv_file, "r") as f:
 
-        reading_header=True
+        reading_header=expect_header
         while True:
             line = f.readline()
             if "ersion" in line:
