@@ -321,6 +321,7 @@ def plot_mrca(this_ax,slim_mrcas_by_gene, slim_mrcas_by_tree, theoretical_mrcas_
     #plt.ylabel("# genes in bin")
     #plt.savefig(png_out)
 
+
 def get_run_time_in_minutes(local_output_folder):
         out_string, error_string = process_wrapper.run_and_wait_with_retry(
             ['ls'], local_output_folder, "Connection reset by peer", 2, 5)

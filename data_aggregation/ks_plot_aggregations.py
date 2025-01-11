@@ -173,7 +173,7 @@ class TestKsPlotAgg(unittest.TestCase):
 
 def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
                                  demographiKS_out_path, demographics_TE9_run_list, run_list_num,
-                                 specks_TE9_run_list, specks_out_path, time_since_DIV,Ks_per_YR,
+                                 specks_TE9_run_list, specks_out_path, Ks_per_YR,
                                  xmax_Ks, xmax_Tc, ymax, suptitle,show_KS_predictions):
     num_runs = len(demographics_TE9_run_list)
     png_out = os.path.join(demographiKS_out_path, "ks_hist_by_TE{0}_test.png".format(run_list_num))
@@ -190,7 +190,9 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_gen
         if dgx_run_name:
 
             dgx_run_path = os.path.join(demographiKS_out_path, dgx_run_name)
-            input_xml_file = glob.glob(dgx_run_path + '/*.used.xml')[0]
+            print("dgx_run_path: " +dgx_run_path )
+            glob_results=glob.glob(dgx_run_path + '/*.used.xml')
+            input_xml_file = glob_results[0]
             config_used = config.DemographiKS_config(input_xml_file)
             csv_file_name = 'allotetraploid_bottleneck.csv'
             ks_file = os.path.join(dgx_run_path, csv_file_name)
@@ -218,10 +220,10 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_gen
             spx_ks_results = []
             spx_run_duration_in_m = 0
 
-        plot_ks(ax[0, i], config_used, demographiKS_ks_results, spx_ks_results, time_since_DIV[i],
+        plot_ks(ax[0, i], config_used, demographiKS_ks_results, spx_ks_results,config_used.DIV_time_Ge,
                 config_used.ancestral_Ne, Ks_per_YR,
                 dgx_run_duration_in_m, spx_run_duration_in_m,
-                plot_title, bin_sizes_Ks[i], xmax_Ks, ymax, show_KS_predictions)
+                plot_title, bin_sizes_Ks[i], xmax_Ks[i], ymax, show_KS_predictions)
 
         slim_csv_file = os.path.join(dgx_run_path, "simulated_ancestral_gene_mrcas.csv")
         loci, slim_mrcas_by_gene = read_data_csv(slim_csv_file)
@@ -232,7 +234,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_gen
                      + "Ne=" + str(config_used.ancestral_Ne)
         plot_mrca(ax[1, i], slim_mrcas_by_gene, [], theory_mrcas_by_gene,
                   dgx_run_duration_in_m, plot_title, config_used.ancestral_Ne,
-                   Ks_per_YR, bin_sizes_Tc[i], xmax_Tc, ymax)
+                   Ks_per_YR, bin_sizes_Tc[i], xmax_Tc[i], ymax)
 
     ax[0, 1].set(ylabel="# paralog pairs in bin")
     ax[1, 1].set(ylabel="# genes in bin")
@@ -282,6 +284,7 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
 
     num_slim_genes = len(slim_ks_by_gene)
     num_specks_genes = len(spx_ks_by_gene)
+    mean_ks_from_Tc = 2.0 * config_used.ancestral_Ne * Ks_per_YR
 
     if not xmax:
         xmax = max(slim_ks_by_gene)
@@ -300,11 +303,13 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
                      density=False)
 
     if t_div:
-        t_div_as_ks= config_used.DIV_time_Ge * config_used.mutation_rate
+        t_div_as_ks= config_used.DIV_time_Ge * Ks_per_YR
         this_ax.axvline(x=t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
+        total_ks_shift=mean_ks_from_Tc+t_div_as_ks
+        this_ax.axvline(x=total_ks_shift, color='k', linestyle='--', label="..including Tc affects")
 
     ks_prediction_Tnow, ks_prediction_Tdiv, ks_model_with_dispersion = (
-        predict_Ks(Ne, bin_size, bins, config_used, num_slim_genes))
+        predict_Ks(Ne, mean_ks_from_Tc, t_div_as_ks, bin_size, bins, config_used, num_slim_genes))
 
     if show_KS_predictions[0]:
         this_ax.plot(bins,ks_prediction_Tdiv,c='red', label='Ks_exp at Tdiv (Kingman assumption)',alpha=0.25)
@@ -328,7 +333,7 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
     # plt.savefig(png_out)
 
 
-def predict_Ks(Ne, bin_size, bins, config_used, num_slim_genes):
+def predict_Ks(Ne,mean_ks_from_Tc, t_div_as_ks, bin_size, bins, config_used, num_slim_genes):
     expected_Ks_peak_shift = config_used.DIV_time_Ge * config_used.mutation_rate
     print("config_used.mutation_rate " + str(config_used.mutation_rate))
     bin_size_in_time = bin_size / config_used.mutation_rate
