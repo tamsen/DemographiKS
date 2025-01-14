@@ -244,24 +244,25 @@ def read_data_csv(csv_file):
                 break
 
             data = line.strip().split(",")
-            loci.append(int(data[0]))
-            mrcas.append(float(data[1]))
+            if len(data) > 1:
+                loci.append(int(data[0]))
+                mrcas.append(float(data[1]))
+            else:
+                mrcas.append(float(data[0]))
 
     return loci,mrcas
 
 
-def plot_mrca(this_ax,slim_mrcas_by_gene, slim_mrcas_by_tree, theoretical_mrcas_by_gene,
-              run_duration_in_m, title, Ne, Ks_per_YR, bin_size,xmax, ymax):
+def plot_mrca(this_ax,slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrcas_by_gene,
+              run_duration_in_m, title, Ne, Ks_per_YR, bin_size,xmax, ymax, total_num_genes):
 
     #fig = plt.figure(figsize=(10, 10), dpi=350
     #Co.T=(1/2N)*e^-((t-1)/2N))
 
     #max_mrca = max(slim_mrcas_by_gene)
     num_slim_genes=len(slim_mrcas_by_gene)
-    num_theory_genes=len(theoretical_mrcas_by_gene)
     avg_slim_Tc=sum(slim_mrcas_by_gene)/num_slim_genes
-    avg_theory_Tc=sum(theoretical_mrcas_by_gene)/num_theory_genes
-    num_segments=len(slim_mrcas_by_tree)
+    #num_segments=len(slim_mrcas_by_tree)
 
     if not xmax:
         xmax = max(slim_mrcas_by_gene)
@@ -269,8 +270,8 @@ def plot_mrca(this_ax,slim_mrcas_by_gene, slim_mrcas_by_tree, theoretical_mrcas_
 
     two_Ne=2.0*Ne
     print("Tc plot bin_size_in_time: " + str(bin_size))
-    kingman = [min(num_theory_genes,
-                   (bin_size*num_theory_genes/two_Ne) * math.e ** ((-1 * i) / two_Ne))
+    kingman = [min(total_num_genes,
+                   (bin_size*total_num_genes/two_Ne) * math.e ** ((-1 * i) / two_Ne))
                for i in bins]
 
 
@@ -282,13 +283,18 @@ def plot_mrca(this_ax,slim_mrcas_by_gene, slim_mrcas_by_tree, theoretical_mrcas_
                                 density=False)
     #label = 'SLiM Tcoal by gene (total: ' + str(num_genes) + ')',
 
-    if len(slim_mrcas_by_tree) > 0:
-        this_ax.hist(slim_mrcas_by_tree, bins=bins, facecolor='r', alpha=0.25,
-                 label='SLiM Tcoal by segment (total: '+str(num_segments)+')',
+    if specks_mrcas_by_gene:
+        num_specks_genes = len(specks_mrcas_by_gene)
+        specks_mrcas_by_gene_in_YRs=[m*10.0**6 for m in specks_mrcas_by_gene]
+        this_ax.hist(specks_mrcas_by_gene_in_YRs, bins=bins, facecolor='c', alpha=0.25,
+                                label='SpecKS Tcoal by gene\n'
+                                + "(" +str(num_specks_genes) + " genes in genome,\n",
                  density=False)
     
-    if len(theoretical_mrcas_by_gene) > 0:
-        this_ax.hist(theoretical_mrcas_by_gene, bins=bins, facecolor='c', alpha=0.25,
+    if theoretical_mrcas_by_gene:
+        num_theory_genes = len(theoretical_mrcas_by_gene)
+        avg_theory_Tc = sum(theoretical_mrcas_by_gene) / num_theory_genes
+        this_ax.hist(theoretical_mrcas_by_gene, bins=bins, facecolor='r', alpha=0.25,
                  label='Theoretical Tcoal by gene\n'
                                 + "(" +str(num_theory_genes) + " genes in genome,\n"
                                  +"avg Tc " +str(int(avg_theory_Tc)) + " generations.",

@@ -24,21 +24,20 @@ class TestGeneLossRates(unittest.TestCase):
 
         bin_sizes_Tc = [200,200, 200, 200,200]
         bin_sizes_Ks = [0.0002, 0.0002, 0.0002, 0.0002, 0.0002]
-        xmax_Ks = 0.025#0.001  # max(demographiKS_ks_results)
-        xmax_Tc = False
+        xmax_Ks = [0.025,0.025,0.025,0.025,0.025] #0.001  # max(demographiKS_ks_results)
+        xmax_Tc = [False,False,False,False,False]
         run_list_num="_5to9_vary_Tdiv_gene_shedding_fix"
         Ks_per_YR = 0.01 * 10**-6 #Mut rate is 1.2 to Ks rate of 1.0 in SpecKS
         ymax = False
         show_KS_predictions=[False,False,False]
+        total_num_genes=3333
         suptitle = "SLiM and SpecKS Ks histograms\n" + \
                                   "Recombination rate = 1.26e-6, Ne and BI constant"
         make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
                                           demographiKS_out_path, demographics_TE5_run_list, run_list_num,
-                                          specks_TE5_run_list, specks_out_path, time_since_DIV,
-                                            Ks_per_YR, xmax_Ks, xmax_Tc, ymax, suptitle,
-                                     show_KS_predictions)
-
-
+                                          specks_TE5_run_list, specks_out_path,Ks_per_YR,
+                                     xmax_Ks, xmax_Tc, ymax, suptitle,
+                                     show_KS_predictions,total_num_genes)
 
         self.assertEqual(True, True)  # add assertion here
 

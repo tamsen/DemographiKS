@@ -174,7 +174,7 @@ class TestKsPlotAgg(unittest.TestCase):
 def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
                                  demographiKS_out_path, demographics_TE9_run_list, run_list_num,
                                  specks_TE9_run_list, specks_out_path, Ks_per_YR,
-                                 xmax_Ks, xmax_Tc, ymax, suptitle,show_KS_predictions):
+                                 xmax_Ks, xmax_Tc, ymax, suptitle,show_KS_predictions, total_num_genes):
     num_runs = len(demographics_TE9_run_list)
     png_out = os.path.join(demographiKS_out_path, "ks_hist_by_TE{0}_test.png".format(run_list_num))
     par_dir = Path(__file__).parent.parent
@@ -216,9 +216,13 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_gen
             csv_file_name = 'Allo_' + spx_run_nickname + '_ML_rep0_Ks_by_GeneTree.csv'
             spx_ks_results = read_Ks_csv(os.path.join(spx_run_path,csv_file_name), True)
             spx_run_duration_in_m = get_run_time_in_minutes(spx_run_path)
+            specks_csv_file = os.path.join(spx_run_path, "variations_in_div_time.txt")
+            loci, specks_mrcas_by_gene = read_data_csv(specks_csv_file)
+
         else:
             spx_ks_results = []
             spx_run_duration_in_m = 0
+            specks_mrcas_by_gene = False
 
         plot_ks(ax[0, i], config_used, demographiKS_ks_results, spx_ks_results,config_used.DIV_time_Ge,
                 config_used.ancestral_Ne, Ks_per_YR,
@@ -232,9 +236,11 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_gen
         loci, theory_mrcas_by_gene = read_data_csv(theory_output_file)
         plot_title = "Tcoal at Tdiv\nburnin time=" + str(burnin_times_in_generations[i]) + " gen, " \
                      + "Ne=" + str(config_used.ancestral_Ne)
-        plot_mrca(ax[1, i], slim_mrcas_by_gene, [], theory_mrcas_by_gene,
+
+        theory_mrcas_by_gene=False
+        plot_mrca(ax[1, i], slim_mrcas_by_gene, specks_mrcas_by_gene, theory_mrcas_by_gene,
                   dgx_run_duration_in_m, plot_title, config_used.ancestral_Ne,
-                   Ks_per_YR, bin_sizes_Tc[i], xmax_Tc[i], ymax)
+                   Ks_per_YR, bin_sizes_Tc[i], xmax_Tc[i], ymax, total_num_genes)
 
     ax[0, 1].set(ylabel="# paralog pairs in bin")
     ax[1, 1].set(ylabel="# genes in bin")
@@ -306,7 +312,7 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
         t_div_as_ks= config_used.DIV_time_Ge * Ks_per_YR
         this_ax.axvline(x=t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
         total_ks_shift=mean_ks_from_Tc+t_div_as_ks
-        this_ax.axvline(x=total_ks_shift, color='k', linestyle='--', label="..including Tc affects")
+        this_ax.axvline(x=total_ks_shift, color='k', linestyle='--', label="Expected Ks mean")
 
     ks_prediction_Tnow, ks_prediction_Tdiv, ks_model_with_dispersion = (
         predict_Ks(Ne, mean_ks_from_Tc, t_div_as_ks, bin_size, bins, config_used, num_slim_genes))
