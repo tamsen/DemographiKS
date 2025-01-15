@@ -10,7 +10,7 @@ class MyDGXDataFetcher(unittest.TestCase):
     def test_fetch_demographics_data(self):
 
         #/ usr / scratch2 / userdata2 / tdunn / DemographiKS_output / SP / SP1MY_m12d24y2024_h09m00s34
-        TE9_run_list=["DGKS_100_100_m5_RC7_m01d14y2025_h09m14s18"]
+        TE9_run_list=["TE08_fix_m01d14y2025_h09m17s20"]
         #              ,)
         #"DGKS_100_100_m5_RC7_m01d14y2025_h09m14s18"
         #            "DGKS_10_10_m5_RC7_m01d14y2025_h09m14s47",
@@ -59,9 +59,9 @@ class MyDGXDataFetcher(unittest.TestCase):
         run_collection_name="TE"
         #me_at_remote_URL =  'tdunn@mesx.sdsu.edu'
         me_at_remote_URL =  'mesx_cluster'
-        #output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_output",
-        #                                run_collection_name)
-        output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_Output")
+        output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_output",
+                                        run_collection_name)
+        #output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_Output")
 
         #run_name="RC10_m12d18y2024_h11m43s13"
         for i in range(0,len(run_list)):

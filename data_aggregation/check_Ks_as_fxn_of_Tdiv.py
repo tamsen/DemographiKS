@@ -11,11 +11,11 @@ class TestGeneLossRates(unittest.TestCase):
 
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
         specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
-        demographics_TE5_run_list=['TE03_m12d20y2024_h14m26s56',
+        demographics_TE5_run_list=[False,
           'TE05fix__m01d06y2025_h11m17s15','TE07_fix__m01d08y2025_h15m09s22',
-           'TE08_m12d24y2024_h09m31s26','TE09_fix_m01d13y2025_h14m13s12']
+           'TE08_fix_m01d14y2025_h09m17s20','TE09_fix_m01d13y2025_h14m13s12']
 
-        specks_TE5_run_list=['specks_TE05_m12d30y2024_h11m50s03',
+        specks_TE5_run_list=[False,
                              "specks_TE05_m01d14y2025_h09m50s16" ,
         "specks_TE07_m01d14y2025_h09m50s16",
         "specks_TE08_m01d14y2025_h09m50s16" ,
