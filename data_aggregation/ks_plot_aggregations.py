@@ -171,12 +171,13 @@ class TestKsPlotAgg(unittest.TestCase):
         self.assertEqual(True, True)  # add assertion here
 
 
-def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
-                                 demographiKS_out_path, demographics_TE9_run_list, run_list_num,
+def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
+                                 demographiKS_out_path, demographics_TE9_run_list, run_list_name,
                                  specks_TE9_run_list, specks_out_path, Ks_per_YR,
-                                 xmax_Ks, xmax_Tc, ymax, suptitle,show_KS_predictions, total_num_genes):
+                                 xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions, total_num_genes):
+    ymax_Tc = False
     num_runs = len(demographics_TE9_run_list)
-    png_out = os.path.join(demographiKS_out_path, "ks_hist_by_TE{0}_test.png".format(run_list_num))
+    png_out = os.path.join(demographiKS_out_path, "ks_hist_by_TE{0}_test.png".format(run_list_name))
     par_dir = Path(__file__).parent.parent
     image_folder = os.path.join(par_dir, "images")
     png_Tnow = os.path.join(image_folder, 'Ks_now_time_slice.jpg')
@@ -224,23 +225,24 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_gen
             spx_run_duration_in_m = 0
             specks_mrcas_by_gene = False
 
-        plot_ks(ax[0, i], config_used, demographiKS_ks_results, spx_ks_results,config_used.DIV_time_Ge,
+        plot_ks(ax[0, i], config_used, demographiKS_ks_results, spx_ks_results, config_used.DIV_time_Ge,
                 config_used.ancestral_Ne, Ks_per_YR,
                 dgx_run_duration_in_m, spx_run_duration_in_m,
-                plot_title, bin_sizes_Ks[i], xmax_Ks[i], ymax, show_KS_predictions)
+                plot_title, bin_sizes_Ks[i], xmax_Ks[i], ymax_Ks[i], show_KS_predictions)
 
         slim_csv_file = os.path.join(dgx_run_path, "simulated_ancestral_gene_mrcas.csv")
         loci, slim_mrcas_by_gene = read_data_csv(slim_csv_file)
 
         theory_output_file = os.path.join(dgx_run_path, "theoretical_ancestral_gene_mrcas.csv")
         loci, theory_mrcas_by_gene = read_data_csv(theory_output_file)
-        plot_title = "Tcoal at Tdiv\nburnin time=" + str(burnin_times_in_generations[i]) + " gen, " \
+        burnin_times_in_generations=config_used.burnin_time
+        plot_title = "Tcoal at Tdiv\nburnin time=" + str(burnin_times_in_generations) + " gen, " \
                      + "Ne=" + str(config_used.ancestral_Ne)
 
         theory_mrcas_by_gene=False
         plot_mrca(ax[1, i], slim_mrcas_by_gene, specks_mrcas_by_gene, theory_mrcas_by_gene,
                   dgx_run_duration_in_m, plot_title, config_used.ancestral_Ne,
-                   Ks_per_YR, bin_sizes_Tc[i], xmax_Tc[i], ymax, total_num_genes)
+                  Ks_per_YR, bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc, total_num_genes)
 
     ax[0, 1].set(ylabel="# paralog pairs in bin")
     ax[1, 1].set(ylabel="# genes in bin")
