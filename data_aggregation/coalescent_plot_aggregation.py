@@ -30,7 +30,7 @@ class TestTCoalAggregation(unittest.TestCase):
         xmax = False#1000
         ymax=False
         png_out=os.path.join(aggragate_output_folder,"mrcsa_by_TE_tests.png")
-        fig, ax = plt.subplots(1, num_runs,figsize=(20,5))
+        fig, ax = plt.subplots(1, num_runs,figsize=(20,10))
         fig.suptitle("SLiM Tcoal by gene in ancestral species at Tdiv\n" + \
             "Recombination rate = 8e-9, Ne varies, BI varies")
 
@@ -253,8 +253,8 @@ def read_data_csv(csv_file):
     return loci,mrcas
 
 
-def plot_mrca(this_ax,slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrcas_by_gene,
-              run_duration_in_m, title, Ne, Ks_per_YR, bin_size,xmax, ymax, total_num_genes):
+def plot_mrca(this_ax, slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrcas_by_gene,
+              dgks_run_duration_in_m, title, Ne, Ks_per_YR, bin_size, xmax, ymax, total_num_genes):
 
     #fig = plt.figure(figsize=(10, 10), dpi=350
     #Co.T=(1/2N)*e^-((t-1)/2N))
@@ -278,7 +278,7 @@ def plot_mrca(this_ax,slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrca
                for i in bins]
 
 
-    if len(slim_mrcas_by_gene) > 0:
+    if slim_mrcas_by_gene:
         this_ax.hist(slim_mrcas_by_gene, bins=bins, facecolor='b', alpha=0.25,
                                 label='SLiM Tcoal by gene\n'
                                 + "(" +str(num_slim_genes) + " genes in genome,\n"
@@ -317,8 +317,11 @@ def plot_mrca(this_ax,slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrca
 
     mut_info = '   simulated num mutations per gene = ' + \
         "{:.2E}".format(Tc_to_Ks*3.0*1000.0)
-    this_ax.text(0,0, "\n".join([Tc_info,ks_info,ks_info_2,mut_info])+"\n", fontsize = 12)
-    x_axis_label="MRCA time\n" + "run time: " +str(round(run_duration_in_m,2)) + " min"
+
+    annotation_txt= "\n".join([Tc_info,ks_info,ks_info_2,mut_info])+"\n"
+    this_ax.annotate(annotation_txt, (0, 0), (0, -60), xycoords='axes fraction', textcoords='offset points', va='top')
+
+    x_axis_label="MRCA time\n" + "demographiKS run time: " + str(round(dgks_run_duration_in_m, 2)) + " min"
 
     if ymax:
         this_ax.set(ylim=[0, ymax])

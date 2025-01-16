@@ -32,29 +32,25 @@ class MyTestCase(unittest.TestCase):
         # Mut rate is 1.2 to Ks rate of 1.0 in SpecKS
         #<mutation_rate>0.000000012</mutation_rate>
         Ks_per_YR=0.00000001
-        show_KS_predictions=False
         make_Tc_fig_with_subplots(bin_sizes,
                                   aggragate_output_folder,
                                   BI_run_list,"mrcsa_by_burnin_time_BI",
-                                  False, False, Ks_per_YR,
-                                  xmaxs , xmaxs , ymax_Ks, suptitle,
-                                  show_KS_predictions, total_num_genes)
+                                  Ks_per_YR,
+                                  xmaxs , suptitle,
+                                  total_num_genes)
 
         self.assertEqual(True, True)  # add assertion here
 
 
 def make_Tc_fig_with_subplots(bin_sizes_Tc,
                                  demographiKS_out_path, demographics_TE9_run_list, run_list_name,
-                                 specks_TE9_run_list, specks_out_path, Ks_per_YR,
-                                 xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions, total_num_genes):
+                                 Ks_per_YR,
+                                 xmax_Tc, suptitle, total_num_genes):
     ymax_Tc = False
     num_runs = len(demographics_TE9_run_list)
-    png_out = os.path.join(demographiKS_out_path, "ks_hist_by_TE{0}_test.png".format(run_list_name))
+    png_out = os.path.join(demographiKS_out_path, "ks_hist_for_{0}.png".format(run_list_name))
     par_dir = Path(__file__).parent.parent
-    image_folder = os.path.join(par_dir, "images")
-    png_Tnow = os.path.join(image_folder, 'Ks_now_time_slice.jpg')
-    png_Tdiv = os.path.join(image_folder, 'Tdiv_TimeSlice.jpg')
-    fig, ax = plt.subplots(1, num_runs, figsize=(20, 10))
+    fig, ax = plt.subplots(1, num_runs, figsize=(20, 5))
     fig.suptitle(suptitle)
     for i in range(0, num_runs):
         dgx_run_name = demographics_TE9_run_list[i]
@@ -71,9 +67,7 @@ def make_Tc_fig_with_subplots(bin_sizes_Tc,
 
         else:
             config_used = False
-            demographiKS_ks_results = []
             dgx_run_duration_in_m = 0
-            plot_title = "foo - didnt load a config"
 
 
 
@@ -86,13 +80,11 @@ def make_Tc_fig_with_subplots(bin_sizes_Tc,
         plot_title = "Tcoal at Tdiv\nburnin time=" + str(burnin_times_in_generations) + " gen, " \
                      + "Ne=" + str(config_used.ancestral_Ne)
 
-        theory_mrcas_by_gene=False
         plot_mrca(ax[i], slim_mrcas_by_gene, False, theory_mrcas_by_gene,
                   dgx_run_duration_in_m, plot_title, config_used.ancestral_Ne,
                   Ks_per_YR, bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc, total_num_genes)
 
-    ax[0].set(ylabel="# paralog pairs in bin")
-    ax[1].set(ylabel="# genes in bin")
+    ax[0].set(ylabel="# genes in bin")
     plt.tight_layout()
     plt.savefig(png_out, dpi=550)
     plt.clf()
