@@ -7,8 +7,6 @@ class TestGeneLossRates(unittest.TestCase):
 
     def test_Ks_for_varying_varying_Tdiv_times(self):
 
-
-
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
         specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
         demographics_TE5_run_list=[False,

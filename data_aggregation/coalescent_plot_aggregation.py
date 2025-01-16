@@ -261,7 +261,10 @@ def plot_mrca(this_ax,slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrca
 
     #max_mrca = max(slim_mrcas_by_gene)
     num_slim_genes=len(slim_mrcas_by_gene)
-    avg_slim_Tc=sum(slim_mrcas_by_gene)/num_slim_genes
+    if num_slim_genes==0:
+        avg_slim_Tc = 0
+    else:
+        avg_slim_Tc=sum(slim_mrcas_by_gene)/num_slim_genes
     #num_segments=len(slim_mrcas_by_tree)
 
     if not xmax:

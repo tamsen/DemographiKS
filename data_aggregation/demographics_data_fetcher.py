@@ -1,7 +1,5 @@
 import os.path
 import unittest
-#import process_wrapper
-import config
 import process_wrapper
 
 
@@ -10,7 +8,8 @@ class MyDGXDataFetcher(unittest.TestCase):
     def test_fetch_demographics_data(self):
 
         #/ usr / scratch2 / userdata2 / tdunn / DemographiKS_output / SP / SP1MY_m12d24y2024_h09m00s34
-        TE9_run_list=["TE08_fix_m01d14y2025_h09m17s20"]
+        TE9_run_list=["BI3_m12d19y2024_h11m02s23"]
+        run_collection_name="BI"
         #              ,)
         #"DGKS_100_100_m5_RC7_m01d14y2025_h09m14s18"
         #            "DGKS_10_10_m5_RC7_m01d14y2025_h09m14s47",
@@ -56,7 +55,6 @@ class MyDGXDataFetcher(unittest.TestCase):
                      "GE7_m12d19y2024_h13m30s32"]
 
         run_list=TE9_run_list
-        run_collection_name="TE"
         #me_at_remote_URL =  'tdunn@mesx.sdsu.edu'
         me_at_remote_URL =  'mesx_cluster'
         output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_output",
