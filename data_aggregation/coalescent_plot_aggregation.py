@@ -58,47 +58,6 @@ class TestTCoalAggregation(unittest.TestCase):
         
         self.assertEqual(True, True)  # add assertion here
 
-    
-    def test_TCoal_with_varying_BI(self):
-
-        #make 1 histogram.
-        aggragate_output_folder = "/home/tamsen/Data/DemographiKS_output_from_mesx"
-
-        BI_run_list=["BI2_m12d19y2024_h10m57s18","BI3_m12d19y2024_h11m02s23",
-                     "BI4_m12d19y2024_h11m02s24","BI5_m12d19y2024_h11m02s27"]
-                    #"BI7_m12d19y2024_h11m02s31"]
-
-        burnin_times_in_generations=[5e2, 5e3, 5e4, 5e5, 5e6] #, 5e7]#8e-8, <- longer BI times still running..
-        theory_output_file=os.path.join("/home/tamsen/Data/DemographiKS_output_from_mesx",
-                                        BI_run_list[0],"theoretical_ancestral_gene_mrcas.csv")
-        num_runs=len(BI_run_list)
-        bin_size = 10000
-        xmax = 160_000
-        png_out=os.path.join(aggragate_output_folder,"mrcsa_by_burnin_time.png")
-        fig, ax = plt.subplots(1, num_runs,figsize=(20,5))
-        fig.suptitle("SLiM Tcoal by gene in ancestral species at Tdiv\n" + \
-            "Recombination rate = 8e-10, Ne=1e4")
-
-        for i in range(0,num_runs):
-            run_name=BI_run_list[i]
-            local_output_folder = os.path.join("/home/tamsen/Data/DemographiKS_output_from_mesx",
-                                               run_name)
-
-            run_duration_in_m = get_run_time_in_minutes(local_output_folder)
-            slim_csv_file=os.path.join(local_output_folder,"simulated_ancestral_gene_mrcas.csv")
-            loci, slim_mrcas_by_gene=read_data_csv(slim_csv_file)
-            loci, theory_mrcas_by_gene=read_data_csv(theory_output_file)
-            plot_title="burnin time=" + str(burnin_times_in_generations[i]) + " generations"
-            plot_mrca(ax[i],slim_mrcas_by_gene, [],theory_mrcas_by_gene,
-                run_duration_in_m, plot_title,bin_size,xmax)
-        
-        ax[0].set(ylabel="# genes in bin")
-        plt.tight_layout()
-        plt.savefig(png_out, dpi=550)
-        plt.clf()
-        plt.close()
-        
-        self.assertEqual(True, True)  # add assertion here
 
     def test_TCoal_with_varying_RC(self):
 
