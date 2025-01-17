@@ -29,6 +29,21 @@ def get_Ks_from_file(paml_out_file):
 
     return ks_results
 
+def extract_Ks_values_by_file(paml_out_file):
+
+    KS_values=[]
+    file_lines=[]
+    log.write_to_log(paml_out_file)
+    base_name = os.path.basename(paml_out_file)
+    Ks_for_og = get_Ks_from_file(paml_out_file)
+    for Ks_data in Ks_for_og:
+        Ks_value = Ks_data.ks_between_ortholog_and_LCA
+        ortholog_names_str = str(Ks_data.ortholog_pair).replace(",", " ")
+        file_line=base_name + "," + ortholog_names_str + "," + \
+                             str(Ks_value) + "," + paml_out_file + "\n"
+        KS_values.append(Ks_value)
+        file_lines.append(file_line)
+    return KS_values, file_lines
 
 
 def extract_K_values(csv_file_out, res_files):

@@ -13,7 +13,7 @@ from datetime import datetime
 from modules.gene_shedder import shed_genes
 from modules import SLiM_runner,ks_calculator, FASTA_extracta,ks_histogramer
 from modules.trees_file_processor import plot_coalescent
-
+import demographiKS_sim
 
 def run_sim():
 
@@ -89,7 +89,7 @@ def run_sim():
     if conf.stop_at_step < 3:
         return
     
-    log.write_to_log("Step 3: Shedding paralogs lost to dpiloidization & fractionation")
+    log.write_to_log("Step 3: Shedding paralogs lost to diploidization & fractionation")
     remaining_sequences_by_paralog_name_dict  = shed_genes(cleaned_sequences_by_paralog_name_dict,conf)
 
 
@@ -101,12 +101,19 @@ def run_sim():
     paml_out_files = ks_calculator.run_CODEML_on_paralogs(
         remaining_sequences_by_paralog_name_dict, demographics_out_folder)
 
+    out_csv_2=os.path.join(demographics_out_folder,conf.sim_name + "_2.csv")
+
     log.write_to_log("Extracting Ks values from PAML.")
     results = ks_histogramer.extract_K_values(out_csv, paml_out_files)
     ks_histogramer.plot_Ks_histogram(out_png, conf,results ,
                       None,None,None,None,"ML","b", 0.001)
 
     log.write_end_to_log()
+
+    #compare with the new version
+    conf.output_folder=conf.output_folder+ "_test2"
+    os.makedirs(conf.output_folder)
+    demographiKS_sim.run(conf)
 
     return
 

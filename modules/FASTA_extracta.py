@@ -24,6 +24,17 @@ def extract_paralog_sequences(demographics_out_folder, focal_genomes, config, mt
     return cleaned_sequences_by_paralog_name_dict
 
 
+def get_sequences_by_paralog_name(gene_length,genome_size,
+                                        max_num_paralogs_to_process):
+    paralog_names = []
+    expected_num_paralogs=int(genome_size/gene_length)
+    max_num_paralogs=min(expected_num_paralogs,max_num_paralogs_to_process)
+    for i in range(0,max_num_paralogs):
+        start_index=i*gene_length
+        paralog_names.append(start_index)
+    return paralog_names
+
+
 def write_per_genome_per_paralog_fastas(demographics_out_folder, focal_genomes, gene_length,
                                         max_num_paralogs_to_process, out_fasta, sim_name):
     sequences_by_paralog_name_dict = {}
