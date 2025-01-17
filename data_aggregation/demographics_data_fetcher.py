@@ -8,8 +8,8 @@ class MyDGXDataFetcher(unittest.TestCase):
     def test_fetch_demographics_data(self):
 
         #/ usr / scratch2 / userdata2 / tdunn / DemographiKS_output / SP / SP1MY_m12d24y2024_h09m00s34
-        TE9_run_list=["BI3_m12d19y2024_h11m02s23"]
-        run_collection_name="BI"
+        TE9_run_list=["GE5_m12d19y2024_h11m47s58"]
+        run_collection_name="GE"
         #              ,)
         #"DGKS_100_100_m5_RC7_m01d14y2025_h09m14s18"
         #            "DGKS_10_10_m5_RC7_m01d14y2025_h09m14s47",
