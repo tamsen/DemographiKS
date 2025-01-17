@@ -101,7 +101,6 @@ def run_sim():
     paml_out_files = ks_calculator.run_CODEML_on_paralogs(
         remaining_sequences_by_paralog_name_dict, demographics_out_folder)
 
-    out_csv_2=os.path.join(demographics_out_folder,conf.sim_name + "_2.csv")
 
     log.write_to_log("Extracting Ks values from PAML.")
     results = ks_histogramer.extract_K_values(out_csv, paml_out_files)

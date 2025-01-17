@@ -86,7 +86,7 @@ def run(conf):
     genes_to_loose_a_duplicate = decide_genes_to_shed(paralog_names, conf)
 
     out_csv_2 = os.path.join(demographics_out_folder, conf.sim_name + "_2.csv")
-
+    random_nuceotides_seed=42
 
     log.write_to_log("Getting paralog sequences from TS data.")
     cleaned_sequences_by_paralog_name_dict = FASTA_extracta.extract_paralog_sequences(demographics_out_folder,
@@ -95,17 +95,23 @@ def run(conf):
 
 
 
-    fasta_string = mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length))
+    #write out the fasta for out focal genomes
+    fasta_string = mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length, seed=random_nuceotides_seed))
     fasta_io = StringIO(fasta_string)
-    for seq_record in SeqIO.parse(fasta_io, 'fasta'):
-        seq_record.id = seq_record.description = seq_record.id.replace('.seq', '')
-        if seq_record.id in focal_genomes:
-            focal_fasta = os.path.join(demographics_out_folder, conf.sim_name +
-                                       seq_record.id +  ".fa")
-            with open(focal_fasta, "w") as f:
-                f.write(str(seq_record.seq))
+    SeqDict = SeqIO.to_dict(SeqIO.parse(fasta_io , "fasta"))
+    Seq1=focal_genomes[0]
+    genome_name = conf.sim_name + "_" + Seq1
+    paralog_ID=0
+    paralog_ID_str=str(paralog_ID)
+    subsequence=SeqDict[Seq1][paralog_ID:10].seq
+    paralog_name = genome_name + "_paralog_" + str(paralog_ID)
+    out_per_genome_per_paralog_fasta = os.path.join(demographics_out_folder, paralog_name + "_foo.fa")
+    # print("Writing data for : " + out_per_genome_fasta + ".")
+    record = SeqRecord(subsequence,
+                       id=Seq1, name=paralog_name,
+                       description="simulated paralogous gene")
+    SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
 
-        print(seq_record.id)
 
 
     Ks_values=[]

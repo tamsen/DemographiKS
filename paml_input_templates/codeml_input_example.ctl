@@ -1,6 +1,5 @@
       seqfile = DUMMY.codonalign.fa  * sequence data filename
       outfile = mlcTree_DUMMY.out           * main result file name
-
         noisy = 9  * 0,1,2,3,9: how much rubbish on the screen
       verbose = 1  * 0: concise; 1: detailed, 2: too much
       runmode = -2  * 0: user tree;  1: semi-automatic;  2: automatic
