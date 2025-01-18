@@ -5,20 +5,14 @@ import log
 
 
 
-def run_CODEML_by_paralog(paralog_ID_number, sequences, demographics_out_folder):
-    #paml_out_files = []
-
-    paralog_folder = os.path.join(demographics_out_folder, "paralog_" + str(paralog_ID_number))
-    if not os.path.exists(paralog_folder):
-        os.makedirs(paralog_folder)
+def run_CODEML_by_paralog(paralog_ID_number, sequences, paralog_folder):
 
     paralog_fa_file = os.path.join(paralog_folder, "paralog_" + str(paralog_ID_number) + ".fa")
     codeml_input_fa_file = sequences_to_codeml_in(sequences, paralog_fa_file)
     log.write_to_log("codeml_input_fa_file written to " + codeml_input_fa_file)
 
-    # need "conda install -c bioconda paml"
+    # need "conda install -c bioconda paml" to run codeml
     codeml_result = run_codeml(codeml_input_fa_file, paralog_folder)
-    #paml_out_files.append(result.ML_dS_file)
 
     return codeml_result.ML_dS_file
 

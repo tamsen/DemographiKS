@@ -54,7 +54,6 @@ def run(conf):
     # random ancestral genomes:
     genome_index_1 = 1
     genome_index_2 = 5
-
     plot_coalescent(trees_file_at_div, genome_index_1, genome_index_2,
                     conf, demographics_out_folder)
 
@@ -64,7 +63,7 @@ def run(conf):
     log.write_to_log("Step 2: Generating paralogs from trees file")
     log.write_to_log("Loading:\t" + str(final_trees_file))
     ts = tskit.load(final_trees_file)
-    metadata = ts.metadata["SLiM"]
+
     # log.write_to_log("SLiM metadata dict:\t" + str(metadata))
     log.write_to_log("size SLiM population:\t" + str((ts.individuals_population.size)))
     log.write_to_log("size SLiM samples:\t" + str((ts.num_samples)))
@@ -90,10 +89,20 @@ def run(conf):
     log.write_to_log("Getting paralog sequences from TS data.")
     fasta_string = mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length,
                                                                             seed=conf.Msprime_random_seed+1))
+    if conf.keep_intermediary_files:
+        with open(out_fasta, "w") as f:
+            f.write(fasta_string )
+        log.write_to_log("Sequences written to FASTA file: " + out_fasta + ".")
+
     fasta_io = StringIO(fasta_string)
     SeqDict = SeqIO.to_dict(SeqIO.parse(fasta_io , "fasta"))
     Ks_values=[]
     for paralog_ID in paralog_names:
+
+        #this would be shed the end of the sim anyway, so dont waste time on it.
+        log.write_to_log("Filtering paralogs predicted to be shed "+ str(paralog_ID))
+        if paralog_ID in genes_to_loose_a_duplicate:
+            continue
 
         raw_sequences_for_paralog={}
         indexes_of_concern=[]
@@ -102,16 +111,18 @@ def run(conf):
             genome_name = conf.sim_name + "_" + subgenome
             subsequence=SeqDict[subgenome][paralog_ID:paralog_ID+conf.gene_length].seq
             paralog_name = genome_name + "_paralog_" + str(paralog_ID)
-            out_per_genome_per_paralog_fasta = os.path.join(demographics_out_folder, paralog_name + "_foo.fa")
-            print("Writing data for : " + paralog_name + ".")
+
+            log.write_to_log("Writing data for : " + paralog_name + ".")
             idx_of_stop_codons=FASTA_extracta.get_nucleotide_index_of_any_STOP_codons_in_seq(
                 conf.num_codons_in_a_gene,str(subsequence), conf.stop_codons)
 
-            print("stop codons: " + ",".join([str(i) for i in idx_of_stop_codons]))
-            record = SeqRecord(subsequence,
-                       id=subgenome, name=paralog_name,
-                       description="simulated paralogous gene")
-            SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
+            log.write_to_log("stop codons: " + ",".join([str(i) for i in idx_of_stop_codons]))
+            if conf.keep_intermediary_files:
+                out_per_genome_per_paralog_fasta = os.path.join(demographics_out_folder, paralog_name + "_foo.fa")
+                record = SeqRecord(subsequence,
+                                   id=subgenome, name=paralog_name,
+                                   description="simulated paralogous gene")
+                SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
             raw_sequences_for_paralog[paralog_name]=str(subsequence)
             indexes_of_concern= indexes_of_concern+idx_of_stop_codons
     
@@ -122,15 +133,19 @@ def run(conf):
             fixed_subsequence = FASTA_extracta.replace_str_indexes(raw_seq,indexes_of_concern, "NNN")
             final_sequences_for_paralog[paralog_name] = fixed_subsequence
 
-        if paralog_ID in genes_to_loose_a_duplicate:
-            log.write_to_log("Step 4:\tshedding paralog" + str(paralog_ID))
-            continue
+        paralog_folder = os.path.join(demographics_out_folder, "paralog_" + str(paralog_ID))
+        if not os.path.exists(paralog_folder):
+            os.makedirs(paralog_folder)
 
         log.write_to_log("Step 4:\tRunnning CODEML on paralog" + str(paralog_ID))
         codeml_ML_dS_file = ks_calculator.run_CODEML_by_paralog(paralog_ID,final_sequences_for_paralog,
-                                                                    demographics_out_folder)
+                                                                    paralog_folder)
 
         Ks_values_for_paralog, file_lines_for_paralog = ks_histogramer.extract_Ks_values_by_file(codeml_ML_dS_file)
+
+        if not conf.keep_intermediary_files:
+            shutil.rmtree(paralog_folder)
+
         with open(out_csv, 'a') as f:
             f.writelines(file_lines_for_paralog)
 

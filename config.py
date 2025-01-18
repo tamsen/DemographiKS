@@ -37,8 +37,11 @@ class DemographiKS_config:
     SLiM_rep =1
     Msprime_random_seed = 42
     DemographiKS_random_seed = 17
+
+    #debugging
     stop_at_step = 999
-    
+    keep_intermediary_files=False
+
     def __init__(self, config_file):
 
         mytree = ET.parse(config_file)
