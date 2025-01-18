@@ -122,11 +122,11 @@ def run(conf):
             SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
             raw_sequences_for_paralog[subgenome]=str(subsequence)
             indexes_of_concern= indexes_of_concern+idx_of_stop_codons
-        #fixed_subsequence = FASTA_extracta.replace_str_indexes(subsequence, idx_of_stop_codons, "NNN")
+    
         final_sequences_for_paralog={}
         for subgenome in focal_genomes:
             raw_seq= raw_sequences_for_paralog[subgenome]
-            fixed_subsequence = FASTA_extracta.replace_str_indexes(raw_seq, idx_of_stop_codons, "NNN")
+            fixed_subsequence = FASTA_extracta.replace_str_indexes(raw_seq,indexes_of_concern, "NNN")
             final_sequences_for_paralog[subgenome] = fixed_subsequence
 
         if paralog_ID in genes_to_loose_a_duplicate:
