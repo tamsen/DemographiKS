@@ -6,7 +6,7 @@ import log
 def extract_paralog_sequences(demographics_out_folder, focal_genomes, config, mts, out_fasta):
     # giant string...
 
-    random_nuceotides_seed = 42
+    random_nuceotides_seed = config.Msprime_random_seed+1
     result = mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length, seed=random_nuceotides_seed))
     with open(out_fasta, "w") as f:
         f.write(result)

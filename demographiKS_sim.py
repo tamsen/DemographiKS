@@ -85,19 +85,11 @@ def run(conf):
                                                   conf.max_num_paralogs_to_process)
     genes_to_loose_a_duplicate = decide_genes_to_shed(paralog_names, conf)
 
-    out_csv_2 = os.path.join(demographics_out_folder, conf.sim_name + "_2.csv")
-    random_nuceotides_seed=42
-
-    log.write_to_log("Getting paralog sequences from TS data.")
-    cleaned_sequences_by_paralog_name_dict = FASTA_extracta.extract_paralog_sequences(demographics_out_folder,
-                                                                                      focal_genomes,
-                                                                                      conf, mts, out_fasta)
-
-
 
     #write out the fasta for out focal genomes
+    log.write_to_log("Getting paralog sequences from TS data.")
     fasta_string = mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length,
-                                                                            seed=random_nuceotides_seed))
+                                                                            seed=conf.Msprime_random_seed+1))
     fasta_io = StringIO(fasta_string)
     SeqDict = SeqIO.to_dict(SeqIO.parse(fasta_io , "fasta"))
     Ks_values=[]
@@ -105,6 +97,7 @@ def run(conf):
 
         raw_sequences_for_paralog={}
         indexes_of_concern=[]
+        log.write_to_log("Getting paralog sequences for "+ str(paralog_ID))
         for subgenome in focal_genomes:
             genome_name = conf.sim_name + "_" + subgenome
             subsequence=SeqDict[subgenome][paralog_ID:paralog_ID+conf.gene_length].seq
@@ -115,19 +108,19 @@ def run(conf):
                 conf.num_codons_in_a_gene,str(subsequence), conf.stop_codons)
 
             print("stop codons: " + ",".join([str(i) for i in idx_of_stop_codons]))
-            #print("fixed_subsequence: " + fixed_subsequence)
             record = SeqRecord(subsequence,
                        id=subgenome, name=paralog_name,
                        description="simulated paralogous gene")
             SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
-            raw_sequences_for_paralog[subgenome]=str(subsequence)
+            raw_sequences_for_paralog[paralog_name]=str(subsequence)
             indexes_of_concern= indexes_of_concern+idx_of_stop_codons
     
         final_sequences_for_paralog={}
-        for subgenome in focal_genomes:
-            raw_seq= raw_sequences_for_paralog[subgenome]
+        unique_paralog_names=list(raw_sequences_for_paralog.keys())
+        for paralog_name in unique_paralog_names:
+            raw_seq= raw_sequences_for_paralog[paralog_name]
             fixed_subsequence = FASTA_extracta.replace_str_indexes(raw_seq,indexes_of_concern, "NNN")
-            final_sequences_for_paralog[subgenome] = fixed_subsequence
+            final_sequences_for_paralog[paralog_name] = fixed_subsequence
 
         if paralog_ID in genes_to_loose_a_duplicate:
             log.write_to_log("Step 4:\tshedding paralog" + str(paralog_ID))
@@ -138,7 +131,7 @@ def run(conf):
                                                                     demographics_out_folder)
 
         Ks_values_for_paralog, file_lines_for_paralog = ks_histogramer.extract_Ks_values_by_file(codeml_ML_dS_file)
-        with open(out_csv_2, 'a') as f:
+        with open(out_csv, 'a') as f:
             f.writelines(file_lines_for_paralog)
 
         Ks_values=Ks_values+Ks_values_for_paralog
