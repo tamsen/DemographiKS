@@ -1,0 +1,25 @@
+import unittest
+import modules.FASTA_extracta as FASTA_extracta
+
+class TestStopCodonReplace(unittest.TestCase):
+    def test_replace_str_index(self):
+
+        result= FASTA_extracta.replace_str_index("hello Sam",3,"p ")
+        print(result)
+        self.assertEqual(result, "help  Sam",)
+
+        result=FASTA_extracta.replace_str_index("hello Sam",3, "NNN")
+        print(result)
+        self.assertEqual(result, 'helNNNSam')
+
+        result=FASTA_extracta.replace_str_indexes("012345678",[2,5,8], "N")
+        print(result)
+        self.assertEqual(result, "01N34N67N")
+
+        result=FASTA_extracta.replace_str_indexes("012345678",[0,5,8], "**")
+        print(result)
+        self.assertEqual(result, "**234**7**")
+
+
+if __name__ == '__main__':
+    unittest.main()

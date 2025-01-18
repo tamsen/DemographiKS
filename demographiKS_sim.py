@@ -7,7 +7,7 @@ import tskit
 import random
 from io import StringIO
 import config
-import version
+import modules.FASTA_extracta
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 import log
@@ -96,42 +96,52 @@ def run(conf):
 
 
     #write out the fasta for out focal genomes
-    fasta_string = mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length, seed=random_nuceotides_seed))
+    fasta_string = mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length,
+                                                                            seed=random_nuceotides_seed))
     fasta_io = StringIO(fasta_string)
     SeqDict = SeqIO.to_dict(SeqIO.parse(fasta_io , "fasta"))
-    Seq1=focal_genomes[0]
-    genome_name = conf.sim_name + "_" + Seq1
-    paralog_ID=0
-    paralog_ID_str=str(paralog_ID)
-    subsequence=SeqDict[Seq1][paralog_ID:10].seq
-    paralog_name = genome_name + "_paralog_" + str(paralog_ID)
-    out_per_genome_per_paralog_fasta = os.path.join(demographics_out_folder, paralog_name + "_foo.fa")
-    # print("Writing data for : " + out_per_genome_fasta + ".")
-    record = SeqRecord(subsequence,
-                       id=Seq1, name=paralog_name,
-                       description="simulated paralogous gene")
-    SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
-
-
-
     Ks_values=[]
-    for paralog_ID_number, sequences in cleaned_sequences_by_paralog_name_dict.items():
+    for paralog_ID in paralog_names:
 
-        if paralog_ID_number in genes_to_loose_a_duplicate:
-            log.write_to_log("Step 4:\tRunnning CODEML on paralog" + str(paralog_ID_number))
+        raw_sequences_for_paralog={}
+        indexes_of_concern=[]
+        for subgenome in focal_genomes:
+            genome_name = conf.sim_name + "_" + subgenome
+            subsequence=SeqDict[subgenome][paralog_ID:paralog_ID+conf.gene_length].seq
+            paralog_name = genome_name + "_paralog_" + str(paralog_ID)
+            out_per_genome_per_paralog_fasta = os.path.join(demographics_out_folder, paralog_name + "_foo.fa")
+            print("Writing data for : " + paralog_name + ".")
+            idx_of_stop_codons=FASTA_extracta.get_nucleotide_index_of_any_STOP_codons_in_seq(
+                conf.num_codons_in_a_gene,str(subsequence), conf.stop_codons)
 
+            print("stop codons: " + ",".join([str(i) for i in idx_of_stop_codons]))
+            #print("fixed_subsequence: " + fixed_subsequence)
+            record = SeqRecord(subsequence,
+                       id=subgenome, name=paralog_name,
+                       description="simulated paralogous gene")
+            SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
+            raw_sequences_for_paralog[subgenome]=str(subsequence)
+            indexes_of_concern= indexes_of_concern+idx_of_stop_codons
+        #fixed_subsequence = FASTA_extracta.replace_str_indexes(subsequence, idx_of_stop_codons, "NNN")
+        final_sequences_for_paralog={}
+        for subgenome in focal_genomes:
+            raw_seq= raw_sequences_for_paralog[subgenome]
+            fixed_subsequence = FASTA_extracta.replace_str_indexes(raw_seq, idx_of_stop_codons, "NNN")
+            final_sequences_for_paralog[subgenome] = fixed_subsequence
+
+        if paralog_ID in genes_to_loose_a_duplicate:
+            log.write_to_log("Step 4:\tshedding paralog" + str(paralog_ID))
             continue
-        else:
-            log.write_to_log("Step 4:\tRunnning CODEML on paralog" + str(paralog_ID_number))
-            codeml_ML_dS_file = ks_calculator.run_CODEML_by_paralog(paralog_ID_number, sequences,
+
+        log.write_to_log("Step 4:\tRunnning CODEML on paralog" + str(paralog_ID))
+        codeml_ML_dS_file = ks_calculator.run_CODEML_by_paralog(paralog_ID,final_sequences_for_paralog,
                                                                     demographics_out_folder)
 
-            Ks_values_for_paralog, file_lines_for_paralog = ks_histogramer.extract_Ks_values_by_file(codeml_ML_dS_file)
+        Ks_values_for_paralog, file_lines_for_paralog = ks_histogramer.extract_Ks_values_by_file(codeml_ML_dS_file)
+        with open(out_csv_2, 'a') as f:
+            f.writelines(file_lines_for_paralog)
 
-            with open(out_csv_2, 'a') as f:
-                f.writelines(file_lines_for_paralog)
-
-            Ks_values=Ks_values+Ks_values_for_paralog
+        Ks_values=Ks_values+Ks_values_for_paralog
         # else: the paralog was shed
 
 

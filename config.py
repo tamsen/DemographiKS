@@ -81,6 +81,7 @@ class DemographiKS_config:
                             self.total_num_bases = int(incoming_txt)
                         if (incoming_tag == "num_codons_in_a_gene"):
                             self.num_codons_in_a_gene = int(incoming_txt)
+                            self.gene_length = self.num_codons_in_a_gene *3
                         if (incoming_tag == "max_num_paralogs_to_process"):
                             self.max_num_paralogs_to_process = parse_int_or_false(incoming_txt)
 

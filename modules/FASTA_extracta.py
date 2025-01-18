@@ -110,3 +110,19 @@ def get_index_of_any_STOP_codons(num_codons_in_a_gene, sequences_by_paralog_name
         problem_codon_indexes_by_paralog_name_dict[paralog_key] = problem_codon_indexes
     return problem_codon_indexes_by_paralog_name_dict
 
+def get_nucleotide_index_of_any_STOP_codons_in_seq(num_codons_in_a_gene, sequence, stop_codons):
+    problem_codon_indexes= []
+    for i in range(0, num_codons_in_a_gene):
+        codon = str(sequence[3 * i:3 * (i + 1)])
+        if codon in stop_codons:
+                problem_codon_indexes.append(i)
+    problem_nucleotide_indexes=[3*i for i in problem_codon_indexes]
+    return problem_nucleotide_indexes
+
+def replace_str_indexes(text,index_list=[],replacement=''):
+    for index in index_list:
+        text= f'{text[:index]}{replacement}{text[index+len(replacement):]}'
+    return text
+
+def replace_str_index(text,index=0,replacement=''):
+    return f'{text[:index]}{replacement}{text[index+len(replacement):]}'
