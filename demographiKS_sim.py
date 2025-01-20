@@ -73,7 +73,7 @@ def run(conf):
     log.write_to_log("size SLiM samples:\t" + str(num_genomes))
     log.write_to_log("num polyploids in population:\t" + str(num_polyploids))
     log.write_to_log("num subgenomes being simulated:\t" + str(num_genomes))
-    log.write_to_log("num subgenomes per polyploid:\t" + str(int(num_genome_per_individual)))
+    log.write_to_log("ploidy per polyploid:\t" + str(int(num_genome_per_individual)))
 
     # pick a random polyploid individual (ie, two random subgenomes from the two populations of parental subgenomes)
     num_genomes = conf.bottleneck_Ne * 2  # because diploid individuals
@@ -87,8 +87,13 @@ def run(conf):
     v_list = [v for v in mts.variants()]
     log.write_to_log(str(len(v_list)) + " mutations added.")
 
+    log.write_to_log("Getting paralog names.")
+    log.write_to_log("Gene length:\t" + str(conf.gene_length))
+    log.write_to_log("Total num bases:\t" + str(conf.total_num_bases))
+    log.write_to_log("Max num paralogs:\t" + str(conf.max_num_paralogs_to_process))
     paralog_names = get_sequences_by_paralog_name(conf.gene_length, conf.total_num_bases,
                                                   conf.max_num_paralogs_to_process)
+    log.write_to_log("Num paralogs before shedding:\t" + str(len(paralog_names)))
     genes_to_loose_a_duplicate = decide_genes_to_shed(paralog_names, conf)
 
 

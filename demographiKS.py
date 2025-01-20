@@ -75,7 +75,7 @@ def run_sim():
     log.write_to_log("size SLiM samples:\t" + str(num_genomes))
     log.write_to_log("num polyploids in population:\t" + str(num_polyploids))
     log.write_to_log("num subgenomes being simulated:\t" + str(num_genomes))
-    log.write_to_log("num subgenomes per polyploid:\t" + str(int(num_genome_per_individual)))
+    log.write_to_log("ploidy per polyploid:\t" + str(int(num_genome_per_individual)))
 
     # pick a random polyploid individual (ie, two random subgenomes from the two populations of parental subgenomes)
     num_genomes=conf.bottleneck_Ne*2 #because diploid individuals

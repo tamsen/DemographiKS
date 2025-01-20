@@ -29,7 +29,11 @@ def get_sequences_by_paralog_name(gene_length,genome_size,
                                         max_num_paralogs_to_process):
     paralog_names = []
     expected_num_paralogs=int(genome_size/gene_length)
-    max_num_paralogs=min(expected_num_paralogs,max_num_paralogs_to_process)
+    if max_num_paralogs_to_process:
+        max_num_paralogs=min(expected_num_paralogs,max_num_paralogs_to_process)
+    else:
+        max_num_paralogs=expected_num_paralogs
+        
     for i in range(0,max_num_paralogs):
         start_index=i*gene_length
         paralog_names.append(start_index)
