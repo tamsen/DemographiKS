@@ -28,6 +28,6 @@
         <Msprime_random_seed>1</Msprime_random_seed>
     </Randomization>
     <LogFileName>DemographiKS_log.txt</LogFileName>
-    <IncludeVisuals>False</IncludeVisuals>
+    <KeepIntermediaryFiles>True</KeepIntermediaryFiles>
     <StopAtStep>99</StopAtStep>
 </metadata>

@@ -60,6 +60,11 @@ class DemographiKS_config:
                         self.log_file_name = False
                     else:
                         self.log_file_name = incoming_txt
+                if (incoming_tag == "KeepIntermediaryFiles"):
+                    if incoming_txt.upper() == "FALSE":
+                        self.keep_intermediary_files = False
+                    else:
+                        self.keep_intermediary_files = incoming_txt
 
                 if (incoming_tag == "Paths"):
                     for inner_layer in top_layer:

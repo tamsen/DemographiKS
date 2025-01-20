@@ -7,61 +7,21 @@ class MyDGXDataFetcher(unittest.TestCase):
 
     def test_fetch_demographics_data(self):
 
-        #/ usr / scratch2 / userdata2 / tdunn / DemographiKS_output / SP / SP1MY_m12d24y2024_h09m00s34
-        TE9_run_list=["GE5_m12d19y2024_h11m47s58"]
+        run_list=['DGKS_5000_5000_m5_BI_40K_RC7_m01d18y2025_h08m07s39',
+                        'DGKS_5000_5000_m5_BI_40K_RC7_m01d18y2025_h08m07s39_test2']
         run_collection_name="GE"
-        #              ,)
-        #"DGKS_100_100_m5_RC7_m01d14y2025_h09m14s18"
-        #            "DGKS_10_10_m5_RC7_m01d14y2025_h09m14s47",
-        #            "DGKS_5000_5000_m5_BI_40K_RC7_m01d14y2025_h09m13s52"]
-        #    "TE05fix__m01d06y2025_h11m17s15","TE07_fix__m01d06y2025_h11m18s25"]
-        #     "DGKS_10_10_v2_m01d06y2025_h15m35s38",
-        #                 "DGKS_100_100_v2_m01d06y2025_h15m35s43",
-        #                     "DGKS_1000_1000_v2_m01d06y2025_h15m35s46"]
-        #TE9_run_list=['TE15_m01d03y2025_h10m23s32']
-        #    'TE07_fix__m01d05y2025_h09m07s41']
-        #    'TE05fix__m01d03y2025_h11m36s57']
-        #[ 'TE10_m12d26y2024_h10m35s41']
-        #    'TE09_m12d26y2024_h09m10s55', 'TE11_m12d26y2024_h10m35s44']
 
-        #'TE05_m12d23y2024_h08m52s16','TE06_m12d23y2024_h09m10s28',
-        #             'TE07_m12d23y2024_h09m18s26','TE08_m12d24y2024_h09m31s26']
-        
-        TE1_run_list=['TE01_m12d20y2024_h14m16s21','TE03_m12d20y2024_h14m26s56',
-                     'TE02_m12d20y2024_h14m22s23']#,'TE04_m12d20y2024_h14m31s31
-
-
-        RC_run_list=['RC10_m12d18y2024_h14m35s15','RC10_m12d18y2024_h14m35s19']
-        #             'RC10_m12d18y2024_h14m35s17',
-        #             'RC10_m12d18y2024_h13m36s12','RC10_m12d18y2024_h14m35s19',
-        #             'RC10_m12d18y2024_h14m30s54','RC10_m12d18y2024_h14m39s19',
-        #             'RC10_m12d18y2024_h14m30s58']
-
-        BI_run_list=["BI2_m12d19y2024_h10m57s18","BI4_m12d19y2024_h11m02s24",
-                    "BI7_m12d19y2024_h11m02s31","BI3_m12d19y2024_h11m02s23",
-                     "BI5_m12d19y2024_h11m02s27"]
-
-
-        Ne_run_list=["Ne3_m12d18y2024_h16m08s40"]
-        #"Ne1_m12d18y2024_h16m08s35","Ne5_m12d18y2024_h16m10s54",
-        #             "Ne2_m12d18y2024_h16m08s38",
-        #             "Ne3_m12d18y2024_h16m08s40",
-        #             "Ne4_m12d18y2024_h16m10s52"]
-        #"Ne6_m12d18y2024_h16m10s57",,"Ne6_m12d19y2024_h11m14s34",
-        # "Ne7_m12d19y2024_h11m14s41","Ne7_m12d18y2024_h16m11s01"
-
-        GE_run_list=["GE4_m12d19y2024_h11m47s58","GE6_m12d19y2024_h11m48s02",
-                     "GE8_m12d19y2024_h13m34s13","GE5_m12d19y2024_h11m47s58",
-                     "GE7_m12d19y2024_h13m30s32"]
-
-        run_list=TE9_run_list
         #me_at_remote_URL =  'tdunn@mesx.sdsu.edu'
         me_at_remote_URL =  'mesx_cluster'
-        output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_output",
-                                        run_collection_name)
-        #output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_Output")
 
-        #run_name="RC10_m12d18y2024_h11m43s13"
+        if 'DGKS' in run_list[0]:
+            output_root_folder = os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_Output")
+        else:
+            output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_output",
+                                        run_collection_name)
+
+
+
         for i in range(0,len(run_list)):
             run_name = run_list[i]
             local_output_folder = os.path.join("/home/tamsen/Data/DemographiKS_output_from_mesx",

@@ -64,10 +64,18 @@ def run_sim():
     log.write_to_log("Step 2: Generating paralogs from trees file")
     log.write_to_log("Loading:\t" + str(final_trees_file))
     ts = tskit.load(final_trees_file)
-    metadata=ts.metadata["SLiM"]
+    #metadata=ts.metadata["SLiM"]
     #log.write_to_log("SLiM metadata dict:\t" + str(metadata))
-    log.write_to_log("size SLiM population:\t" + str((ts.individuals_population.size)))
-    log.write_to_log("size SLiM samples:\t" + str((ts.num_samples)))
+
+    num_individuals_if_diploid = ts.individuals_population.size
+    num_polyploids = num_individuals_if_diploid / 2.0
+    num_genomes = ts.num_samples
+    num_genome_per_individual = num_genomes / num_polyploids
+    log.write_to_log("size SLiM population:\t" + str(num_individuals_if_diploid))
+    log.write_to_log("size SLiM samples:\t" + str(num_genomes))
+    log.write_to_log("num polyploids in population:\t" + str(num_polyploids))
+    log.write_to_log("num subgenomes being simulated:\t" + str(num_genomes))
+    log.write_to_log("num subgenomes per polyploid:\t" + str(int(num_genome_per_individual)))
 
     # pick a random polyploid individual (ie, two random subgenomes from the two populations of parental subgenomes)
     num_genomes=conf.bottleneck_Ne*2 #because diploid individuals
