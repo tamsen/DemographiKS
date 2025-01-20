@@ -341,8 +341,11 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
     # plt.savefig(png_out)
 
 
-def predict_Ks(Ne,mean_ks_from_Tc, t_div_as_ks, bin_size, bins, config_used, num_slim_genes):
+def predict_Ks(Ne,mean_ks_from_Tc, Ks_per_YR, bin_size, bins, config_used, num_slim_genes):
     expected_Ks_peak_shift = config_used.DIV_time_Ge * config_used.mutation_rate
+    t_div_as_ks = config_used.DIV_time_Ge * Ks_per_YR
+    total_ks_shift = mean_ks_from_Tc + t_div_as_ks
+
     print("config_used.mutation_rate " + str(config_used.mutation_rate))
     bin_size_in_time = bin_size / config_used.mutation_rate
     two_Ne = 2.0 * Ne
