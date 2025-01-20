@@ -15,10 +15,7 @@ def print_slim_version(config):
     return
 def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
 
-    #TODO, expose parameter: config.recombination_rate
-
     print_slim_version(config)
-
     log.write_to_log("copy slim script:\t" + my_SLiM_script)
     shutil.copy(my_SLiM_script,config.output_folder)
     full_path_to_slim_script_destination = os.path.join(config.output_folder, os.path.basename(my_SLiM_script))
@@ -35,7 +32,7 @@ def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
     #slim -d "nuBot=0.1" -d "T1=0.5" -d "T2=0.25" -d "rep=1" allotetraploid_bottleneck.slim
 
     delta_t=  ( float(config.DIV_time_Ge) - float(config.WGD_time_Ge) )
-    #burnin_time = 2 * 10 * config.ancestral_Ne
+    #burnin_time = 2 * 10 * config.ancestral_Ne <- reccomended by SLiM manual, but not really always enough.
     burnin_time = config.burnin_time
     cmd = ["slim",
            "-d", "trees_file_name='"+str(trees_file_name)+"'",

@@ -64,27 +64,14 @@ def extract_K_values(csv_file_out, res_files):
                 KS_values.append(Ks_value)
     return KS_values
 
-def plot_Ks_histogram(PAML_hist_out_file, config, Ks_results, WGD_as_Ks, SPEC_as_Ks,
-                      max_Ks, max_y, alg_name, color, bin_size):
+def plot_Ks_histogram(PAML_hist_out_file, config, Ks_results,
+                      alg_name, color):
 
-    fig = plt.figure(figsize=(10, 10), dpi=100)
+    plt.figure(figsize=(10, 10), dpi=100)
     x = Ks_results
+    nBins=50
+    n, bins, patches = plt.hist(x, bins=nBins, facecolor=color, alpha=0.25, label='histogram data')
 
-    if max_Ks:
-        bins = np.arange(0, max_Ks + 0.1, bin_size)
-        #log.write_to_log(PAML_hist_out_file)
-        n, bins, patches = plt.hist(x, bins=bins, facecolor=color, alpha=0.25, label='histogram data')
-        plt.xlim([0, max_Ks * (1.1)])
-    else:
-        nBins=50
-        n, bins, patches = plt.hist(x, bins=nBins, facecolor=color, alpha=0.25, label='histogram data')
-    if max_y:
-        plt.ylim([0, max_y])
-
-    if WGD_as_Ks:
-        plt.axvline(x=WGD_as_Ks, color='b', linestyle='-', label="WGD time as Ks")
-    if SPEC_as_Ks:
-        plt.axvline(x=SPEC_as_Ks, color='r', linestyle='--', label="SPEC time as Ks")
 
     plt.legend()
     plt.xlabel("Ks")
