@@ -1,6 +1,7 @@
 import glob
 import math
 import os
+import curve_fitting
 import unittest
 from pathlib import Path
 import numpy as np
@@ -341,36 +342,48 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
     # plt.savefig(png_out)
 
 
-def predict_Ks(Ne,mean_ks_from_Tc, Ks_per_YR, bin_size, bins, config_used, num_slim_genes):
-    expected_Ks_peak_shift = config_used.DIV_time_Ge * config_used.mutation_rate
+def predict_Ks(Ne, mean_ks_from_Tc, Ks_per_YR, bin_size, bins, config_used, num_genes):
+
+    synonymous_mutations_rate_only= config_used.mutation_rate / 1.2
+    expected_Ks_peak_shift = config_used.DIV_time_Ge * synonymous_mutations_rate_only
     t_div_as_ks = config_used.DIV_time_Ge * Ks_per_YR
-    total_ks_shift = mean_ks_from_Tc + t_div_as_ks
 
     print("config_used.mutation_rate " + str(config_used.mutation_rate))
     bin_size_in_time = bin_size / config_used.mutation_rate
     two_Ne = 2.0 * Ne
-    kingman = [min(num_slim_genes,
-                   (bin_size_in_time * num_slim_genes / two_Ne) * math.e ** (
-                               (-1 * (i / config_used.mutation_rate)) / two_Ne))
+    bin_mid_points=[0.5*(bins[i]+bins[i+1]) for i in range(0,len(bins)-1)]
+    #kingman = [min(num_genes,
+    #               (bin_size_in_time * num_genes / two_Ne) * math.e ** (
+    #                           (-1 * ((i) / config_used.mutation_rate)) / two_Ne))
+    #           for i in bin_mid_points]
+    kingman = [min(num_genes,
+                   (bin_size_in_time * num_genes / two_Ne) * math.e ** (
+                               (-1 * ((i / config_used.mutation_rate) -1)) / two_Ne))
                for i in bins]
-    Ks_model = []
+    Ks_model_exponential = []
     for b in bins:
         if b < expected_Ks_peak_shift:
-            Ks_model.append(0)
+            Ks_model_exponential.append(0)
         else:
-            Ks_model = Ks_model + [0] + kingman
+            Ks_model_exponential = Ks_model_exponential + kingman
             break
 
-    #kernel_size = int(config_used.DIV_time_Ge / 1000)
-    ks_model_with_dispersion = smooth_data(Ne, Ks_model)
-    return Ks_model, kingman, ks_model_with_dispersion
+    ks_model_smoothed_exponential = smooth_data(Ks_model_exponential,(1/bin_size)/1000)
+    #gaussian prediction:
+    total_ks_shift = mean_ks_from_Tc + t_div_as_ks
+    fit_fxn=curve_fitting.wgd_gaussian
+    amp=num_genes*bin_size
+    #The variance of an exponential distribution is 1/λ²
+    sigma= two_Ne*synonymous_mutations_rate_only#*bin_size
+    #sigma=Ne/100000#some fxn of RC (or, tending towards sigma of exponetial!)
+    #mu=total_ks_shift
+    mu=expected_Ks_peak_shift + mean_ks_from_Tc
+    popt=[amp,mu,sigma]
+    ks_model_as_gaussian = [fit_fxn(b, *popt) for b in bins]
+    return kingman, Ks_model_exponential,ks_model_smoothed_exponential, ks_model_as_gaussian
 
-def smooth_data(Ne, ys):
+def smooth_data(ys,sigma):
 
-    #kernel = np.ones(kernel_size) / kernel_size
-    #smoothed_ys = np.convolve(ys, kernel,mode='same')
-    #sigma=Ne / 10
-    sigma = 3
     smoothed_ys = gaussian_filter(ys, sigma=sigma)
     return smoothed_ys
 

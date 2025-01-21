@@ -6,8 +6,8 @@ from data_aggregation.ks_plot_aggregations import make_Tc_Ks_fig_with_subplots
 class TestKsByNe(unittest.TestCase):
 
     def test_Ks_for_varying_Ne_Tdiv_1000(self):
-        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
-        specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
+        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/SPKS_vs_DGKS_Ne'
+        specks_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/SPKS_vs_DGKS_Ne'
 
 
         demographics_TE_run_list = [False, "DGKS_10_10_m5_RC7_m01d14y2025_h09m14s47",
@@ -62,7 +62,7 @@ class TestKsByNe(unittest.TestCase):
                    "Recombination rate = 1.26e-6, Ne and BI constant"
         show_KS_predictions = [True, False, True]
         total_num_genes = 333
-        make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc, burnin_times_in_generations,
+        make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                      demographiKS_out_path, demographics_TE_run_list, run_list_num,
                                      specks_TE_run_list, specks_out_path, Ks_per_YR,
                                      xmax_Ks, xmax_Tc, ymax, suptitle, show_KS_predictions,
