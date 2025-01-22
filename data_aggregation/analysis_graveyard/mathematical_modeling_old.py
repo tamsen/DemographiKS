@@ -15,7 +15,7 @@ from data_aggregation.histogram_plotter import read_Ks_csv
 from data_aggregation.ks_plot_aggregations import plot_ks, plot_expository_images, predict_Ks
 
 
-class TestMathematicalModels(unittest.TestCase):
+class TestMathematicalModelsOld(unittest.TestCase):
 
     def test_mathematical_models(self):
 

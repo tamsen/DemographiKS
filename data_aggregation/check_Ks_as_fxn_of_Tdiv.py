@@ -7,8 +7,9 @@ class TestGeneLossRates(unittest.TestCase):
 
     def test_Ks_for_varying_varying_Tdiv_times(self):
 
-        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx'
-        specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
+        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/SPKS_vs_DGKS_Tdiv'
+        #specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
+        specks_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/SPKS_vs_DGKS_Tdiv'
         demographics_TE5_run_list=[False,
           'TE05fix__m01d06y2025_h11m17s15','TE07_fix__m01d08y2025_h15m09s22',
            'TE08_fix_m01d14y2025_h09m17s20','TE09_fix_m01d13y2025_h14m13s12']
@@ -25,17 +26,15 @@ class TestGeneLossRates(unittest.TestCase):
         xmax_Ks = [0.025,0.025,0.025,0.025,0.025] #0.001  # max(demographiKS_ks_results)
         xmax_Tc = [False,False,False,False,False]
         run_list_name="Ks_for_varying_varying_Tdiv"
-        Ks_per_YR = 0.01 * 10**-6 #Mut rate is 1.2 to Ks rate of 1.0 in SpecKS
         ymax_KS = [800,800,800,800,800]
         show_KS_predictions=[False,False,False]
-        total_num_genes=3333
         suptitle = "SLiM and SpecKS Ks histograms\n" + \
                                   "Recombination rate = 8e-9, Ne and BI constant"
         make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                           demographiKS_out_path, demographics_TE5_run_list, run_list_name,
-                                          specks_TE5_run_list, specks_out_path,Ks_per_YR,
+                                          specks_TE5_run_list, specks_out_path,
                                      xmax_Ks, xmax_Tc, ymax_KS, suptitle,
-                                     show_KS_predictions,total_num_genes)
+                                     show_KS_predictions)
 
         self.assertEqual(True, True)  # add assertion here
 

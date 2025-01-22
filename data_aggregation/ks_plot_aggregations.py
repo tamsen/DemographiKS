@@ -240,8 +240,8 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
 
         theory_mrcas_by_gene=False
         avg_slim_Tc = plot_mrca(ax[1, i], slim_mrcas_by_gene, specks_mrcas_by_gene, theory_mrcas_by_gene,
-                  dgx_run_duration_in_m, plot_title, config_used.ancestral_Ne,
-                  config_used.Ks_per_YR, bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc, config_used.num_genes)
+                  plot_title, config_used.ancestral_Ne,
+                  bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc, config_used.num_genes)
 
         add_annotations(ax[1, i], config_used, avg_slim_Tc,dgx_run_duration_in_m,spx_run_duration_in_m)
 

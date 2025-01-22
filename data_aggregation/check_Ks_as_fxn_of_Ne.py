@@ -36,8 +36,8 @@ class TestKsByNe(unittest.TestCase):
         total_num_genes = 333
         make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                      demographiKS_out_path, demographics_TE_run_list, run_list_num,
-                                     specks_TE_run_list, specks_out_path,Ks_per_YR,
-                                     xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions, total_num_genes)
+                                     specks_TE_run_list, specks_out_path,
+                                     xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions)
 
         self.assertEqual(True, True)  # add assertion here
 

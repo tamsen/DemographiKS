@@ -46,8 +46,8 @@ def make_Tc_fig_with_subplots(bin_sizes_Tc,
                      + "Ne=" + str(config_used.ancestral_Ne)
 
         plot_mrca(ax[i], slim_mrcas_by_gene, False, theory_mrcas_by_gene,
-                  dgx_run_duration_in_m, plot_title, config_used.ancestral_Ne,
-                  Ks_per_YR, bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc, total_num_genes[i])
+                  plot_title, config_used.ancestral_Ne,
+                  bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc, total_num_genes[i])
 
     ax[0].set(ylabel="# genes in bin")
     plt.tight_layout()
@@ -82,7 +82,7 @@ def read_data_csv(csv_file):
 
 
 def plot_mrca(this_ax, slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrcas_by_gene,
-              dgks_run_duration_in_m, title, Ne, Ks_per_YR, bin_size, xmax, ymax, total_num_genes):
+              title, Ne, bin_size, xmax, ymax, total_num_genes):
 
     #fig = plt.figure(figsize=(10, 10), dpi=350
     #Co.T=(1/2N)*e^-((t-1)/2N))
@@ -93,8 +93,14 @@ def plot_mrca(this_ax, slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrc
         avg_simulated_slim_Tc = 0
     else:
         avg_simulated_slim_Tc=sum(slim_mrcas_by_gene)/num_slim_genes
-    #num_segments=len(slim_mrcas_by_tree)
 
+    if specks_mrcas_by_gene and (len(specks_mrcas_by_gene)>0):
+        num_specks_genes = len(specks_mrcas_by_gene)
+        avg_simulated_specKS_Tc = sum(specks_mrcas_by_gene) / num_specks_genes
+    else:
+        avg_simulated_specKS_Tc = 0
+
+    avg_simulated_specKS_Tc_in_years=avg_simulated_specKS_Tc*10**6
     if not xmax:
         xmax = max(slim_mrcas_by_gene)
     bins = np.arange(0, xmax , bin_size)
@@ -118,13 +124,12 @@ def plot_mrca(this_ax, slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrc
         num_specks_genes = len(specks_mrcas_by_gene)
         #note specks results are in millions of years,
         # so we have to convert millions of years to just years.
-        million_years_to_years=1.0**6
-        #specks_mrcas_by_gene_in_YRs=[m*10.0**6 for m in specks_mrcas_by_gene]
-        #bug..?
+        million_years_to_years=10**6
         specks_mrcas_by_gene_in_YRs = [m * million_years_to_years for m in specks_mrcas_by_gene]
         this_ax.hist(specks_mrcas_by_gene_in_YRs, bins=bins, facecolor='c', alpha=0.25,
                                 label='SpecKS Tcoal by gene\n'
-                                + "(" +str(num_specks_genes) + " genes in genome)\n",
+                                + "(" +str(num_specks_genes) + " genes in genome),\n"
+                                +"avg Tc " +str(int(avg_simulated_specKS_Tc_in_years)) + " generations)",
                  density=False)
     
     if theoretical_mrcas_by_gene:
@@ -136,9 +141,8 @@ def plot_mrca(this_ax, slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrc
                                  +"avg Tc " +str(int(avg_theory_Tc)) + " generations)",
                  density=False)
 
-    this_ax.plot(bins,kingman,c='red', label='Expectations under Kingman')
-
-    #x_axis_label="MRCA time\n" + "demographiKS run time: " + str(round(dgks_run_duration_in_m, 2)) + " min"
+    this_ax.plot(bins,kingman,c='red', label='Expectations under Kingman,\n'
+                                +"avg Tc " +str(int(two_Ne)) + " generations)")
 
     if ymax:
         this_ax.set(ylim=[0, ymax])
