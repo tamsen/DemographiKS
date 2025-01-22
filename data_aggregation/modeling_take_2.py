@@ -1,22 +1,55 @@
-import unittest
+
 import glob
-import math
 import os
 import unittest
-from pathlib import Path
-
+import ks_modeling
 import numpy as np
 from matplotlib import pyplot as plt
 
 import config
-from data_aggregation import curve_fitting
+
 from data_aggregation.coalescent_plot_aggregation import plot_mrca, read_data_csv, get_run_time_in_minutes
-from data_aggregation.curve_fitting import fit_curve_to_xs_and_ys, travelling_exp
 from data_aggregation.histogram_plotter import read_Ks_csv
-from data_aggregation.ks_plot_aggregations import plot_ks, plot_expository_images, predict_Ks
 
 class MyTestCase2(unittest.TestCase):
-    def test_modeling(self):
+
+    def test_modeling_with_varying_Tdiv(self):
+
+        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/SPKS_vs_DGKS_Modeling3'
+        specks_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/SPKS_vs_DGKS_Modeling3'
+
+        demographics_run_list=['TE05fix__m01d06y2025_h11m17s15','TE07_fix__m01d08y2025_h15m09s22',
+           'TE08_fix_m01d14y2025_h09m17s20','TE09_fix_m01d13y2025_h14m13s12']
+
+        specks_run_list=["specks_TE05_m01d14y2025_h09m50s16" ,
+        "specks_TE07_m01d14y2025_h09m50s16",
+        "specks_TE08_m01d14y2025_h09m50s16" ,
+        "specks_TE09_m01d14y2025_h09m50s16" ]
+
+
+        # since mutation rate is 1.0e-5
+        # we multiply by 1/1.2 since thats syn / total mut rate
+        Ks_per_YR = 0.833 * 10 ** -5
+        bin_sizes_Tc = [10, 40, 400, 800]  # looks good
+        xmax_Ks = [False for f in demographics_run_list]#[0.04, 0.04, 0.1, 0.4]  # [0.01,0.01,0.01,0.1,0.2]#False#0.08  # for mut rate e-5
+        bin_sizes_Ks = [0.0001, 0.0005, 0.0005, 0.0005]
+        xmax_Tc = [400, 2000, 20000, 40000]
+        run_list_num = "_modeling3_Tdiv"
+        ymax_Ks = [False, False, False, False, False]
+
+        suptitle = "SLiM vs SpecKS, Tcoal and Ks\n" + \
+                   "Recombination rate = 1.26e-7, mut rate 1.0e-5"
+
+        # kingman, Ks_model_exponential, ks_model_smoothed_exponential, ks_model_as_gaussian
+        show_KS_predictions = [False,False, False,False]
+        make_Tc_Ks_model_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
+                                           demographiKS_out_path, demographics_run_list, run_list_num,
+                                           specks_run_list, specks_out_path,
+                                           xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions)
+
+        self.assertEqual(True, True)  # add assertion here
+
+    def test_modeling_with_varying_Ne(self):
 
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/SPKS_vs_DGKS_Modeling2'
         specks_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/SPKS_vs_DGKS_Modeling2'
@@ -38,7 +71,7 @@ class MyTestCase2(unittest.TestCase):
         xmax_Ks = [0.04, 0.04, 0.1, 0.4]  # [0.01,0.01,0.01,0.1,0.2]#False#0.08  # for mut rate e-5
         bin_sizes_Ks = [0.001, 0.001, 0.002, 0.008]
         xmax_Tc = [400, 2000, 20000, 40000]
-        run_list_num = "_modeling2"
+        run_list_num = "_modeling2_Ne"
         ymax_Ks = [False, False, False, False, False]
 
         suptitle = "SLiM vs SpecKS, Tcoal and Ks\n" + \
@@ -47,18 +80,17 @@ class MyTestCase2(unittest.TestCase):
         #kingman, Ks_model_exponential, ks_model_smoothed_exponential, ks_model_as_gaussian
         #ks_prediction_Tnow, ks_prediction_Tdiv, ks_model_with_dispersion
         show_KS_predictions = [False, True, False,True]
-        total_num_genes = 333
         make_Tc_Ks_model_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                      demographiKS_out_path, demographics_TE_run_list, run_list_num,
-                                     specks_TE_run_list, specks_out_path, Ks_per_YR,
-                                     xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions, total_num_genes)
+                                     specks_TE_run_list, specks_out_path,
+                                     xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions)
 
         self.assertEqual(True, True)  # add assertion here
 
 def make_Tc_Ks_model_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                  demographiKS_out_path, demographics_TE9_run_list, run_list_name,
-                                 specks_TE9_run_list, specks_out_path, Ks_per_YR,
-                                 xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions, total_num_genes):
+                                 specks_TE9_run_list, specks_out_path,
+                                 xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions):
     ymax_Tc = False
     num_runs = len(demographics_TE9_run_list)
     png_out = os.path.join(demographiKS_out_path, "ks_hist_by_TE{0}_test.png".format(run_list_name))
@@ -104,13 +136,11 @@ def make_Tc_Ks_model_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             spx_run_duration_in_m = 0
             specks_mrcas_by_gene = False
 
-        plot_ks_for_modelling(ax[0, i], config_used, [], spx_ks_results, config_used.DIV_time_Ge,
-                config_used.ancestral_Ne, Ks_per_YR,
+        plot_ks_for_modelling(ax[0, i], config_used, [], spx_ks_results,
                 dgx_run_duration_in_m, spx_run_duration_in_m,
                 plot_title, bin_sizes_Ks[i], xmax_Ks[i], ymax_Ks[i], show_KS_predictions)
 
-        plot_ks_for_modelling(ax[1, i], config_used, demographiKS_ks_results, [], config_used.DIV_time_Ge,
-                config_used.ancestral_Ne, Ks_per_YR,
+        plot_ks_for_modelling(ax[1, i], config_used, demographiKS_ks_results, [],
                 dgx_run_duration_in_m, spx_run_duration_in_m,
                 plot_title, bin_sizes_Ks[i], xmax_Ks[i], ymax_Ks[i], show_KS_predictions)
 
@@ -135,52 +165,66 @@ def make_Tc_Ks_model_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
     plt.clf()
     plt.close()
 
-def plot_ks_for_modelling(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_per_YR,
+def plot_ks_for_modelling(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene,
             slim_run_duration_in_m, specks_run_duration_in_m, title, bin_size, xmax, ymax,
             show_KS_predictions):
 
     num_slim_genes = len(slim_ks_by_gene)
     num_specks_genes = len(spx_ks_by_gene)
-    mean_ks_from_Tc = 2.0 * config_used.ancestral_Ne * Ks_per_YR
 
     if not xmax:
-        xmax = max(slim_ks_by_gene)
+        if len(slim_ks_by_gene)>0:
+            xmax = max(slim_ks_by_gene)
+        else:
+            xmax = max(spx_ks_by_gene)
     bins = np.arange(0, xmax, bin_size)
 
     if len(slim_ks_by_gene) > 0:
-        this_ax.hist(slim_ks_by_gene, bins=bins, facecolor='b', alpha=0.25,
+        slim_hist_ys, bins, patches = this_ax.hist(slim_ks_by_gene, bins=bins, facecolor='b', alpha=0.25,
                      label='SLiM Ks by gene\n'
                            + "(" + str(num_slim_genes) + " paralogs in genome)",
                      density=False)
 
+        #fit_curve_ys, xs_for_wgd, popt
+        [gaussian_results,gaussian_modified_results] = ks_modeling.fit_Ks_results(slim_hist_ys, bins)
+        if gaussian_results[0]:
+            this_ax.plot(gaussian_results[1], gaussian_results[0], c='k', label='Gaussian curve fit\npopt: '
+                                                                                + str(gaussian_results[2]))
+        #if gaussian_modified_results[0]:
+        #    this_ax.plot(gaussian_modified_results[1], gaussian_modified_results[0], c='b', label='G-modified Exp\npopt: '
+        #                                                                        + str(gaussian_modified_results[2]))
+
     if len(spx_ks_by_gene) > 0:
-        this_ax.hist(spx_ks_by_gene, bins=bins, facecolor='c', alpha=0.25,
+        spx_hist_ys, bins, patches = this_ax.hist(spx_ks_by_gene, bins=bins, facecolor='c', alpha=0.25,
                      label='SpecKS Ks by gene\n'
                            + "(" + str(num_specks_genes) + " paralogs in genome)",
                      density=False)
 
-    if t_div:
-        t_div_as_ks= config_used.DIV_time_Ge * Ks_per_YR
-        this_ax.axvline(x=t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
-        total_ks_shift=mean_ks_from_Tc+t_div_as_ks
-        this_ax.axvline(x=total_ks_shift, color='k', linestyle='--', label="Expected Ks mean")
+        [gaussian_results, gaussian_modified_results] = ks_modeling.fit_Ks_results(spx_hist_ys, bins)
+        if gaussian_results[0]:
+            this_ax.plot(gaussian_results[1], gaussian_results[0], c='k', label='Gaussian curve fit\npopt: '
+                                                                                + str(gaussian_results[2]))
 
-    expected_num_genes=int(config_used.total_num_bases / config_used.gene_length)
+    t_div_as_ks= config_used.DIV_time_Ge * config_used.Ks_per_YR
+    this_ax.axvline(x=t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
+    total_ks_shift=config_used.mean_Ks_from_Tc+t_div_as_ks
+    this_ax.axvline(x=total_ks_shift, color='k', linestyle='--', label="Expected Ks mean")
 
-    ks_prediction_Tdiv, ks_model_expontial_Tnow, ks_model_smoothed_Tnow, ks_model_gaussian = (
-        predict_Ks(Ne, mean_ks_from_Tc, t_div_as_ks, bin_size, bins, config_used, expected_num_genes))
+    Ks_modeling_result= ks_modeling.Ks_modeling_result(config_used, bins)
 
     if show_KS_predictions[0]:
-        this_ax.plot(bins,ks_prediction_Tdiv,c='red', label='Ks_exp at Tdiv (Kingman assumption)',alpha=1)
+        this_ax.plot(bins,Ks_modeling_result.initial_kingman_as_ks,c='red', label='Ks_exp at Tdiv (Kingman assumption)',alpha=1)
     if show_KS_predictions[1]:
-        this_ax.plot(bins,ks_model_expontial_Tnow[0:len(bins)],
+        this_ax.plot(bins,Ks_modeling_result.ks_model_exponential[0:len(bins)],
                  c='gray', label='Ks_exp at Tnow (Kingman)',alpha=1,linestyle='--',)
     if show_KS_predictions[2]:
-        this_ax.plot(bins, ks_model_smoothed_Tnow[0:len(bins)], c='r',
+        this_ax.plot(bins, Ks_modeling_result.ks_model_smoothed_exponential[0:len(bins)], c='r',
                  label='Ks_exp at Tnow (Smoothed Kingman)',alpha=1,linestyle=':',)
     if show_KS_predictions[3]:
-        this_ax.plot(bins, ks_model_gaussian[0:len(bins)], c='gray',
+        this_ax.plot(bins, Ks_modeling_result.ks_model_as_gaussian[0:len(bins)], c='gray',
                  label='Ks_exp at Tnow (Gaussian)',alpha=1,linestyle=':',)
+
+
 
     x_axis_label = "Ks \n" + "SLiM run time: " + str(round(slim_run_duration_in_m, 2)) + " min\n" + \
                    "SpecKS run time: " + str(round(specks_run_duration_in_m,2)) + " min"
@@ -189,10 +233,8 @@ def plot_ks_for_modelling(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene,
     this_ax.set(xlim=[0, xmax])
     this_ax.set(xlabel=x_axis_label)
     this_ax.set(title=title)
-    # this_ax.set(title="Recom. rate: " + str(recombination_rate))
     this_ax.legend()
-    # plt.ylabel("# genes in bin")
-    # plt.savefig(png_out)
+
 
 
 if __name__ == '__main__':

@@ -14,7 +14,7 @@ class DemographiKS_config:
     len_codon=3
     recombination_rate=1.25*10**(-6)
     mutation_rate=1*10**(-5)
-    gene_length=num_codons_in_a_gene*len_codon #nucleotides
+    gene_length_in_bases= num_codons_in_a_gene * len_codon #nucleotides
     stop_codons=["TAA","TGA","TAG"]
     max_num_paralogs_to_process=20 #per genome
     log_file_name = "log.txt"
@@ -89,7 +89,7 @@ class DemographiKS_config:
                             self.total_num_bases = int(incoming_txt)
                         if (incoming_tag == "num_codons_in_a_gene"):
                             self.num_codons_in_a_gene = int(incoming_txt)
-                            self.gene_length = self.num_codons_in_a_gene *3
+                            self.gene_length_in_bases = self.num_codons_in_a_gene * self.len_codon
                         if (incoming_tag == "max_num_paralogs_to_process"):
                             self.max_num_paralogs_to_process = parse_int_or_false(incoming_txt)
 
@@ -140,6 +140,12 @@ class DemographiKS_config:
                             self.Msprime_random_seed = int(incoming_txt)
                         if (incoming_tag == "DemographiKS_random_seed"):
                             self.DemographiKS_random_seed = int(incoming_txt)
+
+        #we are going with Ks_per_YR = mut rate * (1/1.2)
+        # we multiply by 1/1.2 since thats syn / total mut rate
+        self.Ks_per_YR = 0.833 * self.mutation_rate
+        self.mean_Ks_from_Tc = 2.0 * self.bottleneck_Ne * self.Ks_per_YR
+        self.num_genes = int(self.total_num_bases / self.gene_length_in_bases)
 
 def parse_tuple_string(tuple_string):
     if tuple_string.upper() == "FALSE":

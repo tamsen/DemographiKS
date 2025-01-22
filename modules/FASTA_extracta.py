@@ -12,7 +12,7 @@ def extract_paralog_sequences(demographics_out_folder, focal_genomes, config, mt
         f.write(result)
     log.write_to_log("Sequences written to FASTA file: " + out_fasta + ".")
     sequences_by_paralog_name_dict = write_per_genome_per_paralog_fastas(demographics_out_folder, focal_genomes,
-                                                                         config.gene_length,
+                                                                         config.gene_length_in_bases,
                                                                          config.max_num_paralogs_to_process,
                                                                          out_fasta, config.sim_name)
     log.write_to_log("Removing STOP codons. PAML needs sequences that code for AA only")

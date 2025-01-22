@@ -87,11 +87,11 @@ def run():
     log.write_to_log(str(len(v_list)) + " mutations added.")
 
     log.write_to_log("Getting paralog names.")
-    log.write_to_log("Gene length:\t" + str(conf.gene_length))
+    log.write_to_log("Gene length:\t" + str(conf.gene_length_in_bases))
     log.write_to_log("Total num bases:\t" + str(conf.total_num_bases))
     log.write_to_log("Max num paralogs:\t" + str(conf.max_num_paralogs_to_process))
-    paralog_names = FASTA_extracta.get_sequences_by_paralog_name(conf.gene_length, conf.total_num_bases,
-                                                  conf.max_num_paralogs_to_process)
+    paralog_names = FASTA_extracta.get_sequences_by_paralog_name(conf.gene_length_in_bases, conf.total_num_bases,
+                                                                 conf.max_num_paralogs_to_process)
     log.write_to_log("Num paralogs before shedding:\t" + str(len(paralog_names)))
     genes_to_loose_a_duplicate = gene_shedder.decide_genes_to_shed(paralog_names, conf)
 
@@ -133,7 +133,7 @@ def run():
         indexes_of_concern=[]
         for subgenome in focal_genomes:
             genome_name = conf.sim_name + "_" + subgenome
-            subsequence=SeqDict[subgenome][paralog_ID:paralog_ID+conf.gene_length].seq
+            subsequence= SeqDict[subgenome][paralog_ID:paralog_ID+conf.gene_length_in_bases].seq
             paralog_name = genome_name + "_paralog_" + str(paralog_ID)
 
             log.write_to_log("Writing data for: " + paralog_name + ".")

@@ -1,14 +1,12 @@
 import glob
-import math
 import os
-import curve_fitting
 import unittest
 from pathlib import Path
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy.ndimage import gaussian_filter
 import matplotlib.image as mpimg
 import config
+import ks_modeling
 from data_aggregation.coalescent_plot_aggregation import get_run_time_in_minutes, read_data_csv, plot_mrca
 from data_aggregation.histogram_plotter import read_Ks_csv,make_simple_histogram
 
@@ -317,17 +315,17 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
         total_ks_shift=mean_ks_from_Tc+t_div_as_ks
         this_ax.axvline(x=total_ks_shift, color='k', linestyle='--', label="Expected Ks mean")
 
-    ks_prediction_Tnow, ks_prediction_Tdiv, ks_model_with_dispersion = (
-        predict_Ks(Ne, mean_ks_from_Tc, t_div_as_ks, bin_size, bins, config_used, num_slim_genes))
+    modeling_result= ks_modeling.Ks_modeling_result(config_used, bins)
+    #Ks_modeling.Ks_modeling_result (Ne, mean_ks_from_Tc, t_div_as_ks, bin_size, bins, config_used, num_slim_genes))
 
     if show_KS_predictions[0]:
-        this_ax.plot(bins,ks_prediction_Tdiv,c='red', label='Ks_exp at Tdiv (Kingman assumption)',alpha=0.25)
+        this_ax.plot(bins,modeling_result.initial_kingman_as_ks,c='red', label='Ks_exp at Tdiv (Kingman assumption)',alpha=0.25)
     if show_KS_predictions[1]:
-        this_ax.plot(bins,ks_prediction_Tnow[0:len(bins)],
+        this_ax.plot(bins,modeling_result.ks_model_exponential[0:len(bins)],
                  c='gray', label='Ks_exp at Tnow (raw)',alpha=0.25)
     if show_KS_predictions[2]:
-        this_ax.plot(bins, ks_model_with_dispersion[0:len(bins)], c='k',
-                 label='Ks_exp at Tnow (with dispersion)',alpha=0.25)
+        this_ax.plot(bins, modeling_result.ks_model_as_gaussian[0:len(bins)], c='k',
+                 label='Ks_exp at Tnow (gaussian)',alpha=0.25)
 
     x_axis_label = "Ks \n" + "SLiM run time: " + str(round(slim_run_duration_in_m, 2)) + " min\n" + \
                    "SpecKS run time: " + str(round(specks_run_duration_in_m,2)) + " min"
@@ -341,51 +339,6 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
     # plt.ylabel("# genes in bin")
     # plt.savefig(png_out)
 
-
-def predict_Ks(Ne, mean_ks_from_Tc, Ks_per_YR, bin_size, bins, config_used, num_genes):
-
-    synonymous_mutations_rate_only= config_used.mutation_rate / 1.2
-    expected_Ks_peak_shift = config_used.DIV_time_Ge * synonymous_mutations_rate_only
-    t_div_as_ks = config_used.DIV_time_Ge * Ks_per_YR
-
-    print("config_used.mutation_rate " + str(config_used.mutation_rate))
-    bin_size_in_time = bin_size / config_used.mutation_rate
-    two_Ne = 2.0 * Ne
-    bin_mid_points=[0.5*(bins[i]+bins[i+1]) for i in range(0,len(bins)-1)]
-    #kingman = [min(num_genes,
-    #               (bin_size_in_time * num_genes / two_Ne) * math.e ** (
-    #                           (-1 * ((i) / config_used.mutation_rate)) / two_Ne))
-    #           for i in bin_mid_points]
-    kingman = [min(num_genes,
-                   (bin_size_in_time * num_genes / two_Ne) * math.e ** (
-                               (-1 * ((i / config_used.mutation_rate) -1)) / two_Ne))
-               for i in bins]
-    Ks_model_exponential = []
-    for b in bins:
-        if b < expected_Ks_peak_shift:
-            Ks_model_exponential.append(0)
-        else:
-            Ks_model_exponential = Ks_model_exponential + kingman
-            break
-
-    ks_model_smoothed_exponential = smooth_data(Ks_model_exponential,(1/bin_size)/1000)
-    #gaussian prediction:
-    total_ks_shift = mean_ks_from_Tc + t_div_as_ks
-    fit_fxn=curve_fitting.wgd_gaussian
-    amp=num_genes*bin_size
-    #The variance of an exponential distribution is 1/λ²
-    sigma= two_Ne*synonymous_mutations_rate_only#*bin_size
-    #sigma=Ne/100000#some fxn of RC (or, tending towards sigma of exponetial!)
-    #mu=total_ks_shift
-    mu=expected_Ks_peak_shift + mean_ks_from_Tc
-    popt=[amp,mu,sigma]
-    ks_model_as_gaussian = [fit_fxn(b, *popt) for b in bins]
-    return kingman, Ks_model_exponential,ks_model_smoothed_exponential, ks_model_as_gaussian
-
-def smooth_data(ys,sigma):
-
-    smoothed_ys = gaussian_filter(ys, sigma=sigma)
-    return smoothed_ys
 
 if __name__ == '__main__':
     unittest.main()
