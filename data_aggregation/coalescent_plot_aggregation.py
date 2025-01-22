@@ -90,9 +90,9 @@ def plot_mrca(this_ax, slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrc
     #max_mrca = max(slim_mrcas_by_gene)
     num_slim_genes=len(slim_mrcas_by_gene)
     if num_slim_genes==0:
-        avg_slim_Tc = 0
+        avg_simulated_slim_Tc = 0
     else:
-        avg_slim_Tc=sum(slim_mrcas_by_gene)/num_slim_genes
+        avg_simulated_slim_Tc=sum(slim_mrcas_by_gene)/num_slim_genes
     #num_segments=len(slim_mrcas_by_tree)
 
     if not xmax:
@@ -110,13 +110,18 @@ def plot_mrca(this_ax, slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrc
         this_ax.hist(slim_mrcas_by_gene, bins=bins, facecolor='b', alpha=0.25,
                                 label='SLiM Tcoal by gene\n'
                                 + "(" +str(num_slim_genes) + " genes in genome,\n"
-                                 +"avg Tc " +str(int(avg_slim_Tc)) + " generations)",
+                                 +"avg Tc " +str(int(avg_simulated_slim_Tc)) + " generations)",
                                 density=False)
     #label = 'SLiM Tcoal by gene (total: ' + str(num_genes) + ')',
 
     if specks_mrcas_by_gene:
         num_specks_genes = len(specks_mrcas_by_gene)
-        specks_mrcas_by_gene_in_YRs=[m*10.0**6 for m in specks_mrcas_by_gene]
+        #note specks results are in millions of years,
+        # so we have to convert millions of years to just years.
+        million_years_to_years=1.0**6
+        #specks_mrcas_by_gene_in_YRs=[m*10.0**6 for m in specks_mrcas_by_gene]
+        #bug..?
+        specks_mrcas_by_gene_in_YRs = [m * million_years_to_years for m in specks_mrcas_by_gene]
         this_ax.hist(specks_mrcas_by_gene_in_YRs, bins=bins, facecolor='c', alpha=0.25,
                                 label='SpecKS Tcoal by gene\n'
                                 + "(" +str(num_specks_genes) + " genes in genome)\n",
@@ -132,34 +137,39 @@ def plot_mrca(this_ax, slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrc
                  density=False)
 
     this_ax.plot(bins,kingman,c='red', label='Expectations under Kingman')
-    #Tc_to_Ks = avg_theory_Tc * Ks_per_YR
-    Tc_to_Ks = avg_slim_Tc * Ks_per_YR
-    Tc_info='   mean Tc by Kingman = ' + \
-        str(2.0*Ne)
 
-    ks_info='   simulated mean Ks at Tdiv = ' + \
-        "{:.2E}".format(Tc_to_Ks )
-
-    ks_info_2='   2*Ne*Ks_per_YR = ' + \
-        "{:.2E}".format(2.0*Ne*Ks_per_YR)
-
-    mut_info = '   simulated num mutations per gene = ' + \
-        "{:.2E}".format(Tc_to_Ks*3.0*1000.0)
-
-    annotation_txt= "\n".join([Tc_info,ks_info,ks_info_2,mut_info])+"\n"
-    this_ax.annotate(annotation_txt, (0, 0), (0, -60), xycoords='axes fraction', textcoords='offset points', va='top')
-
-    x_axis_label="MRCA time\n" + "demographiKS run time: " + str(round(dgks_run_duration_in_m, 2)) + " min"
+    #x_axis_label="MRCA time\n" + "demographiKS run time: " + str(round(dgks_run_duration_in_m, 2)) + " min"
 
     if ymax:
         this_ax.set(ylim=[0, ymax])
     this_ax.set(xlim=[0, xmax])
-    this_ax.set(xlabel=x_axis_label)
+    this_ax.set(xlabel="MRCA time")
     this_ax.set(title=title)
-    #this_ax.set(title="Recom. rate: " + str(recombination_rate))
     this_ax.legend()
-    #plt.ylabel("# genes in bin")
-    #plt.savefig(png_out)
+
+    return avg_simulated_slim_Tc
+
+
+def add_annotations(this_ax, config_used,
+                    avg_simulated_slim_Tc,slim_run_duration_in_m,specks_run_duration_in_m):
+   
+    simulated_mean_Ks_from_Tc = avg_simulated_slim_Tc * config_used.Ks_per_YR
+    Tc_info = 'mean Tc by Kingman = ' + \
+              str(2.0 * config_used.ancestral_Ne )
+    ks_info = 'simulated mean Ks at Tdiv = ' + \
+              "{:.2E}".format(simulated_mean_Ks_from_Tc)
+    theoretical_mean_Ks_from_Tc = '2*Ne*Ks_per_YR = ' + str(config_used.mean_Ks_from_Tc)
+                #"{:.2E}".format(2.0 * Ne * Ks_per_YR)self.mean_Ks_from_Tc
+    mut_info = 'simulated num mutations per gene = ' + \
+               "{:.2E}".format(simulated_mean_Ks_from_Tc * config_used.gene_length_in_bases)
+
+    SLiM_run_time_info = "SLiM run time: " + str(round(slim_run_duration_in_m, 2)) + " min"
+    SpecKS_run_time_info = "SpecKS run time: " + str(round(specks_run_duration_in_m,2)) + " min"
+
+    annotation_txt = "\n".join([Tc_info, ks_info,
+                                theoretical_mean_Ks_from_Tc, mut_info,"\n",
+                                SLiM_run_time_info,SpecKS_run_time_info ]) + "\n"
+    this_ax.annotate(annotation_txt, (0, 0), (0, -60), xycoords='axes fraction', textcoords='offset points', va='top')
 
 
 def get_run_time_in_minutes(local_output_folder):

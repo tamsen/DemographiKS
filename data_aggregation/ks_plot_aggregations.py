@@ -7,7 +7,8 @@ from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 import config
 import ks_modeling
-from data_aggregation.coalescent_plot_aggregation import get_run_time_in_minutes, read_data_csv, plot_mrca
+from data_aggregation.coalescent_plot_aggregation import get_run_time_in_minutes, read_data_csv, plot_mrca, \
+    add_annotations
 from data_aggregation.histogram_plotter import read_Ks_csv,make_simple_histogram
 
 
@@ -172,8 +173,8 @@ class TestKsPlotAgg(unittest.TestCase):
 
 def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                  demographiKS_out_path, demographics_TE9_run_list, run_list_name,
-                                 specks_TE9_run_list, specks_out_path, Ks_per_YR,
-                                 xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions, total_num_genes):
+                                 specks_TE9_run_list, specks_out_path,
+                                 xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions):
     ymax_Tc = False
     num_runs = len(demographics_TE9_run_list)
     png_out = os.path.join(demographiKS_out_path, "ks_hist_by_TE{0}_test.png".format(run_list_name))
@@ -199,9 +200,9 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             print("reading " + ks_file)
             demographiKS_ks_results = read_Ks_csv(ks_file, False)
             dgx_run_duration_in_m = get_run_time_in_minutes(dgx_run_path)
-            plot_title = "burnin time=" + str(config_used.burnin_time) + " gen,\n" \
+            plot_title = "Ks at Tnow\n" + "burnin time=" + str(config_used.burnin_time) + " gen,\n" \
                      + "Ne=" + str(config_used.ancestral_Ne) +\
-                         ", Tdiv=" + str(config_used.DIV_time_Ge)
+                         ", Tdiv=" + str(config_used.DIV_time_Ge) + ", RC=" + str(config_used.recombination_rate)
         else:
             config_used = False
             demographiKS_ks_results = []
@@ -225,7 +226,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             specks_mrcas_by_gene = False
 
         plot_ks(ax[0, i], config_used, demographiKS_ks_results, spx_ks_results, config_used.DIV_time_Ge,
-                config_used.ancestral_Ne, Ks_per_YR,
+                config_used.ancestral_Ne, config_used.Ks_per_YR,
                 dgx_run_duration_in_m, spx_run_duration_in_m,
                 plot_title, bin_sizes_Ks[i], xmax_Ks[i], ymax_Ks[i], show_KS_predictions)
 
@@ -234,14 +235,18 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
 
         theory_output_file = os.path.join(dgx_run_path, "theoretical_ancestral_gene_mrcas.csv")
         loci, theory_mrcas_by_gene = read_data_csv(theory_output_file)
-        burnin_times_in_generations=config_used.burnin_time
-        plot_title = "Tcoal at Tdiv\nburnin time=" + str(burnin_times_in_generations) + " gen, " \
+        plot_title = "Tcoal at Tdiv\nburnin time=" + str(config_used.burnin_time) + " gen, " \
                      + "Ne=" + str(config_used.ancestral_Ne)
 
         theory_mrcas_by_gene=False
-        plot_mrca(ax[1, i], slim_mrcas_by_gene, specks_mrcas_by_gene, theory_mrcas_by_gene,
+        avg_slim_Tc = plot_mrca(ax[1, i], slim_mrcas_by_gene, specks_mrcas_by_gene, theory_mrcas_by_gene,
                   dgx_run_duration_in_m, plot_title, config_used.ancestral_Ne,
-                  Ks_per_YR, bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc, total_num_genes)
+                  config_used.Ks_per_YR, bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc, config_used.num_genes)
+
+        add_annotations(ax[1, i], config_used, avg_slim_Tc,dgx_run_duration_in_m,spx_run_duration_in_m)
+
+    # x_axis_label = "Ks \n" + "SLiM run time: " + str(round(slim_run_duration_in_m, 2)) + " min\n" + \
+    #               "SpecKS run time: " + str(round(specks_run_duration_in_m,2)) + " min"
 
     ax[0, 1].set(ylabel="# paralog pairs in bin")
     ax[1, 1].set(ylabel="# genes in bin")
@@ -327,17 +332,14 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
         this_ax.plot(bins, modeling_result.ks_model_as_gaussian[0:len(bins)], c='k',
                  label='Ks_exp at Tnow (gaussian)',alpha=0.25)
 
-    x_axis_label = "Ks \n" + "SLiM run time: " + str(round(slim_run_duration_in_m, 2)) + " min\n" + \
-                   "SpecKS run time: " + str(round(specks_run_duration_in_m,2)) + " min"
+    #x_axis_label = "Ks \n" + "SLiM run time: " + str(round(slim_run_duration_in_m, 2)) + " min\n" + \
+    #               "SpecKS run time: " + str(round(specks_run_duration_in_m,2)) + " min"
     if ymax:
         this_ax.set(ylim=[0, ymax])
     this_ax.set(xlim=[0, xmax])
-    this_ax.set(xlabel=x_axis_label)
+    this_ax.set(xlabel="Ks")
     this_ax.set(title=title)
-    # this_ax.set(title="Recom. rate: " + str(recombination_rate))
     this_ax.legend()
-    # plt.ylabel("# genes in bin")
-    # plt.savefig(png_out)
 
 
 if __name__ == '__main__':
