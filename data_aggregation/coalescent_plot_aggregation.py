@@ -154,8 +154,8 @@ def plot_mrca(this_ax, slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrc
     return avg_simulated_slim_Tc
 
 
-def add_annotations(this_ax, config_used,
-                    avg_simulated_slim_Tc,slim_run_duration_in_m,specks_run_duration_in_m):
+def add_mrca_annotations(this_ax, config_used,
+                         avg_simulated_slim_Tc, slim_run_duration_in_m, specks_run_duration_in_m):
    
     simulated_mean_Ks_from_Tc = avg_simulated_slim_Tc * config_used.Ks_per_YR
     Tc_info = 'mean Tc by Kingman = ' + \

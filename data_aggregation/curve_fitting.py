@@ -15,16 +15,24 @@ def linear(x, m, b):
 def wgd_gaussian(x, amp, mu, sig):
     return amp * norm.pdf(x, mu, sig)
 
-#    kingman = [min(num_slim_genes,
-#                   (bin_size_in_time * num_slim_genes / two_Ne) * math.e ** (
-#                               (-1 * (i / config_used.mutation_rate)) / two_Ne))
-#               for i in bins]
+def wgd_exponential(x, amp, loc_of_maximum, K):
 
-def travelling_exp(x,Amp,K,O):
-    if x <= O:
+    if x <= loc_of_maximum:
         return 0
+    else:
+        result= amp * K * math.e ** (-K * ((x - loc_of_maximum)))
+        return result
 
-    return Amp*math.exp(-K*(x-O))
+
+def travelling_kingman(x, two_Ne, Ks_per_YR, bin_size_in_time, num_genes, tdiv_in_ks):
+
+    if x <= tdiv_in_ks:
+        return 0
+    else:
+        scalar=bin_size_in_time * num_genes / two_Ne
+        result= scalar * math.e ** ((-1 * (((x-tdiv_in_ks) /Ks_per_YR) -1)) / two_Ne)
+        return min(num_genes,result)
+
 
 def my_decay(x, Ao,k, r):
     return Ao*((1-r)**(k*x))

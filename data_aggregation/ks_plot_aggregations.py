@@ -1,4 +1,5 @@
 import glob
+import math
 import os
 import unittest
 from pathlib import Path
@@ -7,8 +8,9 @@ from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 import config
 import ks_modeling
+from data_aggregation import curve_fitting
 from data_aggregation.coalescent_plot_aggregation import get_run_time_in_minutes, read_data_csv, plot_mrca, \
-    add_annotations
+    add_mrca_annotations
 from data_aggregation.histogram_plotter import read_Ks_csv,make_simple_histogram
 
 
@@ -177,12 +179,13 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                  xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions):
     ymax_Tc = False
     num_runs = len(demographics_TE9_run_list)
-    png_out = os.path.join(demographiKS_out_path, "ks_hist_by_TE{0}_test.png".format(run_list_name))
+    #png_out = os.path.join(demographiKS_out_path, "ks_hist_by_{0}_test.png".format(run_list_name))
+    png_out = os.path.join(demographiKS_out_path, "ks_hist_by_{0}_test.jpg".format(run_list_name))
     par_dir = Path(__file__).parent.parent
     image_folder = os.path.join(par_dir, "images")
     png_Tnow = os.path.join(image_folder, 'Ks_now_time_slice.jpg')
     png_Tdiv = os.path.join(image_folder, 'Tdiv_TimeSlice.jpg')
-    fig, ax = plt.subplots(2, num_runs, figsize=(20, 10))
+    fig, ax = plt.subplots(2, num_runs, figsize=(40, 20))
     fig.suptitle(suptitle)
     plot_expository_images(ax, png_Tdiv, png_Tnow)
     for i in range(1, num_runs):
@@ -227,7 +230,6 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
 
         plot_ks(ax[0, i], config_used, demographiKS_ks_results, spx_ks_results, config_used.DIV_time_Ge,
                 config_used.ancestral_Ne, config_used.Ks_per_YR,
-                dgx_run_duration_in_m, spx_run_duration_in_m,
                 plot_title, bin_sizes_Ks[i], xmax_Ks[i], ymax_Ks[i], show_KS_predictions)
 
         slim_csv_file = os.path.join(dgx_run_path, "simulated_ancestral_gene_mrcas.csv")
@@ -243,10 +245,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                   plot_title, config_used.ancestral_Ne,
                   bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc, config_used.num_genes)
 
-        add_annotations(ax[1, i], config_used, avg_slim_Tc,dgx_run_duration_in_m,spx_run_duration_in_m)
-
-    # x_axis_label = "Ks \n" + "SLiM run time: " + str(round(slim_run_duration_in_m, 2)) + " min\n" + \
-    #               "SpecKS run time: " + str(round(specks_run_duration_in_m,2)) + " min"
+        add_mrca_annotations(ax[1, i], config_used, avg_slim_Tc, dgx_run_duration_in_m, spx_run_duration_in_m)
 
     ax[0, 1].set(ylabel="# paralog pairs in bin")
     ax[1, 1].set(ylabel="# genes in bin")
@@ -291,12 +290,16 @@ def plot_expository_images(ax, png_Tdiv, png_Tnow):
 
 
 def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_per_YR,
-            slim_run_duration_in_m, specks_run_duration_in_m, title, bin_size, xmax, ymax,
+            title, bin_size, xmax, ymax,
             show_KS_predictions):
 
+    #some results we will want to plot
     num_slim_genes = len(slim_ks_by_gene)
     num_specks_genes = len(spx_ks_by_gene)
     mean_ks_from_Tc = 2.0 * config_used.ancestral_Ne * Ks_per_YR
+    mean_ks_now_from_slim = sum(slim_ks_by_gene) /num_slim_genes
+    variance_from_slim = (1.0/float(num_slim_genes)) * \
+                          sum([(x-mean_ks_now_from_slim)**2 for x in slim_ks_by_gene ]) #sigma_squared
 
     if not xmax:
         xmax = max(slim_ks_by_gene)
@@ -314,12 +317,11 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
                            + "(" + str(num_specks_genes) + " paralogs in genome)",
                      density=False)
 
-    if t_div:
-        t_div_as_ks= config_used.DIV_time_Ge * Ks_per_YR
-        this_ax.axvline(x=t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
-        total_ks_shift=mean_ks_from_Tc+t_div_as_ks
-        this_ax.axvline(x=total_ks_shift, color='k', linestyle='--', label="Expected Ks mean")
-
+    t_div_as_ks= config_used.DIV_time_Ge * config_used.Ks_per_YR
+    this_ax.axvline(x=t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
+    theoretical_ks_mean_now=mean_ks_from_Tc+t_div_as_ks
+    this_ax.axvline(x=theoretical_ks_mean_now, color='r', linestyle='--', label="Expected Ks mean")
+    add_Ks_annotations(this_ax, config_used, mean_ks_now_from_slim,variance_from_slim,bins)
     modeling_result= ks_modeling.Ks_modeling_result(config_used, bins)
     #Ks_modeling.Ks_modeling_result (Ne, mean_ks_from_Tc, t_div_as_ks, bin_size, bins, config_used, num_slim_genes))
 
@@ -341,6 +343,40 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
     this_ax.set(title=title)
     this_ax.legend()
 
+
+def add_Ks_annotations(this_ax, config_used,mean_ks_now_from_slim,variance_from_slim, bins):
+
+    t_div_as_ks= config_used.DIV_time_Ge * config_used.Ks_per_YR
+    sigma_from_slim=math.sqrt(variance_from_slim)
+    theoretical_ks_mean_now=config_used.mean_Ks_from_Tc+t_div_as_ks
+    theoretical_ks_mean_now_as_string="Expected Ks mean ({:.2E})".format(theoretical_ks_mean_now)
+    simulated_ks_mean_now_as_string="Simulated Ks mean ({:.2E})".format(mean_ks_now_from_slim)
+
+    #theoretical_sigma_from_kingman_in_time= (2.0*config_used.ancestral_Ne)**-1 #1/K
+    #theoretical_sigma_from_kingman_in_Ks= theoretical_sigma_from_kingman_in_time*config_used.Ks_per_YR
+    #for an exponential, λ = 1/μ. And sigma=1/λ =μ. SO sigma=μ
+    theoretical_sigma_from_kingman_as_string="Kingman Ks sigma ({:.2E})".format(config_used.mean_Ks_from_Tc)
+    simulated_ks_sigma_now_as_string="Simulated Ks sigma ({:.2E})".format(sigma_from_slim)
+
+    annotation_txt = "\n".join([theoretical_ks_mean_now_as_string,
+                                simulated_ks_mean_now_as_string,
+                                theoretical_sigma_from_kingman_as_string,
+                                simulated_ks_sigma_now_as_string])
+    this_ax.annotate(annotation_txt, (0, 0), (0, -30), xycoords='axes fraction', textcoords='offset points', va='top')
+
+    #theoretical gaussian with given μ and sigma:
+    bin_size=bins[1]-bins[0]
+    popt=[config_used.num_genes*bin_size,
+        theoretical_ks_mean_now,config_used.mean_Ks_from_Tc]
+    fit_curve_ys = [curve_fitting.wgd_gaussian(x, *popt) for x in bins]
+    this_ax.plot(bins,fit_curve_ys,label='expected gaussian?', color='r',alpha=0.25)
+
+    #theoretical exponential
+    K=config_used.mean_Ks_from_Tc**-1
+    bin_size = bins[1] - bins[0]
+    popt=[config_used.num_genes*bin_size,t_div_as_ks,K]
+    fit_curve_ys2 = [curve_fitting.wgd_exponential(x, *popt) for x in bins]
+    this_ax.plot(bins,fit_curve_ys2,label='expectation due to Kingman',linestyle='dotted',color='r',alpha=1)
 
 if __name__ == '__main__':
     unittest.main()
