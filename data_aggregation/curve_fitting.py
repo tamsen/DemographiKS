@@ -6,16 +6,13 @@ from scipy.stats import norm,exponnorm
 def gaussian_modified_exponential(x, Amp, K, loc, scale):
     return Amp * exponnorm.pdf(x, K, loc, scale)
 
-def coal(x, N):
-    k = 1 / N
-    return k * math.exp(k*(1 - x))
 
-def linear(x, m, b):
-    return m * x + b
-def wgd_gaussian(x, amp, mu, sig):
-    return amp * norm.pdf(x, mu, sig)
+def wgd_normal(x, amp, mu, sig):
+    scale=(2.0*math.pi*sig*sig)**(-0.5)
+    exponent=(x-mu)*(x-mu)/(2.0*sig*sig)
+    return  amp * scale * math.e**(-1*exponent)
 
-def wgd_exponential(x, amp, loc_of_maximum, K):
+def wgd_travelling_exponential(x, amp, loc_of_maximum, K):
 
     if x <= loc_of_maximum:
         return 0
@@ -24,7 +21,21 @@ def wgd_exponential(x, amp, loc_of_maximum, K):
         return result
 
 
-def travelling_kingman(x, two_Ne, Ks_per_YR, bin_size_in_time, num_genes, tdiv_in_ks):
+def mix_of_travelling_exponential_with_gaussian(x, amp_exp, loc_of_maximum,
+                                                K,  mu, sig):
+
+    if x <= loc_of_maximum:
+        return 0
+    else:
+        exp_result= amp_exp * K * math.e ** (-K * ((x - loc_of_maximum)))
+        exponent = (x - mu) * (x - mu) / (2.0 * sig * sig)
+        #scale=(2.0*math.pi*sig*sig)**(-0.5)
+        scale=1.0
+        gaus_result = scale * math.e ** (-1 * exponent)
+        return exp_result*gaus_result
+
+
+def travelling_kingman_old(x, two_Ne, Ks_per_YR, bin_size_in_time, num_genes, tdiv_in_ks):
 
     if x <= tdiv_in_ks:
         return 0

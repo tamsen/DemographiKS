@@ -49,26 +49,12 @@ def predict_Ks_from_config(config_used, bins):
 
     ks_model_smoothed_exponential = smooth_data(Ks_model_exponential,(1/bin_size)/1000)
     #gaussian prediction:
-    ks_model_as_gaussian = make_gaussian_prediction(bin_size, bins, config_used, expected_Ks_peak_shift, t_div_as_ks,
-                                                    two_Ne)
+    ks_model_as_gaussian=Ks_model_exponential
+    #ks_model_as_gaussian = make_gaussian_prediction(bin_size, bins, config_used, expected_Ks_peak_shift, t_div_as_ks,
+    #                                                two_Ne)
     return kingman, Ks_model_exponential,ks_model_smoothed_exponential, ks_model_as_gaussian
 
 
-
-def make_gaussian_prediction(bin_size, bins, config_used, expected_Ks_peak_shift, t_div_as_ks, two_Ne):
-    total_ks_shift = config_used.mean_Ks_from_Tc + t_div_as_ks
-    fit_fxn = curve_fitting.wgd_gaussian
-    amp = config_used.num_genes * bin_size
-    # The variance of an exponential distribution is 1/λ²
-    # sigma= two_Ne*synonymous_mutations_rate_only / ( bin_size * 50)  # in Ks space
-    # sigma = 0.002 #for Tdiv, Ne=1000, but Tdiv
-    # seems to work for low Tdiv. Tdiv = 1000, Ne for 100,1000,5000
-    sigma = two_Ne / 100000  # some fxn of RC (or, tending towards sigma of exponetial!)
-    # mu=total_ks_shift
-    mu = expected_Ks_peak_shift + config_used.mean_Ks_from_Tc
-    popt = [amp, mu, sigma]
-    ks_model_as_gaussian = [fit_fxn(b, *popt) for b in bins]
-    return ks_model_as_gaussian
 
 
 def smooth_data(ys,sigma):

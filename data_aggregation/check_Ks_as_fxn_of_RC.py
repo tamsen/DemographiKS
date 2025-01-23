@@ -9,8 +9,8 @@ class TestKsByNe(unittest.TestCase):
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/KS_vs_RC'
         specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
         demographics_run_list = [False, 'KSvsRC6_m01d21y2025_h20m06s34','KSvsRC7_m01d21y2025_h12m16s26',
-                                 'KSvsRC8_m01d21y2025_h08m21s04','KSvsRC9_m01d21y2025_h14m24s03']
-        #                                 'KSvsRC11_m01d21y2025_h20m31s14']
+                                 'KSvsRC8_m01d21y2025_h08m21s04','KSvsRC9_m01d21y2025_h14m24s03',
+                                'KSvsRC10_m01d22y2025_h10m45s03','KSvsRC11_m01d22y2025_h11m14s42']
 
         specks_TE5_run_list = [False,False,False,False,False,False,False]
 

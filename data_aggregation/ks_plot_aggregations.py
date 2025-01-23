@@ -354,8 +354,9 @@ def add_Ks_annotations(this_ax, config_used,mean_ks_now_from_slim,variance_from_
 
     #theoretical_sigma_from_kingman_in_time= (2.0*config_used.ancestral_Ne)**-1 #1/K
     #theoretical_sigma_from_kingman_in_Ks= theoretical_sigma_from_kingman_in_time*config_used.Ks_per_YR
-    #for an exponential, λ = 1/μ. And sigma=1/λ =μ. SO sigma=μ
-    theoretical_sigma_from_kingman_as_string="Kingman Ks sigma ({:.2E})".format(config_used.mean_Ks_from_Tc)
+    #for an exponential, λ = 1/μ. And  σ =1/λ =μ. SO  σ =μ
+    theoretical_ks_sigma = config_used.mean_Ks_from_Tc
+    theoretical_sigma_from_kingman_as_string="Kingman Ks sigma ({:.2E})".format(theoretical_ks_sigma )
     simulated_ks_sigma_now_as_string="Simulated Ks sigma ({:.2E})".format(sigma_from_slim)
 
     annotation_txt = "\n".join([theoretical_ks_mean_now_as_string,
@@ -364,19 +365,35 @@ def add_Ks_annotations(this_ax, config_used,mean_ks_now_from_slim,variance_from_
                                 simulated_ks_sigma_now_as_string])
     this_ax.annotate(annotation_txt, (0, 0), (0, -30), xycoords='axes fraction', textcoords='offset points', va='top')
 
-    #theoretical gaussian with given μ and sigma:
-    bin_size=bins[1]-bins[0]
-    popt=[config_used.num_genes*bin_size,
-        theoretical_ks_mean_now,config_used.mean_Ks_from_Tc]
-    fit_curve_ys = [curve_fitting.wgd_gaussian(x, *popt) for x in bins]
-    this_ax.plot(bins,fit_curve_ys,label='expected gaussian?', color='r',alpha=0.25)
-
-    #theoretical exponential
-    K=config_used.mean_Ks_from_Tc**-1
+    # theoretical exponential
+    K = config_used.mean_Ks_from_Tc ** -1
     bin_size = bins[1] - bins[0]
-    popt=[config_used.num_genes*bin_size,t_div_as_ks,K]
-    fit_curve_ys2 = [curve_fitting.wgd_exponential(x, *popt) for x in bins]
-    this_ax.plot(bins,fit_curve_ys2,label='expectation due to Kingman',linestyle='dotted',color='r',alpha=1)
+    popt = [config_used.num_genes * bin_size, t_div_as_ks, K]
+    fit_curve_ys1 = [curve_fitting.wgd_travelling_exponential(x, *popt) for x in bins]
+    this_ax.plot(bins, fit_curve_ys1, label='expectation due to Kingman', linestyle='dotted', color='r', alpha=1)
+
+    #theoretical gaussian with given μ and sigma:
+    #The variance of "n samples of the mean" is calculated as σ²/n,
+    #where σ² represents the population variance and n is the sample size;
+    #=>  s = σ / sqrt(n)
+    bin_size=bins[1]-bins[0]
+    num_recombination_events_per_nuc=config_used.recombination_rate*config_used.WGD_time_Ge
+    num_recombination_events_per_gene=num_recombination_events_per_nuc*config_used.gene_length_in_bases
+    n = num_recombination_events_per_gene
+    s = theoretical_ks_sigma / math.sqrt(n)
+    popt=[config_used.num_genes*bin_size,
+        theoretical_ks_mean_now,s]
+    fit_curve_ys2 = [curve_fitting.wgd_normal(x, *popt) for x in bins]
+    this_ax.plot(bins,fit_curve_ys2,label='expectation due to CLT', linestyle='dotted', color='k',alpha=1)
+
+    #mix_of_travelling_exponential_with_gaussian(x, amp_exp, loc_of_maximum,
+    #                                            K, mu, sig):
+    #popt= [config_used.num_genes * bin_size, t_div_as_ks, K,
+    #    theoretical_ks_mean_now,s]
+    #fit_curve_ys3 = [curve_fitting.mix_of_travelling_exponential_with_gaussian(x, *popt) for x in bins]
+    #this_ax.plot(bins,fit_curve_ys3,label='Kingman*CLT_Gaussian', linestyle='solid', color='k',alpha=1)
+
+
 
 if __name__ == '__main__':
     unittest.main()
