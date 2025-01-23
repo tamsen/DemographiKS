@@ -6,11 +6,14 @@ from pathlib import Path
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
+from scipy.optimize import curve_fit
+
 import config
 import ks_modeling
 from data_aggregation import curve_fitting
 from data_aggregation.coalescent_plot_aggregation import get_run_time_in_minutes, read_data_csv, plot_mrca, \
     add_mrca_annotations
+from data_aggregation.curve_fitting import gaussian_modified_exponential
 from data_aggregation.histogram_plotter import read_Ks_csv,make_simple_histogram
 
 
@@ -306,7 +309,7 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
     bins = np.arange(0, xmax, bin_size)
 
     if len(slim_ks_by_gene) > 0:
-        this_ax.hist(slim_ks_by_gene, bins=bins, facecolor='b', alpha=0.25,
+        dgx_hist_ys, bins, patches = this_ax.hist(slim_ks_by_gene, bins=bins, facecolor='b', alpha=0.25,
                      label='SLiM Ks by gene\n'
                            + "(" + str(num_slim_genes) + " paralogs in genome)",
                      density=False)
@@ -321,7 +324,8 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
     this_ax.axvline(x=t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
     theoretical_ks_mean_now=mean_ks_from_Tc+t_div_as_ks
     this_ax.axvline(x=theoretical_ks_mean_now, color='r', linestyle='--', label="Expected Ks mean")
-    add_Ks_annotations(this_ax, config_used, mean_ks_now_from_slim,variance_from_slim,bins)
+    add_Ks_annotations(this_ax, config_used, mean_ks_now_from_slim,variance_from_slim,
+                       dgx_hist_ys, bins)
     modeling_result= ks_modeling.Ks_modeling_result(config_used, bins)
     #Ks_modeling.Ks_modeling_result (Ne, mean_ks_from_Tc, t_div_as_ks, bin_size, bins, config_used, num_slim_genes))
 
@@ -344,7 +348,8 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
     this_ax.legend()
 
 
-def add_Ks_annotations(this_ax, config_used,mean_ks_now_from_slim,variance_from_slim, bins):
+def add_Ks_annotations(this_ax, config_used,mean_ks_now_from_slim,variance_from_slim,
+                       dgks_hist_Ns,bins):
 
     t_div_as_ks= config_used.DIV_time_Ge * config_used.Ks_per_YR
     sigma_from_slim=math.sqrt(variance_from_slim)
@@ -359,11 +364,6 @@ def add_Ks_annotations(this_ax, config_used,mean_ks_now_from_slim,variance_from_
     theoretical_sigma_from_kingman_as_string="Kingman Ks sigma ({:.2E})".format(theoretical_ks_sigma )
     simulated_ks_sigma_now_as_string="Simulated Ks sigma ({:.2E})".format(sigma_from_slim)
 
-    annotation_txt = "\n".join([theoretical_ks_mean_now_as_string,
-                                simulated_ks_mean_now_as_string,
-                                theoretical_sigma_from_kingman_as_string,
-                                simulated_ks_sigma_now_as_string])
-    this_ax.annotate(annotation_txt, (0, 0), (0, -30), xycoords='axes fraction', textcoords='offset points', va='top')
 
     # theoretical exponential
     K = config_used.mean_Ks_from_Tc ** -1
@@ -384,15 +384,38 @@ def add_Ks_annotations(this_ax, config_used,mean_ks_now_from_slim,variance_from_
     popt=[config_used.num_genes*bin_size,
         theoretical_ks_mean_now,s]
     fit_curve_ys2 = [curve_fitting.wgd_normal(x, *popt) for x in bins]
-    this_ax.plot(bins,fit_curve_ys2,label='expectation due to CLT', linestyle='dotted', color='k',alpha=1)
+    this_ax.plot(bins,fit_curve_ys2,label='expectation due to CLT', linestyle='dotted', color='k',alpha=0.5)
 
-    #mix_of_travelling_exponential_with_gaussian(x, amp_exp, loc_of_maximum,
-    #                                            K, mu, sig):
-    #popt= [config_used.num_genes * bin_size, t_div_as_ks, K,
-    #    theoretical_ks_mean_now,s]
-    #fit_curve_ys3 = [curve_fitting.mix_of_travelling_exponential_with_gaussian(x, *popt) for x in bins]
-    #this_ax.plot(bins,fit_curve_ys3,label='Kingman*CLT_Gaussian', linestyle='solid', color='k',alpha=1)
+    #gaussian_modified_exponential(x, Amp, Kgme, loc, scale):
+    #s2=s*config_used.num_genes
+    #Kgme = 1.0 / (s2*K)
+    #p0 = [config_used.num_genes * bin_size, s2, t_div_as_ks, Kgme]
+    #fit_curve_ys4 = [curve_fitting.gaussian_modified_exponential(x, *p0) for x in bins]
+    #this_ax.plot(bins, fit_curve_ys4, label='G-modified exp (predicted)', linestyle='solid', color='k', alpha=1)
 
+    #wgd_exp_mod_normal(x, amp, lam,mu, sig)
+    #p0 = [config_used.num_genes * bin_size,config_used.mean_Ks_from_Tc,theoretical_ks_mean_now, s]
+    #fit_curve_ys4 = [curve_fitting.wgd_exp_mod_normal(x, *p0) for x in bins]
+    #this_ax.plot(bins, fit_curve_ys4, label='G-modified exp2 (predicted)', linestyle='solid', color='k', alpha=1)
+
+
+    #s2=s*config_used.num_genes
+    #Kgme = 1.0 / (s2*K)
+    #p0 = [config_used.num_genes * bin_size, s2, t_div_as_ks, Kgme]
+    #popt, pcov = curve_fit(gaussian_modified_exponential, bins[0:len(bins)-1], dgks_hist_Ns, p0=p0)
+    #fit_curve_ys5 = [curve_fitting.gaussian_modified_exponential(x, *popt) for x in bins]
+    #this_ax.plot(bins,fit_curve_ys5,label='G-modified exp (fit)', linestyle='dotted', color='b',alpha=1)
+
+    #popt_params_as_string = "popt=Amp,K,Loc,sigma"
+    #predicted_popt_as_string="predicted_popt: " + str(["{:.2E}".format(p) for p in p0])
+    #true_popt_as_string="true_popt: " + str(["{:.2E}".format(p) for p in popt])
+
+    annotation_txt = "\n".join([theoretical_ks_mean_now_as_string,
+                                simulated_ks_mean_now_as_string,
+                                theoretical_sigma_from_kingman_as_string,
+                                simulated_ks_sigma_now_as_string])
+
+    this_ax.annotate(annotation_txt, (0, 0), (0, -30), xycoords='axes fraction', textcoords='offset points', va='top')
 
 
 if __name__ == '__main__':
