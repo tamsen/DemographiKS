@@ -210,7 +210,7 @@ def plot_ks_for_modelling(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene,
     total_ks_shift=config_used.mean_Ks_from_Tc+t_div_as_ks
     this_ax.axvline(x=total_ks_shift, color='k', linestyle='--', label="Expected Ks mean")
 
-    Ks_modeling_result= ks_modeling.Ks_modeling_result(config_used, bins)
+    Ks_modeling_result= ks_modeling.Ks_modeling_predictions(config_used, bins)
 
     if show_KS_predictions[0]:
         this_ax.plot(bins,Ks_modeling_result.initial_kingman_as_ks,c='red', label='Ks_exp at Tdiv (Kingman assumption)',alpha=1)

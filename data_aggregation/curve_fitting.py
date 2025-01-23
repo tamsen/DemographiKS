@@ -25,6 +25,11 @@ def wgd_normal(x, amp, mu, sig):
 
 def wgd_travelling_exponential(x, amp, loc_of_maximum, K):
 
+    #note, to be more like the Kingman, we could modify this to
+    #(x - loc_of_maximum) ->
+    #(x - loc_of_maximum - one_generation_in_Ks_space)
+    # but the difference should be negligible.
+
     if x <= loc_of_maximum:
         return 0
     else:
