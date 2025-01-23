@@ -24,16 +24,15 @@ class TestKsByNe(unittest.TestCase):
         # we multiply by 1/1.2 since thats syn / total mut rate
         Ks_per_YR = 0.833*10**-5
         bin_sizes_Tc = [80, 80, 80, 400, 800]  # looks good
-        xmax_Ks = [0.04,0.04,0.04,0.1,0.4] #[0.01,0.01,0.01,0.1,0.2]#False#0.08  # for mut rate e-5
-        bin_sizes_Ks = [0.001, 0.001, 0.001, 0.002, 0.008]
+        xmax_Ks = [0.4,0.4,0.4,0.4,0.4] #[0.01,0.01,0.01,0.1,0.2]#False#0.08  # for mut rate e-5
+        bin_sizes_Ks = [0.001, 0.001, 0.001, 0.004, 0.008]
         xmax_Tc = [2000,2000,2000,20000,40000]
         run_list_num = "_early_DGKS_1000_gen_by_Ne_fast_mut_rate"
-        ymax_Ks = [False,False,False,False,False]
+        ymax_Ks = [50 for f in demographics_TE_run_list ]
 
         suptitle = "SLiM vs SpecKS, Tcoal and Ks\n" + \
                    "Recombination rate = 1.26e-7, mut rate 1.0e-5"
         show_KS_predictions=[False,False,False]
-        total_num_genes = 333
         make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                      demographiKS_out_path, demographics_TE_run_list, run_list_num,
                                      specks_TE_run_list, specks_out_path,

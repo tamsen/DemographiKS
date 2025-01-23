@@ -231,8 +231,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             spx_run_duration_in_m = 0
             specks_mrcas_by_gene = False
 
-        plot_ks(ax[0, i], config_used, demographiKS_ks_results, spx_ks_results, config_used.DIV_time_Ge,
-                config_used.ancestral_Ne, config_used.Ks_per_YR,
+        plot_ks(ax[0, i], config_used, demographiKS_ks_results, spx_ks_results,
                 plot_title, bin_sizes_Ks[i], xmax_Ks[i], ymax_Ks[i], show_KS_predictions)
 
         slim_csv_file = os.path.join(dgx_run_path, "simulated_ancestral_gene_mrcas.csv")
@@ -292,11 +291,9 @@ def plot_expository_images(ax, png_Tdiv, png_Tnow):
             ax[1, 0].spines[pos].set_visible(False)
 
 
-def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_per_YR,
-            title, bin_size, xmax, ymax,
-            show_KS_predictions):
+def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene,
+            title, bin_size, xmax, ymax, show_predictions):
 
-    #some results we will want to plot
     num_slim_genes = len(slim_ks_by_gene)
     num_specks_genes = len(spx_ks_by_gene)
 
@@ -319,7 +316,7 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
     this_ax.axvline(x=config_used.t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
     theoretical_ks_mean_now=config_used.mean_Ks_from_Tc+config_used.t_div_as_ks
     this_ax.axvline(x=theoretical_ks_mean_now, color='r', linestyle='--', label="Expected Ks mean")
-    add_Ks_annotations(this_ax, config_used, slim_ks_by_gene,dgx_hist_ys, bins)
+    add_Ks_annotations(this_ax, config_used, slim_ks_by_gene,dgx_hist_ys, bins, show_predictions)
 
     if ymax:
         this_ax.set(ylim=[0, ymax])
@@ -329,7 +326,8 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene, t_div,Ne, Ks_
     this_ax.legend()
 
 
-def add_Ks_annotations(this_ax, config_used,dgks_Ks_results,dgks_hist_results,bins):
+def add_Ks_annotations(this_ax, config_used,dgks_Ks_results,dgks_hist_results,
+                       bins,show_predictions):
 
     ks_predictions = ks_modeling.Ks_modeling_predictions(config_used, bins)
     ks_fits=ks_modeling.Ks_modeling_fits(dgks_Ks_results,dgks_hist_results,bins)
@@ -343,9 +341,11 @@ def add_Ks_annotations(this_ax, config_used,dgks_Ks_results,dgks_hist_results,bi
     simulated_ks_sigma_now_as_string="Simulated Ks sigma ({:.2E})".format(ks_fits.variance_from_slim)
 
     #plot predictions
-    this_ax.plot(bins, ks_predictions.travelling_kingman_ys, label='expectation due to Kingman',
+    if show_predictions[0]:
+        this_ax.plot(bins, ks_predictions.travelling_kingman_ys, label='expectation due to Kingman',
                  linestyle='solid', color='b', alpha=1)
-    this_ax.plot(bins,ks_predictions.travelling_gaussian_ys,label='expectation due to CLT',
+    if show_predictions[1]:
+        this_ax.plot(bins,ks_predictions.travelling_gaussian_ys,label='expectation due to CLT',
                  linestyle='solid', color='r',alpha=1)
 
     #add annotations

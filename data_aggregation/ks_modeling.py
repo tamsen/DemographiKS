@@ -6,6 +6,8 @@ class Ks_modeling_predictions:
 
     def __init__(self, config, bins):
 
+        #bin_midpoints = [0.5 * (bins[i] + bins[i + 1]) for i in range(0, len(bins) - 1)]
+
         self.theoretical_ks_mean_now = config.mean_Ks_from_Tc + config.t_div_as_ks
         # theoretical_sigma_from_kingman_in_time= (2.0*config_used.ancestral_Ne)**-1 #1/K
         # theoretical_sigma_from_kingman_in_Ks= theoretical_sigma_from_kingman_in_time*config_used.Ks_per_YR
@@ -14,7 +16,7 @@ class Ks_modeling_predictions:
         # theoretical exponential prediction
         K = config.mean_Ks_from_Tc ** -1
         bin_size = bins[1] - bins[0]
-        popt = [config.num_genes * bin_size, config.t_div_as_ks, K]
+        popt = [config.num_genes * bin_size, config.t_div_as_ks, config.Ks_per_YR, K]
         self.travelling_kingman_ys=[curve_fitting.wgd_travelling_exponential(x, *popt) for x in bins]
 
         # theoretical gaussian prediction

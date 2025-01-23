@@ -23,7 +23,7 @@ def wgd_normal(x, amp, mu, sig):
     exponent=(x-mu)*(x-mu)/(2.0*sig*sig)
     return  amp * scale * math.e**(-1*exponent)
 
-def wgd_travelling_exponential(x, amp, loc_of_maximum, K):
+def wgd_travelling_exponential(x, amp, loc_of_maximum, ks_for_one_generation,K):
 
     #note, to be more like the Kingman, we could modify this to
     #(x - loc_of_maximum) ->
@@ -33,7 +33,7 @@ def wgd_travelling_exponential(x, amp, loc_of_maximum, K):
     if x <= loc_of_maximum:
         return 0
     else:
-        result= amp * K * math.e ** (-K * ((x - loc_of_maximum)))
+        result= amp * K * math.e ** (-K * ((x - loc_of_maximum - ks_for_one_generation)))
         return result
 
 

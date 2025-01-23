@@ -27,7 +27,7 @@ class TestGeneLossRates(unittest.TestCase):
         xmax_Tc = [False,False,False,False,False]
         run_list_name="Ks_for_varying_varying_Tdiv"
         ymax_KS = [800,800,800,800,800]
-        show_KS_predictions=[False,False,False]
+        show_KS_predictions=[True,True,True]
         suptitle = "SLiM and SpecKS Ks histograms\n" + \
                                   "Recombination rate = 8e-9, Ne and BI constant"
         make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
