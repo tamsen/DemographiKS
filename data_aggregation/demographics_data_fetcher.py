@@ -7,7 +7,8 @@ class MyDGXDataFetcher(unittest.TestCase):
 
     def test_fetch_demographics_data(self):
 
-        run_list=['KSvsRC10_m01d22y2025_h10m45s03','KSvsRC11_m01d22y2025_h11m14s42']
+        run_list=['KSvsRC10_m01d24y2025_h10m40s24']
+
         run_collection_name="TE"
 
         #me_at_remote_URL =  'tdunn@mesx.sdsu.edu'

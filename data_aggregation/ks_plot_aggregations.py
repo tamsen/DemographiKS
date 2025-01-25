@@ -179,11 +179,12 @@ class TestKsPlotAgg(unittest.TestCase):
 def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                  demographiKS_out_path, demographics_TE9_run_list, run_list_name,
                                  specks_TE9_run_list, specks_out_path,
-                                 xmax_Ks, xmax_Tc, ymax_Ks, suptitle, show_KS_predictions):
-    ymax_Tc = False
+                                 xmax_Ks, xmax_Tc, ymax_Ks, ymax_Tc,
+                                 suptitle, show_KS_predictions):
+
     num_runs = len(demographics_TE9_run_list)
-    #png_out = os.path.join(demographiKS_out_path, "ks_hist_by_{0}_test.png".format(run_list_name))
-    png_out = os.path.join(demographiKS_out_path, "ks_hist_by_{0}_test.jpg".format(run_list_name))
+    png_out = os.path.join(demographiKS_out_path, "ks_hist_by_{0}_test.png".format(run_list_name))
+    #png_out = os.path.join(demographiKS_out_path, "ks_hist_by_{0}_test.jpg".format(run_list_name))
     par_dir = Path(__file__).parent.parent
     image_folder = os.path.join(par_dir, "images")
     png_Tnow = os.path.join(image_folder, 'Ks_now_time_slice.jpg')
@@ -245,7 +246,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
         theory_mrcas_by_gene=False
         avg_slim_Tc = plot_mrca(ax[1, i], slim_mrcas_by_gene, specks_mrcas_by_gene, theory_mrcas_by_gene,
                   plot_title, config_used.ancestral_Ne,
-                  bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc, config_used.num_genes)
+                  bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc[i], config_used.num_genes)
 
         add_mrca_annotations(ax[1, i], config_used, avg_slim_Tc, dgx_run_duration_in_m, spx_run_duration_in_m)
 
