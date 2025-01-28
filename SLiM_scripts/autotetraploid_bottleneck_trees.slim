@@ -1,0 +1,92 @@
+// Peter Ralph, 10 September 2019: autotetraploidy
+// Modified by Paul Blischak, 29 September 2020
+
+/*
+	Autopolyploid bottleneck
+
+	Example usage:
+
+	slim -d "nuBot=0.1" -d "rep=1" autotetraploid_snm.slim
+
+	Parameters:
+		nuBot: Proportion of the ancestral population size remaining after bottleneck.
+		rep: Simulation replicate number (for running things in a for loop or
+			 an array job on an HPC).
+*/
+
+initialize() {
+
+	initializeTreeSeq(checkCoalescence=F);
+
+	// Use the rep number to modify the starting seed.
+	// Useful when running on a cluster with jobs starting at the same time.
+	setSeed(rdunif(1, 0, asInteger(2^60) - 1)+asInteger(rep));
+
+	// Number of individuals in population
+	defineConstant("N", asInteger(Na));
+
+	// Length of sequence (L)
+	// defineConstant("L", 1e6);
+
+	// Recombination rate
+	defineConstant("RCR", asFloat(recombination_rate));
+
+	// Mutation rate
+	defineConstant("mu", 0);
+
+	initializeMutationType("m1", 0.5, "f", 0.0);
+	m1.convertToSubstitution = T;
+
+	initializeGenomicElementType("g1", m1, 1.0);
+	initializeGenomicElement(g1, 0, L - 1);
+	initializeMutationRate(mu);
+	initializeRecombinationRate(RCR);
+}
+
+/*
+Setup initial population as two "subgenome populations", each with N individuals.
+Then, allow individuals to be exchanged between subgenome populations with equal
+frequency.
+*/
+1 early() {
+	sim.addSubpop("p1", N);
+	sim.addSubpop("p2", N);
+	p1.setMigrationRates(p2, 0.5);
+	p2.setMigrationRates(p1, 0.5);
+
+	community.rescheduleScriptBlock(
+		s3,
+	    asInteger(BurninTime +  asFloat(Twgd_gen)),
+		asInteger(BurninTime +  asFloat(Twgd_gen))
+	);
+	community.rescheduleScriptBlock(
+		s4,
+	    asInteger(BurninTime-1),
+		asInteger(BurninTime-1)
+	);
+}
+
+/*
+Apply bottleneck after the burn-in period has finished.
+The burn-in period is typically 10x the total number of chromosomes in the
+starting population. Since we're modeling a polysomic autotetraploid with 
+1000 individuals, that means that there are 4000 chromosomes and the burn-in
+is 40_000 generations.
+*/
+BurninTime late() {
+	p1.setSubpopulationSize(asInteger(Nb));
+	p2.setSubpopulationSize(asInteger(Nb));
+}
+
+//Block is rescheduled in generation 1. This block is for writing out the trees file
+
+s3 10 late() {
+	catn(sim.cycle + "\t block s3 executed");
+	sim.treeSeqOutput(trees_file_name);
+	catn("wrote trees file to:\t" + trees_file_name);
+}
+s4 10 early() {
+	catn(sim.cycle + "\t block s4 executed");
+	sim.treeSeqOutput(trees_file_name_at_div);
+	catn("wrote trees file to:\t" + trees_file_name_at_div);
+}

@@ -32,7 +32,13 @@ def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
     #slim -d "nuBot=0.1" -d "T1=0.5" -d "T2=0.25" -d "rep=1" allotetraploid_bottleneck.slim
 
     delta_t=  ( float(config.DIV_time_Ge) - float(config.WGD_time_Ge) )
+
     #burnin_time = 2 * 10 * config.ancestral_Ne <- reccomended by SLiM manual, but not really always enough.
+    if not config.DIV_time_Ge:
+        div_time_string="-1"
+    else:
+        div_time_string=str(config.DIV_time_Ge)
+
     burnin_time = config.burnin_time
     cmd = ["slim",
            "-d", "trees_file_name='"+str(trees_file_name)+"'",
@@ -41,7 +47,8 @@ def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
            "-d", "Na=" + str(config.ancestral_Ne),
            "-d", "Nb=" + str(config.bottleneck_Ne),
            "-d", "delta_t=" + str(delta_t),
-           "-d", "Tdiv_gen=" + str(config.DIV_time_Ge),
+           "-d", "Tdiv_gen=" + div_time_string,
+           "-d", "Twgd_gen=" + str(config.WGD_time_Ge),
            "-d", "BurninTime=" + str(burnin_time),
            "-d", "recombination_rate=" + str(config.recombination_rate),
            "-d", "rep=" + str(config.SLiM_rep),

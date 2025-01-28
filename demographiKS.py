@@ -28,7 +28,8 @@ def run():
     demographics_out_folder = os.path.join(conf.output_folder, "demographiKS_output")
     final_trees_file = os.path.join(slim_out_folder, conf.sim_name + "_trees.txt")
     trees_file_at_div = os.path.join(slim_out_folder, conf.sim_name + "_trees_at_div.txt")
-    my_SLiM_script = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
+    my_SLiM_allo_script = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
+    my_SLiM_auto_script = os.path.join("SLiM_scripts", "autotetraploid_bottleneck_trees.slim")
 
     out_fasta = os.path.join(demographics_out_folder, conf.sim_name + ".fa")
     out_csv = os.path.join(demographics_out_folder, conf.sim_name + ".csv")
@@ -46,7 +47,10 @@ def run():
         log.write_to_log("Using pre-exisiting trees file:\t" + str(conf.pre_existing_trees_file))
     else:
         path_to_current_py_script = os.path.abspath(__file__)
-        full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script), my_SLiM_script)
+        if conf.DIV_time_Ge:
+            full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script), my_SLiM_allo_script)
+        else: #if there was no parental divergence, then this must be an autopolyploid
+            full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script), my_SLiM_auto_script)
         log.write_to_log("Running SLiM script:\t" + str(full_slim_script))
         SLiM_runner.run_slim(conf, final_trees_file, trees_file_at_div, full_slim_script)
 
@@ -142,7 +146,7 @@ def run():
 
             log.write_to_log("stop codons: " + ",".join([str(i) for i in idx_of_stop_codons]))
             if conf.keep_intermediary_files:
-                out_per_genome_per_paralog_fasta = os.path.join(demographics_out_folder, paralog_name + "_foo.fa")
+                out_per_genome_per_paralog_fasta = os.path.join(demographics_out_folder, paralog_name + ".fa")
                 record = SeqRecord(subsequence,
                                    id=subgenome, name=paralog_name,
                                    description="simulated paralogous gene")

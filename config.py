@@ -52,6 +52,9 @@ class DemographiKS_config:
                 incoming_tag = top_layer.tag.strip()
                 incoming_txt = top_layer.text.strip()
 
+                if (incoming_tag == "SimName"):
+                    self.sim_name= incoming_txt
+
                 if (incoming_tag == "StopAtStep"):
                     self.stop_at_step = int(incoming_txt)
 
@@ -126,7 +129,7 @@ class DemographiKS_config:
                         incoming_txt = inner_layer.text.strip()
                         incoming_tag = inner_layer.tag.strip()
                         if (incoming_tag == "DIV_time_Ge"):
-                            self.DIV_time_Ge = float(incoming_txt)
+                            self.DIV_time_Ge = parse_int_or_false(incoming_txt)
                         if (incoming_tag == "WGD_time_Ge"):
                             self.WGD_time_Ge = float(incoming_txt)
 

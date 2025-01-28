@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <Paths>
+          <output_folder_root>/home/tamsen/Data/DemographiKS_output/DemographiKS</output_folder_root>
+         <!-- <pre_existing_trees_file>/home/tamsen/Data/DemographiKS_output/allotetraploid_trees_Ne_1000.txt
+        </pre_existing_trees_file>  -->
+    </Paths>
+    <Chromosome>
+        <total_num_bases>10000</total_num_bases>
+        <num_codons_in_a_gene>1000</num_codons_in_a_gene>
+        <max_num_paralogs_to_process>FALSE</max_num_paralogs_to_process>
+        <recombination_rate>8e-9</recombination_rate>
+        <!--<recombination_rate>8e-8</recombination_rate>-->
+    </Chromosome>
+    <Population>
+        <ancestral_ne>1000</ancestral_ne>
+        <bottleneck_ne>100</bottleneck_ne>
+      </Population>
+    <SequenceEvolution>
+        <WGD_gene_half_life_in_GE>10</WGD_gene_half_life_in_GE>
+    </SequenceEvolution>
+    <Speciation>
+        <DIV_time_Ge>FALSE</DIV_time_Ge>
+        <WGD_time_Ge>25</WGD_time_Ge>
+    </Speciation>
+    <Randomization>
+        <SLiM_rep>1</SLiM_rep>
+        <Msprime_random_seed>1</Msprime_random_seed>
+    </Randomization>
+    <SimName>autotetraploid_bottleneck</SimName>
+    <LogFileName>DemographiKS_log.txt</LogFileName>
+    <KeepIntermediaryFiles>True</KeepIntermediaryFiles>
+    <StopAtStep>99</StopAtStep>
+</metadata>
