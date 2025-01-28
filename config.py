@@ -145,8 +145,10 @@ class DemographiKS_config:
         # we multiply by 1/1.2 since thats syn / total mut rate
         self.Ks_per_YR = 0.833 * self.mutation_rate
         self.mean_Ks_from_Tc = 2.0 * self.ancestral_Ne * self.Ks_per_YR
+        self.mean_Ks_from_Nb = 2.0 * self.bottleneck_Ne * self.Ks_per_YR
         self.num_genes = int(self.total_num_bases / self.gene_length_in_bases)
         self.t_div_as_ks = self.DIV_time_Ge * self.Ks_per_YR
+        self.theoretical_ks_mean_now = self.mean_Ks_from_Tc + self.t_div_as_ks
 
 def parse_tuple_string(tuple_string):
     if tuple_string.upper() == "FALSE":

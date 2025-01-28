@@ -5,7 +5,7 @@ from data_aggregation.ks_plot_aggregations import make_Tc_Ks_fig_with_subplots
 
 class TestKsByNe(unittest.TestCase):
 
-    def test_Ks_for_varying_RC_10K_Ne(self):
+    def test_Ks_for_varying_Na_no_bottleneck(self):
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/KS_vs_Na'
         specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
 

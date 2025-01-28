@@ -7,10 +7,11 @@ class MyDGXDataFetcher(unittest.TestCase):
 
     def test_fetch_demographics_data(self):
 
-        run_list = ['KSvs500Ne_m01d26y2025_h18m18s55']
-        #run_list=['KSvsRC8_m01d25y2025_h13m13s04','KSvs5KNe_m01d26y2025_h18m18s21',
-        #          'KSvs1KNe_m01d26y2025_h18m18s41','KSvs500Ne_m01d26y2025_h18m18s55',
-        #        'KSvs100Ne_m01d26y2025_h18m19s06']
+        run_list = ['KSvs10KNa_1KNb_m01d27y2025_h16m40s00','KSvs100Na_1KNb_m01d27y2025_h16m52s55']
+        #    'KSvs100Na_100Nb_m01d27y2025_h16m51s00','KSvs100Na_1KNb_m01d27y2025_h16m52s55',
+        #            'KSvs100Na_500Nb_m01d27y2025_h16m51s10','KSvs100Na_5KNb_m01d27y2025_h16m52s44',
+        #            'KSvs10KNa_100Nb_m01d27y2025_h16m40s00','KSvs10KNa_1KNb_m01d27y2025_h16m40s00',
+        #            'KSvs10KNa_500Nb_m01d27y2025_h16m40s00','KSvs10KNa_5KNb_m01d27y2025_h16m41s35']
 
         run_collection_name="TE"
         me_at_remote_URL =  'mesx_cluster'

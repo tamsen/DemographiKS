@@ -183,7 +183,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                  suptitle, show_KS_predictions):
 
     num_runs = len(demographics_TE9_run_list)
-    png_out = os.path.join(demographiKS_out_path, "ks_hist_by_{0}_test.png".format(run_list_name))
+    png_out = os.path.join(demographiKS_out_path, run_list_name)
     #png_out = os.path.join(demographiKS_out_path, "ks_hist_by_{0}_test.jpg".format(run_list_name))
     par_dir = Path(__file__).parent.parent
     image_folder = os.path.join(par_dir, "images")
@@ -208,7 +208,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             demographiKS_ks_results = read_Ks_csv(ks_file, False)
             dgx_run_duration_in_m = get_run_time_in_minutes(dgx_run_path)
             plot_title = "Ks at Tnow\n" + "burnin time=" + str(config_used.burnin_time) + " gen,\n" \
-                     + "Ne=" + str(config_used.ancestral_Ne) +\
+                     + "Na=" + str(config_used.ancestral_Ne)  + ", Nb=" + str(config_used.bottleneck_Ne) +\
                          ", Tdiv=" + str(config_used.DIV_time_Ge) + ", RC=" + str(config_used.recombination_rate)
         else:
             config_used = False
@@ -241,7 +241,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
         theory_output_file = os.path.join(dgx_run_path, "theoretical_ancestral_gene_mrcas.csv")
         loci, theory_mrcas_by_gene = read_data_csv(theory_output_file)
         plot_title = "Tcoal at Tdiv\nburnin time=" + str(config_used.burnin_time) + " gen, " \
-                     + "Ne=" + str(config_used.ancestral_Ne)
+                     + "Na=" + str(config_used.ancestral_Ne)
 
         theory_mrcas_by_gene=False
         avg_slim_Tc = plot_mrca(ax[1, i], slim_mrcas_by_gene, specks_mrcas_by_gene, theory_mrcas_by_gene,
@@ -317,6 +317,10 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene,
     this_ax.axvline(x=config_used.t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
     theoretical_ks_mean_now=config_used.mean_Ks_from_Tc+config_used.t_div_as_ks
     this_ax.axvline(x=theoretical_ks_mean_now, color='r', linestyle='--', label="Expected Ks mean")
+    #mean_Ks_from_Nb_string=  "({:.2E})".format(config_used.mean_Ks_from_Nb)
+    #this_ax.axvline(x=config_used.mean_Ks_from_Nb,
+    #                color='g', linestyle='--', label="Tc due to Nb " + mean_Ks_from_Nb_string )
+
     add_Ks_annotations(this_ax, config_used, slim_ks_by_gene,dgx_hist_ys, bins, show_predictions)
 
     if ymax:
@@ -339,6 +343,8 @@ def add_Ks_annotations(this_ax, config_used,dgks_Ks_results,dgks_hist_results,
 
     #compare simulated and predicted Ks sigma
     theoretical_sigma_from_kingman_as_string="Kingman Ks sigma ({:.2E})".format(ks_predictions.theoretical_Kingman_sigma_now )
+    theoretical_sigma_from_subsampling_genes_as_string = "Theoretical Ks sigma from subsampling ({:.2E})".format(
+        ks_predictions.theoretical_sigma_due_to_kingman_from_subsampling_genes)
     simulated_ks_sigma_now_as_string="Simulated Ks sigma ({:.2E})".format(ks_fits.variance_from_slim)
 
     #plot predictions
@@ -353,6 +359,7 @@ def add_Ks_annotations(this_ax, config_used,dgks_Ks_results,dgks_hist_results,
     annotation_txt = "\n".join([theoretical_ks_mean_now_as_string,
                                 simulated_ks_mean_now_as_string,
                                 theoretical_sigma_from_kingman_as_string,
+                                theoretical_sigma_from_subsampling_genes_as_string,
                                 simulated_ks_sigma_now_as_string])
 
     this_ax.annotate(annotation_txt, (0, 0), (0, -30), xycoords='axes fraction', textcoords='offset points', va='top')
