@@ -6,23 +6,29 @@ from data_aggregation.ks_plot_aggregations import make_Tc_Ks_fig_with_subplots
 class TestKsByNe(unittest.TestCase):
 
     def test_Ks_for_varying_RC_10K_Ne(self):
-        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/KS_vs_RC/save_Ne_10K'
+        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/KS_vs_Na'
         specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
 
         #full, w/Ne 10K
-        demographics_run_list = [False, 'KSvsRC6_m01d25y2025_h13m19s03',
-                                 'KSvsRC7_m01d25y2025_h13m14s32', 'KSvsRC8_m01d25y2025_h13m13s04',
-         'KSvsRC9_m01d25y2025_h13m09s54','KSvsRC10_m01d24y2025_h10m40s24_Ne_10_000']
+        demographics_run_list = [False,
+                'KSvs100Ne_m01d26y2025_h18m19s06','KSvs500Ne_m01d26y2025_h18m18s55',
+                                 'KSvs1KNe_m01d26y2025_h18m18s41','KSvs5KNe_m01d26y2025_h18m18s21',
+                                 'KSvsRC8_m01d25y2025_h13m13s04'
+                                 ]
         specks_TE5_run_list = [False,False,False,False,False,False,False]
 
-        bin_sizes_Tc = [2000 for f in demographics_run_list]
-        bin_sizes_Ks = [0.01 for f in demographics_run_list]
-        xmax_Ks = [0.5 for f in demographics_run_list] #[0.025, 0.025, 0.025, 0.025, 0.025]  # 0.001  # max(demographiKS_ks_results)
-        xmax_Tc = [80000 for f in demographics_run_list]
-        ymax_KS = [100 for f in demographics_run_list]
-        ymax_Tc = [100 for f in demographics_run_list]
 
-        run_list_name = "Ks_for_varying_varying_RC_10KNe"
+        xmax_Ks = [0.01,0.05,0.05,0.1,0.5,1]
+        bin_sizes_Ks = [xmax_KS_i/50 for xmax_KS_i in xmax_Ks]
+
+        xmax_Tc = [5000,5000,5000,10000,50000,100000]
+        bin_sizes_Tc = [xmax_Tc_i/50 for xmax_Tc_i in xmax_Tc]
+
+
+        ymax_KS = [False for f in demographics_run_list]
+        ymax_Tc = [False for f in demographics_run_list]
+
+        run_list_name = "Ks_for_varying_varying_Na_Nb_constantRC"
         # since mutation rate is 1.0e-5
         # we multiply by 1/1.2 since thats syn / total mut rate
 
