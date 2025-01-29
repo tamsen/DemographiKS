@@ -10,6 +10,7 @@ class TestKsForAuto(unittest.TestCase):
         specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
 
         demographics_run_list = [False,'Auto1KNe_m01d29y2025_h09m19s49',
+                                 'Auto1KNe_m01d29y2025_h11m39s31',
                                  'KSvs1KNe_m01d26y2025_h18m18s41']
         specks_TE5_run_list = [False,False,False,False,False,False,False]
 
@@ -21,8 +22,8 @@ class TestKsForAuto(unittest.TestCase):
         bin_sizes_Tc = [xmax_Tc_i/50 for xmax_Tc_i in xmax_Tc]
 
 
-        ymax_KS = [False for f in demographics_run_list]
-        ymax_Tc = [False for f in demographics_run_list]
+        ymax_KS = [100 for f in demographics_run_list]
+        ymax_Tc = [100 for f in demographics_run_list]
 
         run_list_name = "Ks_for_Auto"
         # since mutation rate is 1.0e-5
