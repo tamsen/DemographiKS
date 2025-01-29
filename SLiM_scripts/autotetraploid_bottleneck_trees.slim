@@ -29,6 +29,9 @@ initialize() {
 	setSeed(rdunif(1, 0, asInteger(2^60) - 1)+asInteger(rep));
 
 	// Number of individuals in population
+	// Divide N by two here bc
+	// we will make two diploid populations, each of size N/2,
+	// which together has a size of N/2, + N/2 = Na
 	defineConstant("N", asInteger(Na));
 
 	// Length of sequence (L)
@@ -55,8 +58,8 @@ Then, allow individuals to be exchanged between subgenome populations with equal
 frequency.
 */
 1 early() {
-	sim.addSubpop("p1", N);
-	sim.addSubpop("p2", N);
+	sim.addSubpop("p1", asInteger(N/2));
+	sim.addSubpop("p2", asInteger(N/2));
 	p1.setMigrationRates(p2, 0.5);
 	p2.setMigrationRates(p1, 0.5);
 

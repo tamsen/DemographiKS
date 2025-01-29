@@ -202,7 +202,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             glob_results=glob.glob(dgx_run_path + '/*.used.xml')
             input_xml_file = glob_results[0]
             config_used = config.DemographiKS_config(input_xml_file)
-            csv_file_name = 'allotetraploid_bottleneck.csv'
+            csv_file_name = config_used.sim_name + '.csv'
             ks_file = os.path.join(dgx_run_path, csv_file_name)
             print("reading " + ks_file)
             demographiKS_ks_results = read_Ks_csv(ks_file, False)
