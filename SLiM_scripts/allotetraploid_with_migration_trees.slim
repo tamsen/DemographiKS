@@ -1,0 +1,117 @@
+/*
+	Allotetraploid bottleneck
+
+	Example usage:
+
+	slim -d "nuBot=0.1" -d "T1=0.5" -d "T2=0.25" -d "rep=1" allotetraploid_bottleneck.slim
+
+	Parameters:
+		nuBot: Proportion of the ancestral population size remaining after bottleneck.
+		T1: The amount of time in dadi units (# of 2N generations) that the parents
+			are isolated before forming the allotetraploid.
+		T2: The amount of time the allotetraploid lineage has existed before we sample
+			it.
+		rep: Simulation replicate number (for running things in a for loop or
+			 an array job on an HPC).
+*/
+
+initialize() {
+
+	initializeTreeSeq(checkCoalescence=F);
+
+	// Use the rep number to modify the starting seed.
+	// Useful when running on a cluster with jobs starting at the same time.
+	setSeed(rdunif(1, 0, asInteger(2^60) - 1)+asInteger(rep));
+
+	// Number of individuals in population
+	defineConstant("N", asInteger(Na));
+
+	// Time parents are isolated in generations
+	defineConstant("T1", asFloat(delta_t));
+
+	// Recombination rate
+	defineConstant("RCR", asFloat(recombination_rate));
+
+	// Burnin time (generally 10 * num chr = 10 * 2 * N)
+	//defineConstant("BurninTime", 10*2*N);
+
+	// Mutation rate
+	defineConstant("mu", 0);
+
+	initializeMutationType("m1", 0.5, "f", 0.0);
+	m1.convertToSubstitution = T;
+
+	initializeGenomicElementType("g1", m1, 1.0);
+	initializeGenomicElement(g1, 0, L - 1);
+	initializeMutationRate(mu);
+	//initializeRecombinationRate(1.25e-6);
+	initializeRecombinationRate(RCR);
+
+	catn("Tdiv:\t" + Tdiv_gen);
+	catn("delta_t:\t" + delta_t);
+}
+
+/*
+Setup initial diploid ancestral population with N individuals. Schedule population
+bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
+*/
+1 early() {
+	sim.addSubpop("p1", N);
+	community.rescheduleScriptBlock(
+		s1,
+		asInteger(BurninTime + asFloat(T1)),
+		asInteger(BurninTime + asFloat(T1))
+	);
+	community.rescheduleScriptBlock(
+		s3,
+	    asInteger(BurninTime +  asFloat(Tdiv_gen)),
+		asInteger(BurninTime +  asFloat(Tdiv_gen))
+	);
+	community.rescheduleScriptBlock(
+		s4,
+	    asInteger(BurninTime-1),
+		asInteger(BurninTime-1)
+	);
+
+
+}
+
+// Burn-in here is 10 * 2 * 1000 = 20_000 generations.
+BurninTime: late() {
+	catn(sim.cycle + "\t" + p1.individualCount + "\t" + p2.individualCount);
+}
+
+// Split populations after burn-in.
+BurninTime early() {
+	sim.addSubpopSplit("p2", N, p1);
+
+	#allow migration between the parental populations
+	mig_rate=0.1
+	p1.setMigrationRates(p2, mig_rate);
+	p2.setMigrationRates(p1, mig_rate;
+}
+
+BurninTime+foo early() {
+	#stop migration between the parental populations
+	mig_rate=0.1
+	p1.setMigrationRates(p2, mig_rate);
+	p2.setMigrationRates(p1, mig_rate;
+}
+/*
+Block is rescheduled in generation 1. This block is for starting the bottleneck.
+*/
+s1 10 late() {
+	p1.setSubpopulationSize(asInteger(Nb));
+	p2.setSubpopulationSize(asInteger(Nb));
+}
+
+s3 10 late() {
+	catn(sim.cycle + "\t block s3 executed");
+	sim.treeSeqOutput(trees_file_name);
+	catn("wrote trees file to:\t" + trees_file_name);
+}
+s4 10 early() {
+	catn(sim.cycle + "\t block s4 executed");
+	sim.treeSeqOutput(trees_file_name_at_div);
+	catn("wrote trees file to:\t" + trees_file_name_at_div);
+}

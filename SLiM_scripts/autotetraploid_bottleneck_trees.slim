@@ -16,6 +16,12 @@
 
 initialize() {
 
+    // The checkCoalescence parameter controls whether a check for full coalescence
+    // is conducted after each simplification.
+    // If a model will call treeSeqCoalesced() to check for coalescence during its execution,
+    // checkCoalescence should be set to T. Since the coalescence checks entail a performance penalty,
+    // the default of F is preferable otherwise.
+    // (So here we leave checkCoalescence=F for performance, and we will check afterwards)
 	initializeTreeSeq(checkCoalescence=F);
 
 	// Use the rep number to modify the starting seed.
