@@ -9,7 +9,7 @@ class TestKsForAuto(unittest.TestCase):
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/Auto'
         specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
 
-        demographics_run_list = [False,'Auto1KNe_m01d29y2025_h09m19s49',
+        demographics_run_list = [False,'Auto1KNe_m01d29y2025_h12m27s12',
                                  'Auto1KNe_m01d29y2025_h11m39s31',
                                  'KSvs1KNe_m01d26y2025_h18m18s41']
         specks_TE5_run_list = [False,False,False,False,False,False,False]

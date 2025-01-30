@@ -7,14 +7,12 @@ class MyDGXDataFetcher(unittest.TestCase):
 
     def test_fetch_demographics_data(self):
 
-        run_list = ['Auto1KNe_m01d29y2025_h11m39s31']
+        run_list = ['Auto1KNe_m01d29y2025_h12m27s12']
 
         run_collection_name="TE"
         me_at_remote_URL =  'mesx_cluster'
 
-        if (('DGKS' in run_list[0])
-                or ('Auto' in run_list[0])
-                or ('vs' in run_list[0]) or ('refactor' in run_list[0])):
+        if True:
             output_root_folder = os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_Output")
         else:
             output_root_folder=os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_output",
