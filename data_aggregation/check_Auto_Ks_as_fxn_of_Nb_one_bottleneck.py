@@ -1,39 +1,49 @@
 import unittest
 
 from data_aggregation.ks_plot_aggregations import make_Tc_Ks_fig_with_subplots
+from data_aggregation.ks_plot_aggregations_auto_vs_allo import make_Tc_Ks_Allo_vs_Auto_fig_with_subplots
 
 
 class TestKsForAuto(unittest.TestCase):
 
     def test_Ks_for_varying_Nb_one_bottleneck_Auto(self):
-        demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/Auto'
-        specks_out_path = '/home/tamsen/Data/Specks_output_from_mesx'
 
-        demographics_run_list = [False,'Auto1KNe_m01d29y2025_h12m27s12',
-                                 'Auto1KNe_m01d29y2025_h11m39s31',
-                                 'KSvs1KNe_m01d26y2025_h18m18s41']
-        specks_TE5_run_list = [False,False,False,False,False,False,False]
+        demographiKS_allo_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/KS_vs_Nb/Na100'
+        demographics_auto_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/Auto'
+
+        #demographics_auto_run_list = [False,'Auto1KNe_m01d29y2025_h12m27s12',
+        #                         'Auto1KNe_m01d29y2025_h11m39s31',
+        #                         'KSvs1KNe_m01d26y2025_h18m18s41']
+
+        demographics_allo_run_list = [False,
+         'KSvs100Na_100Nb_m01d27y2025_h16m51s00', 'KSvs100Na_500Nb_m01d27y2025_h16m51s10',
+         'KSvs100Na_1KNb_m01d27y2025_h16m52s55', 'KSvs100Na_5KNb_m01d27y2025_h16m52s44']
+
+        demographics_auto_run_list   = [False,
+                                      'Auto100Na_100Nb_m01d29y2025_h18m22s20',
+                                      'Auto_100Na_500Nb_m01d29y2025_h18m22s20',
+                                      'Auto_100Na_1KNb_m01d29y2025_h18m22s20',
+                                      'Auto_100Na_5KNb_m01d29y2025_h18m22s20'
+                                      ]
 
 
-        xmax_Ks = [0.10 for f in demographics_run_list ]
+        xmax_Ks = [0.10 for f in demographics_auto_run_list ]
         bin_sizes_Ks = [xmax_KS_i/50 for xmax_KS_i in xmax_Ks]
 
-        xmax_Tc = [10000 for f in demographics_run_list ]
+        xmax_Tc = [10000 for f in demographics_auto_run_list ]
         bin_sizes_Tc = [xmax_Tc_i/50 for xmax_Tc_i in xmax_Tc]
 
 
-        ymax_KS = [100 for f in demographics_run_list]
-        ymax_Tc = [100 for f in demographics_run_list]
+        ymax_KS = [False for f in demographics_auto_run_list]
+        ymax_Tc = [100 for f in demographics_auto_run_list]
+        run_list_name = "Ks_for_Allo_and_Auto_varying_varying_Nb"
 
-        run_list_name = "Ks_for_Auto"
-        # since mutation rate is 1.0e-5
-        # we multiply by 1/1.2 since thats syn / total mut rate
 
         show_KS_predictions = [False, False, False]
         suptitle = "SLiM and SpecKS Ks histograms\n"
-        make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
-                                     demographiKS_out_path, demographics_run_list, run_list_name,
-                                     specks_TE5_run_list, specks_out_path,
+        make_Tc_Ks_Allo_vs_Auto_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
+                                     demographiKS_allo_out_path, demographics_allo_run_list, run_list_name,
+                                     demographics_auto_run_list, demographics_auto_out_path ,
                                      xmax_Ks, xmax_Tc, ymax_KS, ymax_Tc,
                                      suptitle, show_KS_predictions)
 
@@ -67,7 +77,7 @@ class TestKsForAuto(unittest.TestCase):
 
         show_KS_predictions = [False, False, False]
         suptitle = "SLiM and SpecKS Ks histograms\n"
-        make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
+        make_Tc_Ks_Allo_vs_Auto_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                      demographiKS_out_path, demographics_run_list, run_list_name,
                                      specks_TE5_run_list, specks_out_path,
                                      xmax_Ks, xmax_Tc, ymax_KS, ymax_Tc,

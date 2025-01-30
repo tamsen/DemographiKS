@@ -27,13 +27,14 @@ class TestGeneLossRates(unittest.TestCase):
         xmax_Tc = [False,False,False,False,False]
         run_list_name="Ks_for_varying_varying_Tdiv"
         ymax_KS = [800,800,800,800,800]
+        ymax_Tc = [False for f in demographics_TE5_run_list]
         show_KS_predictions=[True,True,True]
         suptitle = "SLiM and SpecKS Ks histograms\n" + \
                                   "Recombination rate = 8e-9, Ne and BI constant"
         make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                                           demographiKS_out_path, demographics_TE5_run_list, run_list_name,
                                           specks_TE5_run_list, specks_out_path,
-                                     xmax_Ks, xmax_Tc, ymax_KS, suptitle,
+                                     xmax_Ks, xmax_Tc, ymax_KS, ymax_Tc,suptitle,
                                      show_KS_predictions)
 
         self.assertEqual(True, True)  # add assertion here
