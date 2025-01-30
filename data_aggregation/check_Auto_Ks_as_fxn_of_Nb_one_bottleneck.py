@@ -30,9 +30,8 @@ class TestKsForAuto(unittest.TestCase):
         xmax_Ks = [0.10 for f in demographics_auto_run_list ]
         bin_sizes_Ks = [xmax_KS_i/50 for xmax_KS_i in xmax_Ks]
 
-        xmax_Tc = [10000 for f in demographics_auto_run_list ]
-        bin_sizes_Tc = [xmax_Tc_i/50 for xmax_Tc_i in xmax_Tc]
-
+        xmax_Tc = [5000 for f in demographics_auto_run_list]
+        bin_sizes_Tc = [xmax_Tc_i / 50 for xmax_Tc_i in xmax_Tc]
 
         ymax_KS = [False for f in demographics_auto_run_list]
         ymax_Tc = [100 for f in demographics_auto_run_list]
