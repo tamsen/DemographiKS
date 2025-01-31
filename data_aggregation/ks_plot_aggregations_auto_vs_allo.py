@@ -19,19 +19,18 @@ def plot_mrca_for_Autos_and_Allos(this_ax, allo_mrcas_by_gene, auto_mrcas_by_gen
                                   theoretical_mrcas_by_gene,
                                   title, Ne, bin_size, xmax, ymax, total_num_genes):
 
-    num_slim_genes = len(allo_mrcas_by_gene)
-    if num_slim_genes == 0:
-        avg_simulated_slim_Tc = 0
+    num_allo_genes = len(allo_mrcas_by_gene)
+    if num_allo_genes == 0:
+        avg_simulated_allo_Tc = 0
     else:
-        avg_simulated_slim_Tc = sum(allo_mrcas_by_gene) / num_slim_genes
+        avg_simulated_allo_Tc = sum(allo_mrcas_by_gene) / num_allo_genes
 
     if auto_mrcas_by_gene and (len(auto_mrcas_by_gene) > 0):
         auto_mrcas_genes = len(auto_mrcas_by_gene)
-        avg_simulated_specKS_Tc = sum(auto_mrcas_by_gene) / auto_mrcas_genes
+        avg_simulated_auto_Tc = sum(auto_mrcas_by_gene) / auto_mrcas_genes
     else:
-        avg_simulated_specKS_Tc = 0
+        avg_simulated_auto_Tc = 0
 
-    avg_simulated_specKS_Tc_in_years = avg_simulated_specKS_Tc * 10 ** 6
     if not xmax:
         xmax = max(allo_mrcas_by_gene)
     bins = np.arange(0, xmax, bin_size)
@@ -45,17 +44,16 @@ def plot_mrca_for_Autos_and_Allos(this_ax, allo_mrcas_by_gene, auto_mrcas_by_gen
     if allo_mrcas_by_gene:
         this_ax.hist(allo_mrcas_by_gene, bins=bins, facecolor='b', alpha=0.25,
                      label='Allo Tcoal by gene\n'
-                           + "(" + str(num_slim_genes) + " genes in genome,\n"
-                           + "avg Tc " + str(int(avg_simulated_slim_Tc)) + " generations)",
+                           + "(" + str(num_allo_genes) + " genes in genome,\n"
+                           + "avg Tc " + str(int(avg_simulated_allo_Tc)) + " generations)",
                      density=False)
-    # label = 'SLiM Tcoal by gene (total: ' + str(num_genes) + ')',
 
     if auto_mrcas_by_gene:
         auto_mrcas_genes = len(auto_mrcas_by_gene)
         this_ax.hist(auto_mrcas_by_gene, bins=bins, facecolor='c', alpha=1,
                      label='Auto Tcoal by gene\n'
                            + "(" + str(auto_mrcas_genes) + " genes in genome),\n"
-                           + "avg Tc " + str(int(avg_simulated_specKS_Tc_in_years)) + " generations)",
+                           + "avg Tc " + str(int(avg_simulated_auto_Tc)) + " generations)",
                      density=False)
 
     this_ax.plot(bins, kingman, c='red', label='Expectations under Kingman,\n'
@@ -68,7 +66,7 @@ def plot_mrca_for_Autos_and_Allos(this_ax, allo_mrcas_by_gene, auto_mrcas_by_gen
     this_ax.set(title=title)
     this_ax.legend()
 
-    return avg_simulated_slim_Tc
+    return avg_simulated_allo_Tc
 
 
 def plot_allo_vs_auto_ks(this_ax, allo_config_used, allo_ks_by_gene,

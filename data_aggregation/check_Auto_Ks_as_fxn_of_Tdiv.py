@@ -26,8 +26,8 @@ class TestAlloVsAuto_Tdiv(unittest.TestCase):
 
         #xmax_Ks = [0.025,0.025,0.025,0.025,0.025] #0.001  # max(demographiKS_ks_results)
         xmax_Tc = [False,False,False,False,False]
-        xmax_Ks = [0.005 for f in demographics_allo_run_list]
-        bin_sizes_Ks = [xmax_Ks_i/50.0 for xmax_Ks_i in xmax_Ks]
+        xmax_Ks = [0.0005 for f in demographics_allo_run_list]
+        bin_sizes_Ks = [xmax_Ks_i/100.0 for xmax_Ks_i in xmax_Ks]
 
         run_list_name="Ks_for_Allo_and_Auto_varying_varying_Tdiv"
         ymax_KS = [800,800,800,800,800]
