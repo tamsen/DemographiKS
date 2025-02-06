@@ -29,6 +29,11 @@
         <SLiM_rep>1</SLiM_rep>
         <Msprime_random_seed>1</Msprime_random_seed>
     </Randomization>
+    <Migration>
+        <mig_start_gen>5</mig_start_gen>
+        <mig_stop_gen>10</mig_stop_gen>
+        <mig_rate>0.5</mig_rate>
+    </Migration>
     <StopAtStep>999</StopAtStep>
     <LogFileName>DemographiKS_log.txt</LogFileName>
     <IncludeVisuals>False</IncludeVisuals>

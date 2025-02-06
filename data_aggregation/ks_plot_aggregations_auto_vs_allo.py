@@ -4,16 +4,14 @@ import os
 import unittest
 from pathlib import Path
 import numpy as np
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, image as mpimg
 import config
 import ks_modeling
 
 from data_aggregation.coalescent_plot_aggregation import get_run_time_in_minutes, read_data_csv,\
     add_mrca_annotations
 
-from data_aggregation.histogram_plotter import read_Ks_csv,make_simple_histogram
-from data_aggregation.ks_plot_aggregations import plot_expository_images
-
+from data_aggregation.histogram_plotter import read_Ks_csv
 
 def plot_mrca_for_Autos_and_Allos(this_ax, allo_mrcas_by_gene, auto_mrcas_by_gene,
                                   theoretical_mrcas_by_gene,
@@ -120,11 +118,11 @@ def make_Tc_Ks_Allo_vs_Auto_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
     #png_out = os.path.join(demographiKS_out_path, "ks_hist_by_{0}_test.jpg".format(run_list_name))
     par_dir = Path(__file__).parent.parent
     image_folder = os.path.join(par_dir, "images")
-    png_Tnow = os.path.join(image_folder, 'Ks_now_time_slice.jpg')
-    png_Tdiv = os.path.join(image_folder, 'Tdiv_TimeSlice.jpg')
+    png_Tnow = os.path.join(image_folder, 'Auto_vs_Allo_now_crop.png')
+    png_Tc = os.path.join(image_folder, 'Auto_vs_Allo_Tc_crop.png')
     fig, ax = plt.subplots(2, num_runs, figsize=(40, 20))
     fig.suptitle(suptitle)
-    plot_expository_images(ax, png_Tdiv, png_Tnow)
+    plot_expository_allo_auto_images(ax, png_Tc, png_Tnow)
     for i in range(1, num_runs):
         allo_run_name = allo_run_list[i]
 
@@ -228,6 +226,39 @@ def add_Ks_annotations(this_ax, config_used,dgks_Ks_results,dgks_hist_results,
                                 simulated_ks_sigma_now_as_string])
 
     this_ax.annotate(annotation_txt, (0, 0), (0, -30), xycoords='axes fraction', textcoords='offset points', va='top')
+
+def plot_expository_allo_auto_images(ax, png_Tc, png_Tnow):
+
+        # img = Image.open(png_Tnow)
+        # im = plt.imread(get_sample_data(png_Tnow))
+        # img.close()
+
+        # file = open(png_Tnow, "rb")  # Open file in binary read mode
+        # im = file.read()
+        # file.close()  # Close the file
+        im = mpimg.imread(png_Tnow)
+        ax[0, 0].imshow(im)
+        ax[0, 0].get_xaxis().set_visible(False)
+        ax[0, 0].get_yaxis().set_visible(False)
+        # Selecting the axis-X making the bottom and top axes False.
+        ax[0, 0].tick_params(axis='x', which='both', bottom=False,
+                             top=False, labelbottom=False)
+        ax[0, 0].tick_params(axis='y', which='both', right=False,
+                             left=False, labelleft=False)
+        for pos in ['right', 'top', 'bottom', 'left']:
+            ax[0, 0].spines[pos].set_visible(False)
+        ax[0, 0].set(title="polyploid Ks at T_now for allo and autopolyploid\n\n\n")
+
+        # img = Image.open(png_Tdiv)
+        # im = plt.imread(get_sample_data(png_Tdiv))
+        # img.close()
+        im = mpimg.imread(png_Tc)
+        ax[1, 0].imshow(im)
+        ax[1, 0].get_xaxis().set_visible(False)
+        ax[1, 0].get_yaxis().set_visible(False)
+        ax[1, 0].set(title="ancestral Tc at T_div for allo and T_wgd for auto")
+        for pos in ['right', 'top', 'bottom', 'left']:
+            ax[1, 0].spines[pos].set_visible(False)
 
 
 if __name__ == '__main__':

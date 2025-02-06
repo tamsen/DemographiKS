@@ -24,15 +24,16 @@ class TestAlloVsAuto_Tdiv(unittest.TestCase):
 
         bin_sizes_Tc = [200,200, 200, 200,200]
 
-        #xmax_Ks = [0.025,0.025,0.025,0.025,0.025] #0.001  # max(demographiKS_ks_results)
+        xmax_Ks = [0.025,0.025,0.025,0.025,0.025] #0.001  # max(demographiKS_ks_results)
         xmax_Tc = [False,False,False,False,False]
-        xmax_Ks = [0.0005 for f in demographics_allo_run_list]
+        #xmax_Ks = [0.0005 for f in demographics_allo_run_list]
         bin_sizes_Ks = [xmax_Ks_i/100.0 for xmax_Ks_i in xmax_Ks]
 
         run_list_name="Ks_for_Allo_and_Auto_varying_varying_Tdiv"
         ymax_KS = [800,800,800,800,800]
         ymax_Tc = [False for f in demographics_allo_run_list]
-        show_KS_predictions=[True,True,True]
+        #show_KS_predictions=[True,True,True]
+        show_KS_predictions = [False, False, False]
         suptitle = "Allo and Auto Ks histograms\n" + \
                                   "Recombination rate = 8e-9, Ne and BI constant"
 

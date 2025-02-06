@@ -38,6 +38,11 @@ class DemographiKS_config:
     Msprime_random_seed = 42
     DemographiKS_random_seed = 17
 
+    #migration
+    mig_start = False
+    mig_stop = False
+    mig_rate = False
+
     #debugging
     stop_at_step = 999
     keep_intermediary_files=False
@@ -80,6 +85,17 @@ class DemographiKS_config:
                                 self.pre_existing_trees_file=False
                             else:
                                 self.pre_existing_trees_file = incoming_txt
+
+                if (incoming_tag == "Migration"):
+                    for inner_layer in top_layer:
+                        incoming_txt = inner_layer.text.strip()
+                        incoming_tag = inner_layer.tag.strip()
+                        if (incoming_tag == "mig_start_gen"):
+                            self.mig_start= int(incoming_txt)
+                        if (incoming_tag == "mig_stop_gen"):
+                            self.mig_stop = int(incoming_txt)
+                        if (incoming_tag == "mig_rate"):
+                            self.mig_rate= float(incoming_txt)
 
                 if (incoming_tag == "Chromosome"):
                     for inner_layer in top_layer:

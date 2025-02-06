@@ -21,5 +21,10 @@ class TestConfigLoading(unittest.TestCase):
         
         self.assertEqual(conf.burnin_time, 478)
 
+        self.assertEqual(conf.mig_start, 5)
+        self.assertEqual(conf.mig_stop, 10)
+        self.assertEqual(conf.mig_rate, 0.5)
+        print("mig rate=" + str(conf.mig_rate))
+
 if __name__ == '__main__':
     unittest.main()

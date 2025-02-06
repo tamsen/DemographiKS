@@ -49,6 +49,11 @@ initialize() {
 
 	catn("Tdiv:\t" + Tdiv_gen);
 	catn("delta_t:\t" + delta_t);
+
+	//MigStart,MihStop, mig_rate
+	defineConstant("MigStartInt", asInteger(MigStart));
+	defineConstant("MigStopInt", asInteger(MigStop));
+	defineConstant("MigRateFloat", asInteger(mig_rate));
 }
 
 /*
@@ -72,7 +77,16 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 	    asInteger(BurninTime-1),
 		asInteger(BurninTime-1)
 	);
-
+	community.rescheduleScriptBlock(
+		sMigStart,
+	    asInteger(BurninTime + MigStartInt),
+		asInteger(BurninTime + MigStartInt)
+	);
+	community.rescheduleScriptBlock(
+		sMigStop,
+	    asInteger(BurninTime + MigStopInt),
+		asInteger(BurninTime + MigStopInt)
+	);
 
 }
 
@@ -84,19 +98,22 @@ BurninTime: late() {
 // Split populations after burn-in.
 BurninTime early() {
 	sim.addSubpopSplit("p2", N, p1);
-
-	#allow migration between the parental populations
-	mig_rate=0.1
-	p1.setMigrationRates(p2, mig_rate);
-	p2.setMigrationRates(p1, mig_rate;
 }
 
-BurninTime+foo early() {
-	#stop migration between the parental populations
-	mig_rate=0.1
-	p1.setMigrationRates(p2, mig_rate);
-	p2.setMigrationRates(p1, mig_rate;
+// Block is rescheduled in generation 1.
+// This block starts migration between the parental populations
+sMigStart 10 early() {
+	p1.setMigrationRates(p2, MigRateFloat);
+	p2.setMigrationRates(p1, MigRateFloat;
 }
+
+// Block is rescheduled in generation 1.
+// This block stops migration between the parental populations
+sMigStop 10 early() {
+	p1.setMigrationRates(p2,0);
+	p2.setMigrationRates(p1,0;
+}
+
 /*
 Block is rescheduled in generation 1. This block is for starting the bottleneck.
 */
