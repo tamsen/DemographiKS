@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
     <Paths>
-          <output_folder_root>/home/tamsen/Data/DemographiKS_output/DemographiKS</output_folder_root>
-         <!-- <pre_existing_trees_file>/home/tamsen/Data/DemographiKS_output/allotetraploid_trees_Ne_1000.txt
-        </pre_existing_trees_file>  -->
+          <output_folder_root>/home/tamsen/Data/DemographiKS_output/DemographiKS</output_folder_root>->
     </Paths>
     <Chromosome>
-        <total_num_bases>10000</total_num_bases>
+        <total_num_bases>1000000</total_num_bases>
         <num_codons_in_a_gene>1000</num_codons_in_a_gene>
         <max_num_paralogs_to_process>FALSE</max_num_paralogs_to_process>
-        <recombination_rate>8e-9</recombination_rate>
+        <recombination_rate>8e-7</recombination_rate>
     </Chromosome>
     <Population>
-        <ancestral_ne>1000</ancestral_ne>
+        <ancestral_ne>100</ancestral_ne>
         <bottleneck_ne>100</bottleneck_ne>
+        <burnin_time>5000</burnin_time>
       </Population>
     <SequenceEvolution>
-        <WGD_gene_half_life_in_GE>10</WGD_gene_half_life_in_GE>
+        <WGD_gene_half_life_in_GE>310000</WGD_gene_half_life_in_GE>
+        <mutation_rate>0.000001</mutation_rate>
     </SequenceEvolution>
     <Speciation>
-        <DIV_time_Ge>75</DIV_time_Ge>
-        <WGD_time_Ge>25</WGD_time_Ge>
+        <DIV_time_Ge>5000</DIV_time_Ge>
+        <WGD_time_Ge>5000</WGD_time_Ge>
     </Speciation>
-        <Migration>
-        <mig_start_gen>5</mig_start_gen>
-        <mig_stop_gen>10</mig_stop_gen>
+    <Migration>
+        <mig_start_gen>1000</mig_start_gen>
+        <mig_stop_gen>2000</mig_stop_gen>
         <mig_rate>0.5</mig_rate>
     </Migration>
     <Randomization>
