@@ -20,17 +20,6 @@ def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
     shutil.copy(my_SLiM_script,config.output_folder)
     full_path_to_slim_script_destination = os.path.join(config.output_folder, os.path.basename(my_SLiM_script))
     log.write_to_log("full_path_to_slim_script_destination:\t" + full_path_to_slim_script_destination)
-	#Parameters:
-	#	nuBot: Proportion of the ancestral population size remaining after bottleneck.
-	#	T1: The amount of time in dadi units (# of 2N generations) that the parents
-	#		are isolated before forming the allotetraploid.
-	#	T2: The amount of time the allotetraploid lineage has existed before we sample
-	#		it.
-	#	rep: Simulation replicate number (for running things in a for loop or
-	#		 an array job on an HPC).
-
-    #slim -d "nuBot=0.1" -d "T1=0.5" -d "T2=0.25" -d "rep=1" allotetraploid_bottleneck.slim
-
     delta_t=  ( float(config.DIV_time_Ge) - float(config.WGD_time_Ge) )
 
     #burnin_time = 2 * 10 * config.ancestral_Ne <- reccomended by SLiM manual, but not really always enough.
@@ -51,10 +40,16 @@ def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
            "-d", "Twgd_gen=" + str(config.WGD_time_Ge),
            "-d", "BurninTime=" + str(burnin_time),
            "-d", "recombination_rate=" + str(config.recombination_rate),
-           "-d", "rep=" + str(config.SLiM_rep),
-           "-m", "-s", "0", full_path_to_slim_script_destination]
+           "-d", "rep=" + str(config.SLiM_rep)]
 
+    if config.mig_rate:
+        extra_commands_for_migration=[
+            "-d", "MigStart="+str(config.mig_start),
+            "-d", "MigStop="+str(config.mig_stop),
+            "-d", "MigRate="+str(config.mig_rate)]
+        cmd = cmd  + extra_commands_for_migration
 
+    cmd= cmd + ["-m", "-s", "0", full_path_to_slim_script_destination]
     log.write_to_log("\t cmd: " + " ".join(cmd))
     log.write_to_log("\t cwd: " + config.output_folder)
     out_string,error_string = process_wrapper.run_and_wait_on_process(cmd, config.output_folder)

@@ -50,10 +50,10 @@ initialize() {
 	catn("Tdiv:\t" + Tdiv_gen);
 	catn("delta_t:\t" + delta_t);
 
-	//MigStart,MihStop, mig_rate
+	//Migration-specific parameters
 	defineConstant("MigStartInt", asInteger(MigStart));
 	defineConstant("MigStopInt", asInteger(MigStop));
-	defineConstant("MigRateFloat", asInteger(mig_rate));
+	defineConstant("MigRateFloat", asFloat(MigRate));
 }
 
 /*
@@ -69,8 +69,8 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 	);
 	community.rescheduleScriptBlock(
 		s3,
-	    asInteger(BurninTime +  asFloat(Tdiv_gen)),
-		asInteger(BurninTime +  asFloat(Tdiv_gen))
+	    asInteger(BurninTime) +  asInteger(Tdiv_gen),
+		asInteger(BurninTime) +  asInteger(Tdiv_gen)
 	);
 	community.rescheduleScriptBlock(
 		s4,
@@ -78,14 +78,14 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 		asInteger(BurninTime-1)
 	);
 	community.rescheduleScriptBlock(
-		sMigStart,
-	    asInteger(BurninTime + MigStartInt),
-		asInteger(BurninTime + MigStartInt)
+		s5,
+	    asInteger(BurninTime) + MigStartInt,
+		asInteger(BurninTime) + MigStartInt
 	);
 	community.rescheduleScriptBlock(
-		sMigStop,
-	    asInteger(BurninTime + MigStopInt),
-		asInteger(BurninTime + MigStopInt)
+		s6,
+	    asInteger(BurninTime) + MigStopInt,
+		asInteger(BurninTime) + MigStopInt
 	);
 
 }
@@ -97,27 +97,31 @@ BurninTime: late() {
 
 // Split populations after burn-in.
 BurninTime early() {
+	catn(sim.cycle + "\tBurnin complete. Parental divergence start!");
 	sim.addSubpopSplit("p2", N, p1);
 }
 
-// Block is rescheduled in generation 1.
-// This block starts migration between the parental populations
-sMigStart 10 early() {
+s5 late() {
+	catn(sim.cycle + "\t Its s5 time! Migration start!");
+	catn("size p2=" + p2.individualCount);
 	p1.setMigrationRates(p2, MigRateFloat);
-	p2.setMigrationRates(p1, MigRateFloat;
+    p2.setMigrationRates(p1, MigRateFloat);
+    catn("set p2 to p1 migration rate.. " + MigRateFloat);
 }
 
 // Block is rescheduled in generation 1.
 // This block stops migration between the parental populations
-sMigStop 10 early() {
-	p1.setMigrationRates(p2,0);
-	p2.setMigrationRates(p1,0;
+s6 late() {
+	catn(sim.cycle + "\t Its s6 time! Migration stop!");
+    p1.setMigrationRates(p2,0);
+    p2.setMigrationRates(p1,0);
 }
 
 /*
 Block is rescheduled in generation 1. This block is for starting the bottleneck.
 */
 s1 10 late() {
+	catn(sim.cycle + "\t Its s1 time! WGD has occurred!");
 	p1.setSubpopulationSize(asInteger(Nb));
 	p2.setSubpopulationSize(asInteger(Nb));
 }
@@ -127,7 +131,7 @@ s3 10 late() {
 	sim.treeSeqOutput(trees_file_name);
 	catn("wrote trees file to:\t" + trees_file_name);
 }
-s4 10 early() {
+s4 10 late() {
 	catn(sim.cycle + "\t block s4 executed");
 	sim.treeSeqOutput(trees_file_name_at_div);
 	catn("wrote trees file to:\t" + trees_file_name_at_div);
