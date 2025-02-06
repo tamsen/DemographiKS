@@ -19,12 +19,12 @@
         <mutation_rate>0.000001</mutation_rate>
     </SequenceEvolution>
     <Speciation>
-        <DIV_time_Ge>5000</DIV_time_Ge>
-        <WGD_time_Ge>5000</WGD_time_Ge>
+        <DIV_time_Ge>50000</DIV_time_Ge>
+        <WGD_time_Ge>30000</WGD_time_Ge>
     </Speciation>
     <Migration>
-        <mig_start_gen>1000</mig_start_gen>
-        <mig_stop_gen>2000</mig_stop_gen>
+        <mig_start_gen>10000</mig_start_gen>
+        <mig_stop_gen>15000</mig_stop_gen>
         <mig_rate>0.5</mig_rate>
     </Migration>
     <Randomization>
@@ -32,6 +32,6 @@
         <Msprime_random_seed>1</Msprime_random_seed>
     </Randomization>
     <LogFileName>DemographiKS_log.txt</LogFileName>
-    <KeepIntermediaryFiles>True</KeepIntermediaryFiles>
+    <KeepIntermediaryFiles>False</KeepIntermediaryFiles>
     <StopAtStep>99</StopAtStep>
 </metadata>

@@ -8,22 +8,11 @@ class MyDGXDataFetcher(unittest.TestCase):
     def test_fetch_demographics_data(self):
 
         #/usr/scratch2/userdata2/tdunn/DemographiKS_Output
-        run_list = ['Auto_100Na_1KNb_m01d29y2025_h18m22s20']
-        #    'Auto100Na_100Nb_m01d29y2025_h18m22s20','Auto_100Na_500Nb_m01d29y2025_h18m22s20',
-        #            'Auto_100Na_1KNb_m01d29y2025_h18m22s20','Auto_100Na_5KNb_m01d29y2025_h18m22s20']
-
-        #/usr/scratch2/userdata2/tdunn/DemographiKS_Output
-        #run_list = ['Auto_Ne1000_m01d29y2025_h17m52s03']
-        #'Auto_Ne10_m01d29y2025_h17m47s29','Auto_Ne100_m01d29y2025_h17m47s29']
-        #            'Auto_Ne1000_m01d29y2025_h17m52s03','Auto_Ne5000_m01d29y2025_h17m47s29']
-
-        #/usr/scratch2/userdata2/tdunn/DemographiKS_Output
-        #run_list = [ 'Auto_Twgd500000_m01d29y2025_h17m22s23','Auto_Twgd1000000_m01d29y2025_h17m22s24']
-        #'Auto_Twgd10000_m01d29y2025_h17m22s23', 'Auto_Twgd100000_m01d29y2025_h17m25s36',
+        run_list = ['Mig2_m02d06y2025_h11m49s15']
 
         run_collection_name="TE"
         me_at_remote_URL =  'mesx_cluster'
-        output_root_folder = os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_Output")
+        output_root_folder = os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_output")
         #if False:
         #    output_root_folder = os.path.join("/usr/scratch2/userdata2/tdunn/DemographiKS_Output")
         #else:
