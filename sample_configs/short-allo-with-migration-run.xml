@@ -25,7 +25,7 @@
     <Migration>
         <mig_start_gen>10000</mig_start_gen>
         <mig_stop_gen>15000</mig_stop_gen>
-        <mig_rate>0.5</mig_rate>
+        <mig_rate>0.0</mig_rate>
     </Migration>
     <Randomization>
         <SLiM_rep>1</SLiM_rep>

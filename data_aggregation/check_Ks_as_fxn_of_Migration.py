@@ -10,23 +10,27 @@ class TestKsByMig(unittest.TestCase):
     def test_Ks_for_varying_Migration(self):
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/KS_vs_Mg'
 
-        demographics_run_list = [False,'Mig2_m02d06y2025_h11m49s15']
-        specks_TE5_run_list = [False,False,False,False,False,False,False]
+        demographics_run_list = [False,
+                                 'Mig5_m02d06y2025_h14m14s08','Mig4_m02d06y2025_h14m14s10',
+                                 'Mig7_m02d06y2025_h16m03s11','Mig6_m02d06y2025_h16m03s14']
+        #'Mig4_m02d06y2025_h13m45s58', 'Mig5_m02d06y2025_h13m45s56',
+        #'Mig2_m02d06y2025_h12m42s08', 'Mig3_m02d06y2025_h12m51s06',
+        specks_TE5_run_list = [False, False, False, False, False,False,False]
 
 
         #xmax_Ks = [0.01,0.05,0.05,0.1,0.5,1]
-        xmax_Ks = [0.1 for f in demographics_run_list]
+        xmax_Ks = [1 for f in demographics_run_list]
         bin_sizes_Ks = [xmax_KS_i/50 for xmax_KS_i in xmax_Ks]
 
         #xmax_Tc = [5000,5000,5000,10000,50000,100000]
-        xmax_Tc = [100000 for f in demographics_run_list ]
+        xmax_Tc = [5000 for f in demographics_run_list ]
         bin_sizes_Tc = [xmax_Tc_i/50 for xmax_Tc_i in xmax_Tc]
 
 
         #ymax_KS = [False for f in demographics_run_list]
         #ymax_Tc = [False for f in demographics_run_list]
-        ymax_KS = [250 for f in demographics_run_list]
-        ymax_Tc = [1000 for f in demographics_run_list]
+        ymax_KS = [40 for f in demographics_run_list]
+        ymax_Tc = [200 for f in demographics_run_list]
 
         run_list_name = "Ks_for_varying_varying_Mg_constantRC"
         # since mutation rate is 1.0e-5

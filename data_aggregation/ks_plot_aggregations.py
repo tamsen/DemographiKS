@@ -184,7 +184,6 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
 
     num_runs = len(demographics_TE9_run_list)
     png_out = os.path.join(demographiKS_out_path, run_list_name)
-    #png_out = os.path.join(demographiKS_out_path, "ks_hist_by_{0}_test.jpg".format(run_list_name))
     par_dir = Path(__file__).parent.parent
     image_folder = os.path.join(par_dir, "images")
     png_Tnow = os.path.join(image_folder, 'Ks_now_time_slice.jpg')
@@ -207,9 +206,16 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             print("reading " + ks_file)
             demographiKS_ks_results = read_Ks_csv(ks_file, False)
             dgx_run_duration_in_m = get_run_time_in_minutes(dgx_run_path)
-            plot_title = "Ks at Tnow\n" + "burnin time=" + str(config_used.burnin_time) + " gen,\n" \
+            plot_title = "Ks at Tnow\n" + \
+                         "burnin time=" + str(config_used.burnin_time) + " gen, " \
                      + "Na=" + str(config_used.ancestral_Ne)  + ", Nb=" + str(config_used.bottleneck_Ne) +\
-                         ", Tdiv=" + str(config_used.DIV_time_Ge) + ", RC=" + str(config_used.recombination_rate)
+                         ",\nTdiv=" + str(config_used.DIV_time_Ge) + ", RC=" + str(config_used.recombination_rate)
+            if config_used.mig_rate:
+                plot_title = plot_title + ", MigStart=" + str(config_used.mig_start) + \
+                              ", MigEnd=" + str(config_used.mig_stop) +  ", MigRate=" + str(config_used.mig_rate)
+            else:
+                plot_title = plot_title + ", MigRate=0"
+
         else:
             config_used = False
             demographiKS_ks_results = []
