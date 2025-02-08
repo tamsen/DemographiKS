@@ -33,16 +33,20 @@ class DemographiKS_config:
     #So, thats 44.723*10**6 GE if one year = 1 generation
     mean_WGD_life_span_in_GE= 44.723*10**6
 
-    #randomness
-    SLiM_rep =1
-    Msprime_random_seed = 42
-    DemographiKS_random_seed = 17
+    #Exchange rate between allopolyploid subgenomes after WGD,
+    #as in "Demographic history inference and the polyploid continuum" by  Blischak et al 2023
+    homoeologous_exchange_rate = 0 
 
     #migration
     mig_start = False
     mig_stop = False
     mig_rate = False
 
+    #randomness
+    SLiM_rep =1
+    Msprime_random_seed = 42
+    DemographiKS_random_seed = 17
+    
     #debugging
     stop_at_step = 999
     keep_intermediary_files=False
@@ -104,6 +108,8 @@ class DemographiKS_config:
 
                         if (incoming_tag == "recombination_rate"):
                             self.recombination_rate = float(incoming_txt)
+                        if (incoming_tag == "homoeologous_exchange_rate"):
+                            self.homoeologous_exchange_rate = float(incoming_txt)
                         if (incoming_tag == "total_num_bases"):
                             self.total_num_bases = int(incoming_txt)
                         if (incoming_tag == "num_codons_in_a_gene"):
@@ -122,10 +128,10 @@ class DemographiKS_config:
                             self.mean_WGD_life_span_in_GE = half_life_to_mean_life(incoming_txt)
                         if (incoming_tag == "num_codons"):
                             self.num_codons = int(incoming_txt)
-                        if (incoming_tag == "Ks_per_Myr"):
-                            self.Ks_per_Myr = float(incoming_txt)
-                        if (incoming_tag == "per_site_evolutionary_distance"):
-                            self.per_site_evolutionary_distance = float(incoming_txt)
+                        #if (incoming_tag == "Ks_per_Myr"):
+                        #    self.Ks_per_Myr = float(incoming_txt)
+                        #if (incoming_tag == "per_site_evolutionary_distance"):
+                        #    self.per_site_evolutionary_distance = float(incoming_txt)
                         if (incoming_tag == "evolver_random_seed"):
                             self.evolver_random_seed = int(incoming_txt)
 
@@ -162,7 +168,7 @@ class DemographiKS_config:
 
         #we are going with Ks_per_YR = mut rate * (1/1.2)
         # we multiply by 1/1.2 since thats syn / total mut rate
-        self.Ks_per_YR = 0.833 * self.mutation_rate
+        self.Ks_per_YR = 0.833333333 * self.mutation_rate
         self.mean_Ks_from_Tc = 2.0 * self.ancestral_Ne * self.Ks_per_YR
         self.mean_Ks_from_Nb = 2.0 * self.bottleneck_Ne * self.Ks_per_YR
         self.num_genes = int(self.total_num_bases / self.gene_length_in_bases)

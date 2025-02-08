@@ -10,6 +10,7 @@
         <num_codons_in_a_gene>1000</num_codons_in_a_gene>
         <max_num_paralogs_to_process>50</max_num_paralogs_to_process>
         <recombination_rate>1.26e-6</recombination_rate>
+        <homoeologous_exchange_rate>0.123</homoeologous_exchange_rate>
     </Chromosome>
     <Population>
         <ancestral_ne>100000</ancestral_ne>

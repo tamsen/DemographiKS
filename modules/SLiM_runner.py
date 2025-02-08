@@ -40,6 +40,7 @@ def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
            "-d", "Twgd_gen=" + str(config.WGD_time_Ge),
            "-d", "BurninTime=" + str(burnin_time),
            "-d", "recombination_rate=" + str(config.recombination_rate),
+           "-d", "dij=" + str(config.homoeologous_exchange_rate),
            "-d", "rep=" + str(config.SLiM_rep)]
 
     if config.mig_rate:

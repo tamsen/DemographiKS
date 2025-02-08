@@ -54,6 +54,16 @@ initialize() {
 	catn("delta_t:\t" + delta_t);
 }
 
+
+mateChoice() {
+    // Prefer relatives as mates
+    // This particular callback makes the mating weights be (almost) proportional to relatedness.
+    // The "0.01" is a fudge to prevent the weights all ever being zero
+    // (see SLiM manual for why this is needed)
+    inbreeding_coefficient=1.0
+    return inbreeding_coefficient * weights * (individual.relatedness(sourceSubpop.individuals) + 0.01);
+}
+
 /*
 Setup initial diploid ancestral population with N individuals. Schedule population
 bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).

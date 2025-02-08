@@ -85,22 +85,6 @@ class TestKsPlotAgg(unittest.TestCase):
 
         specks_TE_run_list=[False,False,False,False]
 
-        #demographics_TE_run_list=['TE15_m01d03y2025_h10m23s32',
-        #                           'TE15_m01d03y2025_h10m23s32','TE07_fix__m01d05y2025_h09m07s41']
-        #demographics_TE9_run_list = ['TE10_m12d26y2024_h10m35s41','TE10_m12d26y2024_h10m35s41',
-        #    'TE09_m12d26y2024_h09m10s55', 'TE11_m12d26y2024_h10m35s44']
-
-        #demographics_TE9_run_list = ['TE11_m12d26y2024_h10m35s44','TE11_m12d26y2024_h10m35s44',
-        #    'TE09_m12d26y2024_h09m10s55']
-
-        #specks_TE9_run_list=['specks_TE07_m12d30y2024_h12m10s15','specks_TE07_m12d30y2024_h12m10s15',
-        #                     'specks_TE07_m12d30y2024_h12m10s15']
-        #specks_TE9_run_list = ['specks_TE10_m12d31y2024_h09m30s26', 'specks_TE10_m12d31y2024_h09m30s26',
-        #                       'specks_TE09_m12d31y2024_h09m10s34',
-        #                       'specks_TE11_m12d31y2024_h09m30s22']
-
-        #specks_TE9_run_list = ['specks_TE11_m12d31y2024_h09m30s22', 'specks_TE11_m12d31y2024_h09m30s22',
-        #                       'specks_TE09_m12d31y2024_h09m10s34']
 
         Ne = [10,10, 100, 1000]
         #Ne=[500, 500, 1000]
@@ -188,9 +172,12 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
     image_folder = os.path.join(par_dir, "images")
     png_Tnow = os.path.join(image_folder, 'Ks_now_time_slice.jpg')
     png_Tdiv = os.path.join(image_folder, 'Tdiv_TimeSlice.jpg')
+    png_with_migration_Tnow = os.path.join(image_folder, 'Migration_now.png')
+    png_with_migration_Tdiv = os.path.join(image_folder, 'Migration_Tc.png')
+
     fig, ax = plt.subplots(2, num_runs, figsize=(40, 20))
     fig.suptitle(suptitle)
-    plot_expository_images(ax, png_Tdiv, png_Tnow)
+
     for i in range(1, num_runs):
         dgx_run_name = demographics_TE9_run_list[i]
 
@@ -238,6 +225,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             spx_run_duration_in_m = 0
             specks_mrcas_by_gene = False
 
+
         plot_ks(ax[0, i], config_used, demographiKS_ks_results, spx_ks_results,
                 plot_title, bin_sizes_Ks[i], xmax_Ks[i], ymax_Ks[i], show_KS_predictions)
 
@@ -256,6 +244,11 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
 
         add_mrca_annotations(ax[1, i], config_used, avg_slim_Tc, dgx_run_duration_in_m, spx_run_duration_in_m)
 
+    if config_used.mig_rate > 0:
+        plot_expository_images(ax, png_with_migration_Tdiv , png_with_migration_Tnow)
+    else:
+        plot_expository_images(ax, png_Tdiv, png_Tnow)
+
     ax[0, 1].set(ylabel="# paralog pairs in bin")
     ax[1, 1].set(ylabel="# genes in bin")
     plt.tight_layout()
@@ -266,13 +259,6 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
 
 def plot_expository_images(ax, png_Tdiv, png_Tnow):
 
-        #img = Image.open(png_Tnow)
-        #im = plt.imread(get_sample_data(png_Tnow))
-        #img.close()
-
-        #file = open(png_Tnow, "rb")  # Open file in binary read mode
-        #im = file.read()
-        #file.close()  # Close the file
         im = mpimg.imread(png_Tnow)
         ax[0, 0].imshow(im)
         ax[0, 0].get_xaxis().set_visible(False)
@@ -326,6 +312,11 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene,
     #mean_Ks_from_Nb_string=  "({:.2E})".format(config_used.mean_Ks_from_Nb)
     #this_ax.axvline(x=config_used.mean_Ks_from_Nb,
     #                color='g', linestyle='--', label="Tc due to Nb " + mean_Ks_from_Nb_string )
+    if config_used.mig_rate > 0:
+        mig_start_as_Ks=config_used.t_div_as_ks- (config_used.Ks_per_YR*config_used.mig_start)
+        mig_stop_as_Ks=config_used.t_div_as_ks- (config_used.Ks_per_YR*config_used.mig_stop)
+        this_ax.axvline(x=mig_start_as_Ks, color='g', linestyle='--', label="Mig start")
+        this_ax.axvline(x=mig_stop_as_Ks, color='g', linestyle=':', label="Mig stop")
 
     add_Ks_annotations(this_ax, config_used, slim_ks_by_gene,dgx_hist_ys, bins, show_predictions)
 
