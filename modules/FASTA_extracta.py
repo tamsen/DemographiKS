@@ -25,8 +25,8 @@ def extract_paralog_sequences(demographics_out_folder, focal_genomes, config, mt
     return cleaned_sequences_by_paralog_name_dict
 
 
-def get_sequences_by_paralog_name(gene_length,genome_size,
-                                        max_num_paralogs_to_process):
+def get_paralog_names(gene_length, genome_size,
+                      max_num_paralogs_to_process):
     paralog_names = []
     expected_num_paralogs=int(genome_size/gene_length)
     if max_num_paralogs_to_process:

@@ -17,7 +17,7 @@
         <bottleneck_ne>100</bottleneck_ne>
       </Population>
     <SequenceEvolution>
-        <WGD_gene_half_life_in_GE>10</WGD_gene_half_life_in_GE>
+        <WGD_gene_half_life_in_GE>1000000000</WGD_gene_half_life_in_GE>
     </SequenceEvolution>
     <Speciation>
         <DIV_time_Ge>75</DIV_time_Ge>

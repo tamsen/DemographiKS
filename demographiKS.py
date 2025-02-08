@@ -1,4 +1,5 @@
 import datetime
+import math
 import os
 import shutil
 from io import StringIO
@@ -84,9 +85,10 @@ def run():
     # pick a random polyploid individual (ie, two random subgenomes from the two populations of parental subgenomes)
     num_genomes = conf.bottleneck_Ne * 2  # because diploid individuals, and thats SLiM default
     random.seed(conf.DemographiKS_random_seed)
-    focal_genomes = ["n" + str(random.randint(1, num_genomes)),
-                     "n" + str(random.randint(1 + num_genomes, 2 * num_genomes))]
-    log.write_to_log("random focal polyploid individual:\t" + str(focal_genomes))
+    focal_genomes_as_int = [(random.randint(1, num_genomes)),
+                            (random.randint(1 + num_genomes, 2 * num_genomes))]
+    focal_genomes_as_str = ["n" + str(i) for i in focal_genomes_as_int]
+    log.write_to_log("random focal polyploid individual:\t" + str(focal_genomes_as_str))
 
     # overlays neutral mutations
     mts = msprime.sim_mutations(ts, rate=conf.mutation_rate, random_seed=conf.Msprime_random_seed, keep=True)
@@ -97,24 +99,48 @@ def run():
     log.write_to_log("Gene length:\t" + str(conf.gene_length_in_bases))
     log.write_to_log("Total num bases:\t" + str(conf.total_num_bases))
     log.write_to_log("Max num paralogs:\t" + str(conf.max_num_paralogs_to_process))
-    paralog_names = FASTA_extracta.get_sequences_by_paralog_name(conf.gene_length_in_bases, conf.total_num_bases,
-                                                                 conf.max_num_paralogs_to_process)
+    paralog_names = FASTA_extracta.get_paralog_names(conf.gene_length_in_bases, conf.total_num_bases,
+                                                     conf.max_num_paralogs_to_process)
     log.write_to_log("Num paralogs before shedding:\t" + str(len(paralog_names)))
     genes_to_loose_a_duplicate = gene_shedder.decide_genes_to_shed(paralog_names, conf)
 
 
     #write out the fasta for our focal genomes
     log.write_to_log("Getting paralog sequences from TS data.")
+    #https://tskit.dev/tskit/docs/stable/python-api.html
+    wrap_width=0
     fasta_string = mts.as_fasta(reference_sequence=tskit.random_nucleotides(mts.sequence_length,
-                                                                            seed=conf.Msprime_random_seed+1))
+                                                                            seed=conf.Msprime_random_seed+1),
+                                wrap_width=wrap_width)
+
+
+    seq_dict={}
+    for k in range(0,len(focal_genomes_as_int)):
+        i=focal_genomes_as_int[k]
+        tags=["\n>n" + str(j) for j in range(0,i)]
+        len_tags_so_far=sum([len(t)+1 for t in tags])
+        num_places=int(math.log10(i))
+        terms=[9*(m+1)*10**m for m in range(0,num_places)]
+        print("terms" + str(terms))
+        index_update=1+sum(terms)+(i-10**num_places)*(num_places+1)+(i)*4
+        next_to_add=4+ num_places+1 #4 from ">n\n" and len(135) or whatever it is..
+        print("next_to_add=" + str(next_to_add))
+        #print("tags" + str(tags))
+        print("index_update: " + str(index_update))
+        print("len_tags_so_far: " + str(len_tags_so_far))
+        str_inx=i*conf.total_num_bases+index_update+next_to_add
+        print(str(i) + "th_genome: " + fasta_string[str_inx:str_inx+100])
+        seq_dict[focal_genomes_as_str[k]]=fasta_string[str_inx:str_inx+conf.total_num_bases]
+
     if conf.keep_intermediary_files:
         with open(out_fasta, "w") as f:
             f.write(fasta_string )
         log.write_to_log("Sequences written to FASTA file: " + out_fasta + ".")
     log.write_to_log("Final genomes complete")
 
-    fasta_io = StringIO(fasta_string)
-    SeqDict = SeqIO.to_dict(SeqIO.parse(fasta_io , "fasta"))
+    #memory intensive
+    #fasta_io = StringIO(fasta_string)
+    #SeqDict = SeqIO.to_dict(SeqIO.parse(fasta_io , "fasta"))
     Ks_values=[]
 
     if conf.stop_at_step < 3:
@@ -138,9 +164,10 @@ def run():
         log.write_to_log("\tStep 4: Writing paralog sequences for " + str(paralog_ID))
         raw_sequences_for_paralog={}
         indexes_of_concern=[]
-        for subgenome in focal_genomes:
+        for subgenome in focal_genomes_as_str:
             genome_name = conf.sim_name + "_" + subgenome
-            subsequence= SeqDict[subgenome][paralog_ID:paralog_ID+conf.gene_length_in_bases].seq
+            #subsequence= SeqDict[subgenome][paralog_ID:paralog_ID+conf.gene_length_in_bases].seq
+            subsequence = seq_dict[subgenome][paralog_ID:paralog_ID + conf.gene_length_in_bases]
             paralog_name = genome_name + "_paralog_" + str(paralog_ID)
 
             log.write_to_log("Writing data for: " + paralog_name + ".")
@@ -150,10 +177,15 @@ def run():
             log.write_to_log("stop codons: " + ",".join([str(i) for i in idx_of_stop_codons]))
             if conf.keep_intermediary_files:
                 out_per_genome_per_paralog_fasta = os.path.join(demographics_out_folder, paralog_name + ".fa")
-                record = SeqRecord(subsequence,
-                                   id=subgenome, name=paralog_name,
-                                   description="simulated paralogous gene")
-                SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
+                #record = SeqRecord(subsequence,
+                #                   id=subgenome, name=paralog_name,
+                #                   description="simulated paralogous gene")
+                #SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
+                with open(out_per_genome_per_paralog_fasta, "w") as f:
+                    #f.writelines(["foo","foo"])
+                    f.writelines([">" + subgenome +"\n",subsequence])
+                    print("written:" + subsequence)
+
             raw_sequences_for_paralog[paralog_name]=str(subsequence)
             indexes_of_concern= indexes_of_concern+idx_of_stop_codons
     
