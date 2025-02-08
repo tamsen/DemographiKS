@@ -114,34 +114,35 @@ def run():
                                 wrap_width=wrap_width)
 
 
-    seq_dict={}
-    for k in range(0,len(focal_genomes_as_int)):
-        i=focal_genomes_as_int[k]
-        tags=["\n>n" + str(j) for j in range(0,i)]
-        len_tags_so_far=sum([len(t)+1 for t in tags])
-        num_places=int(math.log10(i))
-        terms=[9*(m+1)*10**m for m in range(0,num_places)]
-        print("terms" + str(terms))
-        index_update=1+sum(terms)+(i-10**num_places)*(num_places+1)+(i)*4
-        next_to_add=4+ num_places+1 #4 from ">n\n" and len(135) or whatever it is..
-        print("next_to_add=" + str(next_to_add))
-        #print("tags" + str(tags))
-        print("index_update: " + str(index_update))
-        print("len_tags_so_far: " + str(len_tags_so_far))
-        str_inx=i*conf.total_num_bases+index_update+next_to_add
-        print(str(i) + "th_genome: " + fasta_string[str_inx:str_inx+100])
-        seq_dict[focal_genomes_as_str[k]]=fasta_string[str_inx:str_inx+conf.total_num_bases]
-
     if conf.keep_intermediary_files:
         with open(out_fasta, "w") as f:
             f.write(fasta_string )
         log.write_to_log("Sequences written to FASTA file: " + out_fasta + ".")
     log.write_to_log("Final genomes complete")
 
-    #memory intensive
+    #memory intensive, so do it a different way..
     #fasta_io = StringIO(fasta_string)
     #SeqDict = SeqIO.to_dict(SeqIO.parse(fasta_io , "fasta"))
     Ks_values=[]
+
+    #the different way...
+    seq_dict={}
+    for k in range(0,len(focal_genomes_as_int)):
+        i=focal_genomes_as_int[k]
+        #tags=["\n>n" + str(j) for j in range(0,i)]
+        #len_tags_so_far=sum([len(t)+1 for t in tags])
+        num_places=int(math.log10(i))
+        terms=[9*(m+1)*10**m for m in range(0,num_places)]
+        print("terms" + str(terms))
+        index_update=1+sum(terms)+(i-10**num_places)*(num_places+1)+(i)*4
+        next_to_add= 5 + num_places #4 from ">n\n" and len(135) or whatever it is..
+        print("next_to_add=" + str(next_to_add))
+        #print("tags" + str(tags))
+        print("index_update: " + str(index_update))
+        #print("len_tags_so_far: " + str(len_tags_so_far))
+        str_inx=i*conf.total_num_bases+index_update+next_to_add
+        print(str(i) + "th_genome: " + fasta_string[str_inx:str_inx+100])
+        seq_dict[focal_genomes_as_str[k]]=fasta_string[str_inx:str_inx+conf.total_num_bases]
 
     if conf.stop_at_step < 3:
             return
@@ -183,7 +184,7 @@ def run():
                 #SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
                 with open(out_per_genome_per_paralog_fasta, "w") as f:
                     #f.writelines(["foo","foo"])
-                    f.writelines([">" + subgenome +"\n",subsequence])
+                    f.writelines([">" + subgenome + " simulated paralogous gene\n",subsequence])
                     print("written:" + subsequence)
 
             raw_sequences_for_paralog[paralog_name]=str(subsequence)
