@@ -65,13 +65,13 @@ frequency.
 
 	community.rescheduleScriptBlock(
 		s3,
-	    asInteger(BurninTime +  asFloat(Twgd_gen)),
-		asInteger(BurninTime +  asFloat(Twgd_gen))
+	    asInteger(BurninTime) +  asInteger(Twgd_gen),
+		asInteger(BurninTime) +  asInteger(Twgd_gen)
 	);
 	community.rescheduleScriptBlock(
 		s4,
-	    asInteger(BurninTime-10),
-		asInteger(BurninTime-10)
+	    asInteger(BurninTime-1),
+		asInteger(BurninTime-1)
 	);
 }
 
