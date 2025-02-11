@@ -10,31 +10,41 @@ class TestKsByMig(unittest.TestCase):
     def test_Ks_for_varying_Migration(self):
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/KS_vs_Mg'
 
+        #When Migration is halfway between DIV and NOW, for 100 years.
+        run_list_name = "Ks_for_100yr_of_Mig_with_varying_rates"
         demographics_run_list = [False,
-                                 'Mig9_m02d06y2025_h16m59s59','Mig11_m02d06y2025_h17m09s33']
-        #'Mig7_m02d06y2025_h16m03s11', 'Mig6_m02d06y2025_h16m03s14',
-        #'Mig4_m02d06y2025_h13m45s58', 'Mig5_m02d06y2025_h13m45s56',
-        #'Mig2_m02d06y2025_h12m42s08', 'Mig3_m02d06y2025_h12m51s06',
+                                 'Mig14v2_m02d08y2025_h12m59s40',
+                                 'Mig13v2_m02d09y2025_h09m19s48','Mig12v2_m02d09y2025_h12m17s34']
+        #                         'Mig14v3_m02d10y2025_h17m03s26',
+        #                         'Mig13v3_m02d10y2025_h17m04s04',
+        #                         'Mig12v3_m02d10y2025_h17m04s44']
+
+        #                         'Mig14v2_m02d08y2025_h12m59s40',
+        #                         'Mig13v2_m02d09y2025_h09m19s48','Mig12v2_m02d09y2025_h12m17s34',
+        #                         'Mig11v2_m02d09y2025_h12m21s19']
+        #demographics_run_list = [False,
+        #                         'Mig14v2_m02d08y2025_h12m59s40',
+        #                         'Mig15v2_m02d09y2025_h19m13s36',
+        #                         'Mig16v2_m02d09y2025_h19m13s40',
+        #                         'Mig17v2_m02d09y2025_h19m13s44']
+        # run_list_name = "Ks_for_5yr_of_Mig_with_varying_rates"
+
         specks_TE5_run_list = [False, False, False, False, False,False,False]
 
 
         #xmax_Ks = [0.01,0.05,0.05,0.1,0.5,1]
         xmax_Ks = [0.02 for f in demographics_run_list]
-        bin_sizes_Ks = [xmax_KS_i/50 for xmax_KS_i in xmax_Ks]
+        bin_sizes_Ks = [xmax_KS_i/25 for xmax_KS_i in xmax_Ks]
 
         #xmax_Tc = [5000,5000,5000,10000,50000,100000]
-        xmax_Tc = [5000 for f in demographics_run_list ]
-        bin_sizes_Tc = [xmax_Tc_i/50 for xmax_Tc_i in xmax_Tc]
+        xmax_Tc = [10000 for f in demographics_run_list ]
+        bin_sizes_Tc = [xmax_Tc_i/25 for xmax_Tc_i in xmax_Tc]
 
 
         #ymax_KS = [False for f in demographics_run_list]
         #ymax_Tc = [False for f in demographics_run_list]
-        ymax_KS = [100 for f in demographics_run_list]
-        ymax_Tc = [200 for f in demographics_run_list]
-
-        run_list_name = "Ks_for_varying_varying_Mg_constantRC"
-        # since mutation rate is 1.0e-5
-        # we multiply by 1/1.2 since thats syn / total mut rate
+        ymax_KS = [500 for f in demographics_run_list]
+        ymax_Tc = [800 for f in demographics_run_list]
 
         show_KS_predictions = [False, False, False]
         suptitle = "Ks histograms\n"

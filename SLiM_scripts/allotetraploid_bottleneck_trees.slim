@@ -67,8 +67,8 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 	);
 	community.rescheduleScriptBlock(
 		s3,
-	    asInteger(BurninTime +  asFloat(Tdiv_gen)),
-		asInteger(BurninTime +  asFloat(Tdiv_gen))
+	    asInteger(BurninTime) +  asInteger(Tdiv_gen),
+		asInteger(BurninTime) +  asInteger(Tdiv_gen)
 	);
 	community.rescheduleScriptBlock(
 		s4,
@@ -86,6 +86,7 @@ BurninTime: late() {
 
 // Split populations after burn-in.
 BurninTime early() {
+	catn(sim.cycle + "\tBurnin complete. Parental divergence start!");
 	sim.addSubpopSplit("p2", N, p1);
 }
 
@@ -111,7 +112,7 @@ s3 10 late() {
 	sim.treeSeqOutput(trees_file_name);
 	catn("wrote trees file to:\t" + trees_file_name);
 }
-s4 10 early() {
+s4 10 late() {
 	catn(sim.cycle + "\t block s4 executed");
 	sim.treeSeqOutput(trees_file_name_at_div);
 	catn("wrote trees file to:\t" + trees_file_name_at_div);
