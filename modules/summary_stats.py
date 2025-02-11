@@ -23,7 +23,17 @@ def expected_heterozygosity(Ne,mutation_rate):
     denominator = numerator + 1.0
     return  numerator/ denominator
 
-def inbreeding_coefficient(Het_exp,Het_obs):
-    numerator =4.0*Ne*mutation_rate
-    denominator = numerator + 1.0
-    return  numerator/ denominator
+def inbreeding_coefficient(het_exp,het_obs):
+    numerator =het_exp - het_obs
+    return  numerator/ het_exp
+
+def observed_Ne(het_exp,het_obs):
+    numerator =het_exp - het_obs
+    return  numerator/ het_exp
+
+# https://www.nature.com/articles/hdy201643
+# heterozygosity excess
+# Ne = π / (4μ);
+# and π is nucleotide diversity
+# (average number of nuc differences in a population or sample)
+# https://evolutionarygenetics.github.io/Chapter7.html
