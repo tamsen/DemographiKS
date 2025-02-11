@@ -32,6 +32,7 @@ def run():
     my_SLiM_allo_script = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
     my_SLiM_auto_script = os.path.join("SLiM_scripts", "autotetraploid_bottleneck_trees.slim")
     my_SLiM_allo_with_migration_script = os.path.join("SLiM_scripts", "allotetraploid_migration_trees.slim")
+    my_SLiM_allo_with_assortative_mating_script = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_inbreeding_trees.slim")
 
     out_fasta = os.path.join(demographics_out_folder, conf.sim_name + ".fa")
     out_csv = os.path.join(demographics_out_folder, conf.sim_name + ".csv")
@@ -46,13 +47,17 @@ def run():
     log.write_to_log("Step 1: running SLiM")
     if conf.pre_existing_trees_file:
         final_trees_file = conf.pre_existing_trees_file
-        log.write_to_log("Using pre-exisiting trees file:\t" + str(conf.pre_existing_trees_file))
+        log.write_to_log("Using pre-existing trees file:\t" + str(conf.pre_existing_trees_file))
     else:
         path_to_current_py_script = os.path.abspath(__file__)
         if conf.DIV_time_Ge:
             full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script), my_SLiM_allo_script)
             if conf.mig_rate:
                 full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script), my_SLiM_allo_with_migration_script)
+            if conf.assortative_mating_coefficient:
+                full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script),
+                                                my_SLiM_allo_with_assortative_mating_script)
+
         else: #if there was no parental divergence, then this must be an autopolyploid
             full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script), my_SLiM_auto_script)
         log.write_to_log("Running SLiM script:\t" + str(full_slim_script))

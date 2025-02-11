@@ -17,6 +17,7 @@
 
 initialize() {
 
+    initializeSLiMOptions(keepPedigrees=T);
 	initializeTreeSeq(checkCoalescence=F);
 
 	// Use the rep number to modify the starting seed.
@@ -60,8 +61,8 @@ mateChoice() {
     // This particular callback makes the mating weights be (almost) proportional to relatedness.
     // The "0.01" is a fudge to prevent the weights all ever being zero
     // (see SLiM manual for why this is needed)
-    inbreeding_coefficient=1.0
-    return inbreeding_coefficient * weights * (individual.relatedness(sourceSubpop.individuals) + 0.01);
+    assortative_mating_coefficient=1.0;
+    return assortative_mating_coefficient * weights * (individual.relatedness(sourceSubpop.individuals) + 0.01);
 }
 
 /*
@@ -77,8 +78,8 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 	);
 	community.rescheduleScriptBlock(
 		s3,
-	    asInteger(BurninTime +  asFloat(Tdiv_gen)),
-		asInteger(BurninTime +  asFloat(Tdiv_gen))
+	    asInteger(BurninTime) +  asInteger(Tdiv_gen),
+		asInteger(BurninTime) +  asInteger(Tdiv_gen)
 	);
 	community.rescheduleScriptBlock(
 		s4,
@@ -89,6 +90,12 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 
 }
 
+10: late() {
+    // Print mean heterozygosity across the population
+    heterozygosity = calcHeterozygosity(p1.genomes);
+    cat("Mean heterozygosity = " + heterozygosity + "\n");
+}
+
 // Burn-in here is 10 * 2 * 1000 = 20_000 generations.
 BurninTime: late() {
 	catn(sim.cycle + "\t" + p1.individualCount + "\t" + p2.individualCount);
@@ -96,6 +103,7 @@ BurninTime: late() {
 
 // Split populations after burn-in.
 BurninTime early() {
+	catn(sim.cycle + "\tBurnin complete. Parental divergence start!");
 	sim.addSubpopSplit("p2", N, p1);
 }
 
@@ -121,7 +129,7 @@ s3 10 late() {
 	sim.treeSeqOutput(trees_file_name);
 	catn("wrote trees file to:\t" + trees_file_name);
 }
-s4 10 early() {
+s4 10 late() {
 	catn(sim.cycle + "\t block s4 executed");
 	sim.treeSeqOutput(trees_file_name_at_div);
 	catn("wrote trees file to:\t" + trees_file_name_at_div);

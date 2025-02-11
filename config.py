@@ -35,7 +35,10 @@ class DemographiKS_config:
 
     #Exchange rate between allopolyploid subgenomes after WGD,
     #as in "Demographic history inference and the polyploid continuum" by  Blischak et al 2023
-    homoeologous_exchange_rate = 0 
+    homoeologous_exchange_rate = 0
+
+    #mating
+    assortative_mating_coefficient = False
 
     #migration
     mig_start = False
@@ -145,6 +148,8 @@ class DemographiKS_config:
                             self.bottleneck_Ne = int(incoming_txt)
                         if (incoming_tag == "burnin_time"):
                             self.burnin_time = int(incoming_txt)
+                        if (incoming_tag == "assortative_mating_coefficient"):
+                            self.assortative_mating_coefficient = parse_float_or_false(incoming_txt)
 
                 if (incoming_tag == "Speciation"):
                     for inner_layer in top_layer:
