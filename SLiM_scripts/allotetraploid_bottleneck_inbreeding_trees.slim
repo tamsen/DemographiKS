@@ -30,17 +30,15 @@ initialize() {
 	// Time parents are isolated in generations
 	defineConstant("T1", asFloat(delta_t));
 
-	// Recombination rate across subgenomes
-	defineConstant("DIJ", asFloat(dij));
-
 	// Recombination rate
 	defineConstant("RCR", asFloat(recombination_rate));
 
-	// Burnin time (generally 10 * num chr = 10 * 2 * N)
-	//defineConstant("BurninTime", 10*2*N);
-
 	// Mutation rate
 	defineConstant("mu", 0);
+
+	// assortative_mating_coefficient
+	defineConstant("AMCp", asFloat(AMCoef));
+	defineConstant("AMCq", 1.0-AMCp);
 
 	initializeMutationType("m1", 0.5, "f", 0.0);
 	m1.convertToSubstitution = T;
@@ -55,14 +53,29 @@ initialize() {
 	catn("delta_t:\t" + delta_t);
 }
 
+1: late() {
+	if(sim.cycle % 100 == 0) {
+		catn("cycle:\t" + sim.cycle + "\tNe\t" + p1.individualCount);
+		mean_relatedness=mean(p1.individuals.tagF);
+		catn("mean_relatedness\t" + mean_relatedness + "\n");
+		}
+}
+
+
+modifyChild()
+{
+	parental_relatedness=parent1.relatedness(c(parent2));
+	child.tagF=parental_relatedness;
+	return T;
+}
 
 mateChoice() {
     // Prefer relatives as mates
     // This particular callback makes the mating weights be (almost) proportional to relatedness.
-    // The "0.01" is a fudge to prevent the weights all ever being zero
+    // The "0.00001" is a fudge to prevent the weights all ever being zero
     // (see SLiM manual for why this is needed)
-    assortative_mating_coefficient=1.0;
-    return assortative_mating_coefficient * weights * (individual.relatedness(sourceSubpop.individuals) + 0.01);
+	new_weights=weights*(AMCq + individual.relatedness(sourceSubpop.individuals)*AMCp + 0.00001)	;
+	return new_weights;
 }
 
 /*
@@ -90,15 +103,13 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 
 }
 
-10: late() {
-    // Print mean heterozygosity across the population
-    heterozygosity = calcHeterozygosity(p1.genomes);
-    cat("Mean heterozygosity = " + heterozygosity + "\n");
-}
 
 // Burn-in here is 10 * 2 * 1000 = 20_000 generations.
 BurninTime: late() {
+
+	if(sim.cycle % 100 == 0) {
 	catn(sim.cycle + "\t" + p1.individualCount + "\t" + p2.individualCount);
+	}
 }
 
 // Split populations after burn-in.
@@ -115,13 +126,6 @@ s1 10 late() {
 	p1.setSubpopulationSize(asInteger(Nb));
 	p2.setSubpopulationSize(asInteger(Nb));
 	catn("size p2=" + p2.individualCount);
-
-	// sets the homoeologous exchange / recombination rate across subgenomes
-	// (in this case it is coded as migration even though its not really migration.)
-	// as in "Demographic history inference and the polyploid continuum" by  Blischak et al 2023
-	catn(sim.cycle + "\t Homoeologous exchange between subgenomes = " + DIJ);
-	p1.setMigrationRates(p2, DIJ);
-	p2.setMigrationRates(p1, DIJ);
 }
 
 s3 10 late() {

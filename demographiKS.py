@@ -2,18 +2,17 @@ import datetime
 import math
 import os
 import shutil
-from io import StringIO
 import msprime
 import sys
 import tskit
 import random
-from Bio import SeqIO
-from Bio.SeqRecord import SeqRecord
 from datetime import datetime
 import config
 import version
 import log
-from modules import SLiM_runner,ks_calculator,FASTA_extracta,ks_histogramer,gene_shedder,trees_file_processor
+from modules import SLiM_runner, ks_calculator, FASTA_extracta, ks_histogramer, gene_shedder, trees_file_processor, \
+    summary_stats
+
 
 def run():
 
@@ -35,7 +34,8 @@ def run():
     my_SLiM_allo_with_assortative_mating_script = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_inbreeding_trees.slim")
 
     out_fasta = os.path.join(demographics_out_folder, conf.sim_name + ".fa")
-    out_csv = os.path.join(demographics_out_folder, conf.sim_name + ".csv")
+    ks_csv = os.path.join(demographics_out_folder, conf.sim_name + ".csv")
+    ss_csv = os.path.join(demographics_out_folder, "summary_stats.csv")
     out_png = os.path.join(conf.output_folder, conf.sim_name + "_hist.png")
 
     folders_needed = [conf.output_folder, demographics_out_folder, slim_out_folder]
@@ -130,29 +130,24 @@ def run():
     #SeqDict = SeqIO.to_dict(SeqIO.parse(fasta_io , "fasta"))
     Ks_values=[]
 
-    #the different way...
+    #the different way...index straight into the fasta
     seq_dict={}
     for k in range(0,len(focal_genomes_as_int)):
         i=focal_genomes_as_int[k]
-        #tags=["\n>n" + str(j) for j in range(0,i)]
-        #len_tags_so_far=sum([len(t)+1 for t in tags])
         num_places=int(math.log10(i))
         terms=[9*(m+1)*10**m for m in range(0,num_places)]
-        print("terms" + str(terms))
         index_update=1+sum(terms)+(i-10**num_places)*(num_places+1)+(i)*4
-        next_to_add= 5 + num_places #4 from ">n\n" and len(135) or whatever it is..
-        print("next_to_add=" + str(next_to_add))
-        #print("tags" + str(tags))
-        print("index_update: " + str(index_update))
-        #print("len_tags_so_far: " + str(len_tags_so_far))
+        next_to_add= 5 + num_places
         str_inx=i*conf.total_num_bases+index_update+next_to_add
-        print(str(i) + "th_genome: " + fasta_string[str_inx:str_inx+100])
         seq_dict[focal_genomes_as_str[k]]=fasta_string[str_inx:str_inx+conf.total_num_bases]
 
     if conf.stop_at_step < 3:
             return
 
     log.write_to_log("Step 3-5: Entering paralog-processing loop")
+    with open(ss_csv, 'a') as f:
+        f.write("paralog_ID\tpi\n")
+
     for paralog_ID in paralog_names:
 
         log.write_to_log("\tStep 3: Gene shedding for " + str(paralog_ID))
@@ -172,7 +167,6 @@ def run():
         indexes_of_concern=[]
         for subgenome in focal_genomes_as_str:
             genome_name = conf.sim_name + "_" + subgenome
-            #subsequence= SeqDict[subgenome][paralog_ID:paralog_ID+conf.gene_length_in_bases].seq
             subsequence = seq_dict[subgenome][paralog_ID:paralog_ID + conf.gene_length_in_bases]
             paralog_name = genome_name + "_paralog_" + str(paralog_ID)
 
@@ -183,12 +177,7 @@ def run():
             log.write_to_log("stop codons: " + ",".join([str(i) for i in idx_of_stop_codons]))
             if conf.keep_intermediary_files:
                 out_per_genome_per_paralog_fasta = os.path.join(demographics_out_folder, paralog_name + ".fa")
-                #record = SeqRecord(subsequence,
-                #                   id=subgenome, name=paralog_name,
-                #                   description="simulated paralogous gene")
-                #SeqIO.write(record, out_per_genome_per_paralog_fasta, "fasta")
                 with open(out_per_genome_per_paralog_fasta, "w") as f:
-                    #f.writelines(["foo","foo"])
                     f.writelines([">" + subgenome + " simulated paralogous gene\n",subsequence])
                     print("written:" + subsequence)
 
@@ -201,6 +190,12 @@ def run():
             raw_seq= raw_sequences_for_paralog[paralog_name]
             fixed_subsequence = FASTA_extracta.replace_str_indexes(raw_seq,indexes_of_concern, "NNN")
             final_sequences_for_paralog[paralog_name] = fixed_subsequence
+
+        #we have the sequences in memory at this point, we can calculate summary stats
+        pi = summary_stats.pi_nuc_diversity(list(final_sequences_for_paralog.values()))
+        with open(ss_csv, 'a') as f:
+            summary_stats_data=str(paralog_ID) + "\t" + str(pi) + "\n"
+            f.write(str(summary_stats_data))
 
         paralog_folder = os.path.join(demographics_out_folder, "paralog_" + str(paralog_ID))
         if not os.path.exists(paralog_folder):
@@ -217,7 +212,7 @@ def run():
         if not conf.keep_intermediary_files:
             shutil.rmtree(paralog_folder)
 
-        with open(out_csv, 'a') as f:
+        with open(ks_csv, 'a') as f:
             f.writelines(file_lines_for_paralog)
 
         Ks_values=Ks_values+Ks_values_for_paralog

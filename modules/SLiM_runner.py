@@ -50,6 +50,11 @@ def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
             "-d", "MigRate="+str(config.mig_rate)]
         cmd = cmd  + extra_commands_for_migration
 
+    if config.assortative_mating_coefficient:
+        extra_commands_for_inbreeding=[
+            "-d", "AMCoef="+str(config.assortative_mating_coefficient)]
+        cmd = cmd  + extra_commands_for_inbreeding
+
     cmd= cmd + ["-m", "-s", "0", full_path_to_slim_script_destination]
     log.write_to_log("\t cmd: " + " ".join(cmd))
     log.write_to_log("\t cwd: " + config.output_folder)

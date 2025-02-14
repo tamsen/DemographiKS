@@ -131,10 +131,6 @@ class DemographiKS_config:
                             self.mean_WGD_life_span_in_GE = half_life_to_mean_life(incoming_txt)
                         if (incoming_tag == "num_codons"):
                             self.num_codons = int(incoming_txt)
-                        #if (incoming_tag == "Ks_per_Myr"):
-                        #    self.Ks_per_Myr = float(incoming_txt)
-                        #if (incoming_tag == "per_site_evolutionary_distance"):
-                        #    self.per_site_evolutionary_distance = float(incoming_txt)
                         if (incoming_tag == "evolver_random_seed"):
                             self.evolver_random_seed = int(incoming_txt)
 
