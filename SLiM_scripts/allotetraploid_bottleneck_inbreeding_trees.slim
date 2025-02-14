@@ -51,6 +51,8 @@ initialize() {
 
 	catn("Tdiv:\t" + Tdiv_gen);
 	catn("delta_t:\t" + delta_t);
+	catn("AMCp:\t" + AMCp);
+	catn("AMCq:\t" + AMCq);
 }
 
 1: late() {
@@ -104,9 +106,7 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 }
 
 
-// Burn-in here is 10 * 2 * 1000 = 20_000 generations.
 BurninTime: late() {
-
 	if(sim.cycle % 100 == 0) {
 	catn(sim.cycle + "\t" + p1.individualCount + "\t" + p2.individualCount);
 	}

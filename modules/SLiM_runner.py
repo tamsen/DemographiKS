@@ -43,14 +43,14 @@ def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
            "-d", "dij=" + str(config.homoeologous_exchange_rate),
            "-d", "rep=" + str(config.SLiM_rep)]
 
-    if config.mig_rate:
+    if str(config.mig_rate) != str(False):
         extra_commands_for_migration=[
             "-d", "MigStart="+str(config.mig_start),
             "-d", "MigStop="+str(config.mig_stop),
             "-d", "MigRate="+str(config.mig_rate)]
         cmd = cmd  + extra_commands_for_migration
 
-    if config.assortative_mating_coefficient:
+    if str(config.assortative_mating_coefficient) != str(False):
         extra_commands_for_inbreeding=[
             "-d", "AMCoef="+str(config.assortative_mating_coefficient)]
         cmd = cmd  + extra_commands_for_inbreeding

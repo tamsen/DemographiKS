@@ -52,9 +52,9 @@ def run():
         path_to_current_py_script = os.path.abspath(__file__)
         if conf.DIV_time_Ge:
             full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script), my_SLiM_allo_script)
-            if conf.mig_rate:
+            if str(conf.mig_rate) != str(False):
                 full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script), my_SLiM_allo_with_migration_script)
-            if conf.assortative_mating_coefficient:
+            if str(conf.assortative_mating_coefficient) != str(False):
                 full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script),
                                                 my_SLiM_allo_with_assortative_mating_script)
 
@@ -249,6 +249,11 @@ def setup(arguments):
     print("Current Working Directory:\t" + cwd)
     if conf.output_folder[0:2]== "./":
         conf.output_folder = os.path.join(os.getcwd(),conf.output_folder.replace("./",""))
+
+    if (conf.mig_rate and conf.assortative_mating_coefficient):
+        print("For simplicty, DemographiKS does not currently simulate migration and inbreeding.")
+        print("Please choose one or the other. Thank you.")
+        return False
 
     config_file_used=os.path.basename(config_file).replace(".xml",".used.xml")
     print("Output folder:\t" + conf.output_folder)

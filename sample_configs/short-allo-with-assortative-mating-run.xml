@@ -13,7 +13,7 @@
         <ancestral_ne>10</ancestral_ne>
         <bottleneck_ne>10</bottleneck_ne>
         <burnin_time>50</burnin_time>
-        <assortative_mating_coefficient>1</assortative_mating_coefficient>
+        <assortative_mating_coefficient>0.5</assortative_mating_coefficient>
       </Population>
     <SequenceEvolution>
         <WGD_gene_half_life_in_GE>310000</WGD_gene_half_life_in_GE>
