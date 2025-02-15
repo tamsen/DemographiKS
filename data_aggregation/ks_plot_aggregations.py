@@ -315,8 +315,8 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene,
     if config_used.mig_rate > 0:
         mig_start_as_Ks=config_used.t_div_as_ks- (config_used.Ks_per_YR*config_used.mig_start)
         mig_stop_as_Ks=config_used.t_div_as_ks- (config_used.Ks_per_YR*config_used.mig_stop)
-        this_ax.axvline(x=mig_start_as_Ks, color='g', linestyle='--', label="Mig start")
-        this_ax.axvline(x=mig_stop_as_Ks, color='g', linestyle=':', label="Mig stop")
+        this_ax.axvline(x=mig_start_as_Ks, color='g', linestyle=':', label="Mig start")
+        this_ax.axvline(x=mig_stop_as_Ks, color='g', linestyle='--', label="Mig stop")
 
     add_Ks_annotations(this_ax, config_used, slim_ks_by_gene,dgx_hist_ys, bins, show_predictions)
 
