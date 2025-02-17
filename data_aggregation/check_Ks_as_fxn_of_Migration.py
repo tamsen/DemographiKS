@@ -11,26 +11,20 @@ class TestKsByMig(unittest.TestCase):
         demographiKS_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/KS_vs_Mg'
 
         #When Migration is halfway between DIV and NOW, for 100 years.
-        run_list_name = "Ks_for_100yr_of_Mig_with_varying_rates"
-        demographics_run_list = [False, 'Mig14_m02d11y2025_h10m52s03', 'Mig13_m02d11y2025_h10m52s04'
-                                 ]
-        #                         'Mig14v2_m02d08y2025_h12m59s40',
-        #                         'Mig13v2_m02d09y2025_h09m19s48',
-
-        #                         'Mig14v3_m02d10y2025_h17m03s26',
-        #                         'Mig13v3_m02d10y2025_h17m04s04',
-        #                         'Mig12v3_m02d10y2025_h17m04s44']
-
-        #                         'Mig14v2_m02d08y2025_h12m59s40',
-        #                         'Mig13v2_m02d09y2025_h09m19s48','Mig12v2_m02d09y2025_h12m17s34',
-        #                         'Mig11v2_m02d09y2025_h12m21s19']
-
-        # run_list_name = "Ks_for_5yr_of_Mig_with_varying_rates"
+        #run_list_name = "Ks_for_100yr_of_Mig_with_varying_rates"
         #demographics_run_list = [False,
-        #                         'Mig14v2_m02d08y2025_h12m59s40',
-        #                         'Mig15v2_m02d09y2025_h19m13s36',
-        #                         'Mig16v2_m02d09y2025_h19m13s40',
-        #                         'Mig17v2_m02d09y2025_h19m13s44']
+        #                         'Mig14v4_m02d14y2025_h09m46s25',
+        #                         'Mig13v4_m02d14y2025_h09m46s25',
+        #                         'Mig12v4_m02d14y2025_h09m46s25',
+        #                         'Mig11v4_m02d14y2025_h09m46s25']
+
+
+
+        #run_list_name = "Ks_for_5yr_of_Mig_with_varying_rates"
+        #demographics_run_list = [False,
+        #                        'Mig14v4_m02d14y2025_h09m46s25','Mig15v4_m02d15y2025_h17m50s44',
+        #                         'Mig16v4_m02d15y2025_h17m50s37','Mig17v4_m02d15y2025_h17m50s41']
+
 
         run_list_name = "Ks_for_gradual_speciation_ie_Mig_with_varying_duration"
         demographics_run_list = [False,
@@ -54,8 +48,8 @@ class TestKsByMig(unittest.TestCase):
 
         #ymax_KS = [False for f in demographics_run_list]
         #ymax_Tc = [False for f in demographics_run_list]
-        ymax_KS = [500 for f in demographics_run_list]
-        ymax_Tc = [800 for f in demographics_run_list]
+        ymax_KS = [1500 for f in demographics_run_list]
+        ymax_Tc = [2400 for f in demographics_run_list]
 
         show_KS_predictions = [False, False, False]
         suptitle = "Ks histograms\n"

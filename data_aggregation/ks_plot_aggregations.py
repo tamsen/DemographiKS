@@ -306,7 +306,7 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene,
                            + "(" + str(num_specks_genes) + " paralogs in genome)",
                      density=False)
 
-    this_ax.axvline(x=config_used.t_div_as_ks, color='b', linestyle='--', label="input Tdiv as Ks")
+    this_ax.axvline(x=config_used.t_div_as_ks, color='b', linestyle='-.', label="input Tdiv as Ks")
     theoretical_ks_mean_now=config_used.mean_Ks_from_Tc+config_used.t_div_as_ks
     this_ax.axvline(x=theoretical_ks_mean_now, color='r', linestyle='--', label="Expected Ks mean")
     #mean_Ks_from_Nb_string=  "({:.2E})".format(config_used.mean_Ks_from_Nb)
@@ -317,7 +317,7 @@ def plot_ks(this_ax, config_used, slim_ks_by_gene, spx_ks_by_gene,
         mig_stop_as_Ks=config_used.t_div_as_ks- (config_used.Ks_per_YR*config_used.mig_stop)
         this_ax.axvline(x=mig_start_as_Ks, color='g', linestyle=':', label="Mig start")
         this_ax.axvline(x=mig_stop_as_Ks, color='g', linestyle='--', label="Mig stop")
-
+        this_ax.axvspan(mig_stop_as_Ks, mig_start_as_Ks, alpha=0.5, color='g')
     add_Ks_annotations(this_ax, config_used, slim_ks_by_gene,dgx_hist_ys, bins, show_predictions)
 
     if ymax:

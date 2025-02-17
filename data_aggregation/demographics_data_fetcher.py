@@ -8,11 +8,7 @@ class MyDGXDataFetcher(unittest.TestCase):
     def test_fetch_demographics_data(self):
 
         #/usr/scratch2/userdata2/tdunn/DemographiKS_Output
-        run_list = ['Mig25v2_m02d14y2025_h09m48s26',
-                    'Mig26v2_m02d14y2025_h09m48s27',
-                    'Mig27v2_m02d14y2025_h09m48s30',
-                    'Mig28v2_m02d14y2025_h09m48s32',
-                    'Mig29v2_m02d14y2025_h09m48s35']
+        run_list = ['Mig17v4_m02d15y2025_h17m50s41']
 
         run_collection_name = "TE"
         me_at_remote_URL = 'mesx_cluster'

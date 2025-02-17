@@ -54,6 +54,9 @@ class DemographiKS_config:
     stop_at_step = 999
     keep_intermediary_files=False
 
+    # incase we need this...
+    specks_per_site_evolutionary_distance = 0.01268182
+
     def __init__(self, config_file):
 
         mytree = ET.parse(config_file)
