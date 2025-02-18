@@ -26,13 +26,14 @@ class TestKsByMig(unittest.TestCase):
         #                         'Mig16v4_m02d15y2025_h17m50s37','Mig17v4_m02d15y2025_h17m50s41']
 
 
-        run_list_name = "Ks_for_gradual_speciation_ie_Mig_with_varying_duration"
+        run_list_name = "Ks_for_gradual_speciation_ie_Mig_with_varying_duration_0p1"
         demographics_run_list = [False,
-                                 'Mig25v2_m02d14y2025_h09m48s26',
-                                  'Mig26v2_m02d14y2025_h09m48s27',
-                                  'Mig27v2_m02d14y2025_h09m48s30',
-                                  'Mig28v2_m02d14y2025_h09m48s32',
-                                  'Mig29v2_m02d14y2025_h09m48s35']
+                                 'Mig14v4_m02d14y2025_h09m46s25',
+                                 'Mig26v4_m02d16y2025_h14m03s20',
+                                 'Mig27v4_m02d16y2025_h14m03s22',
+                                 'Mig28v4_m02d16y2025_h14m03s34',
+                                 'Mig29v4_m02d16y2025_h14m03s57']
+
 
         specks_TE5_run_list = [False, False, False, False, False,False,False]
 
