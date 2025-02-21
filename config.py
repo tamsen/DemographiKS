@@ -1,5 +1,6 @@
 # eventually this should be read in from an xml config or similar
 import math
+import ast
 import xml.etree.ElementTree as ET
 
 
@@ -79,11 +80,15 @@ class DemographiKS_config:
                         self.log_file_name = False
                     else:
                         self.log_file_name = incoming_txt
+
                 if (incoming_tag == "KeepIntermediaryFiles"):
                     if incoming_txt.upper() == "FALSE":
                         self.keep_intermediary_files = False
                     else:
                         self.keep_intermediary_files = incoming_txt
+
+                if (incoming_tag == "AncestralGenomesToSample"):
+                    self.sample_ancestral_genomes_for_Tc = ast.literal_eval(incoming_txt)
 
                 if (incoming_tag == "Paths"):
                     for inner_layer in top_layer:

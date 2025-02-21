@@ -67,6 +67,7 @@ def run():
     for pairs in conf.sample_ancestral_genomes_for_Tc:
         genome_index_1 = pairs[0]
         genome_index_2 = pairs[1]
+        log.write_to_log("random ancestral genomes:" + str(pairs))
         log.write_to_log("Plotting Tc for sample ancestral genomes "
                          + str(genome_index_1) + " and " + str(genome_index_2))
         trees_file_processor.plot_coalescent(trees_file_at_div, genome_index_1, genome_index_2,

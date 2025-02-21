@@ -155,7 +155,8 @@ def plot_mrca(this_ax, slim_mrcas_by_gene, specks_mrcas_by_gene, theoretical_mrc
 
 
 def add_mrca_annotations(this_ax, config_used,
-                         avg_simulated_slim_Tc, slim_run_duration_in_m, specks_run_duration_in_m):
+                         avg_simulated_slim_Tc, slim_run_duration_in_m, specks_run_duration_in_m,
+                         slim_version, specks_version):
    
     simulated_mean_Ks_from_Tc = avg_simulated_slim_Tc * config_used.Ks_per_YR
     Tc_info = 'mean Tc by Kingman = ' + \
@@ -167,8 +168,11 @@ def add_mrca_annotations(this_ax, config_used,
     mut_info = 'simulated num mutations per gene = ' + \
                "{:.2E}".format(simulated_mean_Ks_from_Tc * config_used.gene_length_in_bases)
 
-    SLiM_run_time_info = "SLiM run time: " + str(round(slim_run_duration_in_m, 2)) + " min"
-    SpecKS_run_time_info = "SpecKS run time: " + str(round(specks_run_duration_in_m,2)) + " min"
+    SLiM_run_time_info = ("SLiM run time: " + str(round(slim_run_duration_in_m, 2)) +
+                          " min, version " + slim_version)
+
+    SpecKS_run_time_info = ("SpecKS run time: " + str(round(specks_run_duration_in_m,2)) +
+                            " min, version " + specks_version)
 
     annotation_txt = "\n".join([Tc_info, ks_info,
                                 theoretical_mean_Ks_from_Tc, mut_info,"\n",
@@ -177,24 +181,25 @@ def add_mrca_annotations(this_ax, config_used,
 
 
 def get_run_time_in_minutes(local_output_folder):
-        out_string, error_string = process_wrapper.run_and_wait_with_retry(
-            ['ls'], local_output_folder, "Connection reset by peer", 2, 5)
 
-        print("folder: \n" + local_output_folder)
-        print("ls: \n" + out_string)
-        log_file = [s for s in out_string.split() if 'log.txt' in s][0]
+        glob_results = glob.glob(local_output_folder + '/*log.txt')
+        log_file=glob_results[0]
         print("log file: " + log_file)
         head_string, error_string = process_wrapper.run_and_wait_with_retry(
             ['head', log_file], local_output_folder, "Connection reset by peer", 2, 5)
         tail_string, error_string = process_wrapper.run_and_wait_with_retry(
             ['tail', log_file], local_output_folder, "Connection reset by peer", 2, 5)
-        first_line = head_string.split("\n")[0].split("\t")[0]
-        last_line = tail_string.split("\n")[-4].split("\t")[0]
-        datetime_start = datetime.strptime(first_line, '%d/%m/%Y,%H:%M:%S:')
-        datetime_end = datetime.strptime(last_line, '%d/%m/%Y,%H:%M:%S:')
+
+        first_lines = head_string.split("\n")
+        start_time_string = first_lines[0].split("\t")[0]
+        end_time_string = tail_string.split("\n")[-4].split("\t")[0]
+        version_string = first_lines[7].split("\t")[1]
+        print(version_string )
+        datetime_start = datetime.strptime(start_time_string, '%d/%m/%Y,%H:%M:%S:')
+        datetime_end = datetime.strptime(end_time_string, '%d/%m/%Y,%H:%M:%S:')
         difference = datetime_end - datetime_start
         duration_in_m = difference.total_seconds() / 60.0
-        return duration_in_m
+        return duration_in_m,version_string
 
 if __name__ == '__main__':
     unittest.main()

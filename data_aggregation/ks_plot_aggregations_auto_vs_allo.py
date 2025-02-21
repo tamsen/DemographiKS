@@ -143,7 +143,7 @@ def make_Tc_Ks_Allo_vs_Auto_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             ks_file = os.path.join(allo_run_path, csv_file_name)
             print("reading " + ks_file)
             allo_ks_results = read_Ks_csv(ks_file, False)
-            allo_run_duration_in_m = get_run_time_in_minutes(allo_run_path)
+            allo_run_duration_in_m, allo_version = get_run_time_in_minutes(allo_run_path)
             plot_title = "Ks at Tnow\n" + "burnin time=" + str(allo_config_used.burnin_time) + " gen,\n" \
                      + "Na=" + str(allo_config_used.ancestral_Ne)  + ", Nb=" + str(allo_config_used.bottleneck_Ne) +\
                          ", Tdiv=" + str(allo_config_used.DIV_time_Ge) + ", RC=" + str(allo_config_used.recombination_rate)
@@ -166,7 +166,7 @@ def make_Tc_Ks_Allo_vs_Auto_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             ks_file = os.path.join(auto_run_path, csv_file_name)
             print("reading " + ks_file)
             auto_ks_results = read_Ks_csv(ks_file, False)
-            auto_run_duration_in_m = get_run_time_in_minutes(auto_run_path)
+            auto_run_duration_in_m, auto_version = get_run_time_in_minutes(auto_run_path)
         else:
             spx_ks_results = []
             spx_run_duration_in_m = 0
@@ -197,8 +197,10 @@ def make_Tc_Ks_Allo_vs_Auto_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                   plot_title, allo_config_used.ancestral_Ne,
                   bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc[i], allo_config_used.num_genes)
 
-        add_mrca_annotations(ax[2, i], allo_config_used, avg_slim_Tc, allo_run_duration_in_m,
-                             auto_run_duration_in_m)
+        add_mrca_annotations(ax[2, i], allo_config_used, avg_slim_Tc,
+                             allo_run_duration_in_m,
+                             auto_run_duration_in_m,
+                             allo_version, auto_version)
 
     ax[0, 1].set(ylabel="# paralog pairs in bin")
     ax[1, 1].set(ylabel="# genes in bin")

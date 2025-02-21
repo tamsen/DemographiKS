@@ -192,7 +192,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             ks_file = os.path.join(dgx_run_path, csv_file_name)
             print("reading " + ks_file)
             demographiKS_ks_results = read_Ks_csv(ks_file, False)
-            dgx_run_duration_in_m = get_run_time_in_minutes(dgx_run_path)
+            dgx_run_duration_in_m, dgx_version = get_run_time_in_minutes(dgx_run_path)
             plot_title = "Ks at Tnow\n" + \
                          "burnin time=" + str(config_used.burnin_time) + " gen, " \
                      + "Na=" + str(config_used.ancestral_Ne)  + ", Nb=" + str(config_used.bottleneck_Ne) +\
@@ -216,7 +216,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             spx_run_path = os.path.join(specks_out_path, spx_run_name)
             csv_file_name = 'Allo_' + spx_run_nickname + '_ML_rep0_Ks_by_GeneTree.csv'
             spx_ks_results = read_Ks_csv(os.path.join(spx_run_path,csv_file_name), True)
-            spx_run_duration_in_m = get_run_time_in_minutes(spx_run_path)
+            spx_run_duration_in_m,spx_version = get_run_time_in_minutes(spx_run_path)
             specks_csv_file = os.path.join(spx_run_path, "variations_in_div_time.txt")
             loci, specks_mrcas_by_gene = read_data_csv(specks_csv_file)
 

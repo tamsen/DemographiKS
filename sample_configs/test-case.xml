@@ -38,4 +38,5 @@
     <StopAtStep>999</StopAtStep>
     <LogFileName>DemographiKS_log.txt</LogFileName>
     <IncludeVisuals>False</IncludeVisuals>
+    <AncestralGenomesToSample>[[1,10],[5,7]]</AncestralGenomesToSample>
 </metadata>
