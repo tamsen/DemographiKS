@@ -19,7 +19,7 @@ class TestAlloVsAuto_Tdiv(unittest.TestCase):
         demographics_auto_run_list=[False,
                                     'Auto_Twgd10000_m01d29y2025_h17m22s23',
                                     'Auto_Twgd100000_m01d29y2025_h17m25s36',
-                                    'Auto_Twgd10000_m01d29y2025_h17m22s23',
+                                    'Auto_Twgd500000_m01d29y2025_h17m22s23',
                                     'Auto_Twgd100000_m01d29y2025_h17m25s36']
 
         bin_sizes_Tc = [200,200, 200, 200,200]

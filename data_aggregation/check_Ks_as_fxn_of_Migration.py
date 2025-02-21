@@ -26,13 +26,27 @@ class TestKsByMig(unittest.TestCase):
         #                         'Mig16v4_m02d15y2025_h17m50s37','Mig17v4_m02d15y2025_h17m50s41']
 
 
-        run_list_name = "Ks_for_gradual_speciation_ie_Mig_with_varying_duration_0p1"
+        #run_list_name = "Ks_for_gradual_speciation_ie_Mig_with_varying_duration_10percent"
+        #demographics_run_list = [False,
+        #                         'Mig14v4_m02d14y2025_h09m46s25',
+        #                         'Mig26v4_m02d16y2025_h14m03s20',
+        #                         'Mig27v4_m02d16y2025_h14m03s22',
+        #                         'Mig28v4_m02d16y2025_h14m03s34',
+        #                         'Mig29v4_m02d16y2025_h14m03s57']
+
+        #run_list_name = "Ks_for_gradual_speciation_ie_Mig_with_varying_duration_1percent"
+        #demographics_run_list = [False,
+        # 'Mig14v4_m02d14y2025_h09m46s25','Mig26v4p1_m02d17y2025_h18m42s39',
+        #  'Mig27v4p1_m02d17y2025_h18m42s40',
+        # 'Mig28v4p1_m02d17y2025_h18m42s43', 'Mig29v4p1_m02d17y2025_h18m42s46']
+
+        run_list_name = "Ks_for_gradual_speciation_ie_Mig_with_varying_duration_0p1percent"
         demographics_run_list = [False,
-                                 'Mig14v4_m02d14y2025_h09m46s25',
-                                 'Mig26v4_m02d16y2025_h14m03s20',
-                                 'Mig27v4_m02d16y2025_h14m03s22',
-                                 'Mig28v4_m02d16y2025_h14m03s34',
-                                 'Mig29v4_m02d16y2025_h14m03s57']
+            'Mig14v4_m02d14y2025_h09m46s25',
+            'Mig26v4p001_m02d19y2025_h09m33s24',
+            'Mig27v4p001_m02d19y2025_h09m33s21',
+            'Mig28v4p001_m02d19y2025_h09m33s19',
+            'Mig29v4p001_m02d19y2025_h09m33s17']
 
 
         specks_TE5_run_list = [False, False, False, False, False,False,False]
@@ -47,9 +61,9 @@ class TestKsByMig(unittest.TestCase):
         bin_sizes_Tc = [xmax_Tc_i/25 for xmax_Tc_i in xmax_Tc]
 
 
-        #ymax_KS = [False for f in demographics_run_list]
-        #ymax_Tc = [False for f in demographics_run_list]
-        ymax_KS = [1500 for f in demographics_run_list]
+
+        #ymax_KS = [1500 for f in demographics_run_list]
+        ymax_KS = [2000 for f in demographics_run_list]
         ymax_Tc = [2400 for f in demographics_run_list]
 
         show_KS_predictions = [False, False, False]

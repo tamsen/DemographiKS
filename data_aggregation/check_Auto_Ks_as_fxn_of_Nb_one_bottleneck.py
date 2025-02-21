@@ -6,7 +6,7 @@ from data_aggregation.ks_plot_aggregations_auto_vs_allo import make_Tc_Ks_Allo_v
 
 class TestKsForAuto(unittest.TestCase):
 
-    def test_Ks_for_varying_Nb_one_bottleneck_Auto(self):
+    def test_Ks_for_varying_Nb_one_bottleneck_Auto_Na_fixed_at_100(self):
 
         demographiKS_allo_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/KS_vs_Nb/Na100'
         demographics_auto_out_path = '/home/tamsen/Data/DemographiKS_output_from_mesx/Auto'

@@ -13,6 +13,7 @@ def plot_coalescent(trees_file, genome_index_1,genome_index_2, config, output_fo
         genome_length=config.total_num_bases
         gene_length=3*config.num_codons_in_a_gene
         num_genes=int(genome_length/gene_length)
+        label_for_pair=str(genome_index_1) + "_" + str(genome_index_2)
 
         #get tree for every gene
         gene_starts=[i*gene_length for i in range(0,num_genes)]
@@ -33,16 +34,17 @@ def plot_coalescent(trees_file, genome_index_1,genome_index_2, config, output_fo
                 mrcas_by_tree.append(mrca.time)
                 tree_interval_starts.append(tree_interval_start)
 
-        csv_file_out1 = os.path.join(output_folder, "simulated_ancestral_gene_mrcas.csv")
+        csv_file_out1 = os.path.join(output_folder,label_for_pair+
+                                     "_simulated_ancestral_gene_mrcas.csv")
         save_mrca_values(csv_file_out1, mrcas_by_gene,gene_starts)
         theoretical_mrcas=theoretical_coalescent(num_genes,config.ancestral_Ne)
         csv_file_out2 = os.path.join(output_folder, "theoretical_ancestral_gene_mrcas.csv")
         save_mrca_values(csv_file_out2,theoretical_mrcas,gene_starts)
-        csv_file_out3 = os.path.join(output_folder, "simulated_ancestral_tree_mrcas.csv")
+        csv_file_out3 = os.path.join(output_folder, label_for_pair+ "_simulated_ancestral_tree_mrcas.csv")
         save_mrca_values(csv_file_out3,mrcas_by_tree,tree_interval_starts)
-        png_out1 = os.path.join(output_folder, "mrca_hist1.png")
+        png_out1 = os.path.join(output_folder, label_for_pair+"_mrca_hist1.png")
         plot_mrca(mrcas_by_gene,[],theoretical_mrcas, png_out1)
-        png_out2 = os.path.join(output_folder, "mrca_hist2.png")
+        png_out2 = os.path.join(output_folder, label_for_pair+"_mrca_hist2.png")
         plot_mrca(mrcas_by_gene,[],[], png_out2)
 
 def theoretical_coalescent(num_genes,N):

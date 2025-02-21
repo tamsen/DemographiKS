@@ -51,6 +51,7 @@ class DemographiKS_config:
     DemographiKS_random_seed = 17
     
     #debugging
+    sample_ancestral_genomes_for_Tc = [[1,5]]
     stop_at_step = 999
     keep_intermediary_files=False
 

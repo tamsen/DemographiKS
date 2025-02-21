@@ -64,9 +64,12 @@ def run():
         SLiM_runner.run_slim(conf, final_trees_file, trees_file_at_div, full_slim_script)
 
     # select random ancestral genomes to calculate the T coalescent:
-    genome_index_1 = 1
-    genome_index_2 = 5
-    trees_file_processor.plot_coalescent(trees_file_at_div, genome_index_1, genome_index_2,
+    for pairs in conf.sample_ancestral_genomes_for_Tc:
+        genome_index_1 = pairs[0]
+        genome_index_2 = pairs[1]
+        log.write_to_log("Plotting Tc for sample ancestral genomes "
+                         + str(genome_index_1) + " and " + str(genome_index_2))
+        trees_file_processor.plot_coalescent(trees_file_at_div, genome_index_1, genome_index_2,
                     conf, demographics_out_folder)
 
     if conf.stop_at_step < 2:
@@ -84,7 +87,7 @@ def run():
     log.write_to_log("size SLiM population:\t" + str(num_individuals_if_diploid))
     log.write_to_log("size SLiM samples:\t" + str(num_genomes))
     log.write_to_log("num polyploids in population:\t" + str(num_polyploids))
-    log.write_to_log("num subgenomes being simulated:\t" + str(num_genomes))
+    log.write_to_log("num genomes being simulated:\t" + str(num_genomes))
     log.write_to_log("ploidy per polyploid:\t" + str(int(num_genome_per_individual)))
 
     # pick a random polyploid individual (ie, two random subgenomes from the two populations of parental subgenomes)
