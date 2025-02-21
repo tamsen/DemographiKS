@@ -48,7 +48,7 @@ def plot_mrca_for_Autos_and_Allos(this_ax, allo_mrcas_by_gene, auto_mrcas_by_gen
 
     if auto_mrcas_by_gene:
         auto_mrcas_genes = len(auto_mrcas_by_gene)
-        this_ax.hist(auto_mrcas_by_gene, bins=bins, facecolor='c', alpha=1,
+        this_ax.hist(auto_mrcas_by_gene, bins=bins, facecolor='c', alpha=0.5,
                      label='Auto Tcoal by gene\n'
                            + "(" + str(auto_mrcas_genes) + " genes in genome),\n"
                            + "avg Tc " + str(int(avg_simulated_auto_Tc)) + " generations)",
@@ -77,6 +77,7 @@ def plot_allo_vs_auto_ks(this_ax, allo_config_used, allo_ks_by_gene,
     if not xmax:
         xmax = max(allo_ks_by_gene)
     bins = np.arange(0, xmax, bin_size)
+    dgx_hist_ys=[]
 
     if len(allo_ks_by_gene) > 0:
         dgx_hist_ys, bins, patches = this_ax.hist(allo_ks_by_gene, bins=bins, facecolor='b', alpha=0.25,
@@ -118,11 +119,16 @@ def make_Tc_Ks_Allo_vs_Auto_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
     #png_out = os.path.join(demographiKS_out_path, "ks_hist_by_{0}_test.jpg".format(run_list_name))
     par_dir = Path(__file__).parent.parent
     image_folder = os.path.join(par_dir, "images")
+    png_Auto= os.path.join(image_folder, 'Auto_now_crop.png')
     png_Tnow = os.path.join(image_folder, 'Auto_vs_Allo_now_crop.png')
     png_Tc = os.path.join(image_folder, 'Auto_vs_Allo_Tc_crop.png')
-    fig, ax = plt.subplots(2, num_runs, figsize=(40, 20))
+    fig, ax = plt.subplots(3, num_runs, figsize=(40, 20))
     fig.suptitle(suptitle)
-    plot_expository_allo_auto_images(ax, png_Tc, png_Tnow)
+    captions=[
+        "polyploid Ks at T_now for autopolyploid\n\n\n",
+        "polyploid Ks at T_now for allo and autopolyploid\n\n\n",
+        "ancestral Tc at T_div for allo and T_wgd for auto"]
+    plot_expository_allo_auto_image_list(ax, [png_Auto,png_Tnow,png_Tc], captions)
     for i in range(1, num_runs):
         allo_run_name = allo_run_list[i]
 
@@ -166,9 +172,16 @@ def make_Tc_Ks_Allo_vs_Auto_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
             spx_run_duration_in_m = 0
             specks_mrcas_by_gene = False
 
-        plot_allo_vs_auto_ks(ax[0, i], allo_config_used, allo_ks_results,
+        plot_allo_vs_auto_ks(ax[0, i], allo_config_used, [],
+                             auto_config_used,auto_ks_results,
+                             plot_title,
+                             bin_sizes_Ks[0][i], xmax_Ks[0][i],
+                             ymax_Ks[0][i], show_KS_predictions)
+
+
+        plot_allo_vs_auto_ks(ax[1, i], allo_config_used, allo_ks_results,
                              auto_config_used, auto_ks_results,
-                plot_title, bin_sizes_Ks[i], xmax_Ks[i], ymax_Ks[i], show_KS_predictions)
+                plot_title, bin_sizes_Ks[1][i], xmax_Ks[1][i], ymax_Ks[1][i], show_KS_predictions)
 
         allo_Tc_csv_file = os.path.join(allo_run_path, "simulated_ancestral_gene_mrcas.csv")
         loci, allo_mrcas_by_gene = read_data_csv(allo_Tc_csv_file)
@@ -180,11 +193,11 @@ def make_Tc_Ks_Allo_vs_Auto_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                      + "Na=" + str(allo_config_used.ancestral_Ne)
 
         theory_mrcas_by_gene=False
-        avg_slim_Tc = plot_mrca_for_Autos_and_Allos(ax[1, i], allo_mrcas_by_gene, auto_mrcas_by_gene, theory_mrcas_by_gene,
+        avg_slim_Tc = plot_mrca_for_Autos_and_Allos(ax[2, i], allo_mrcas_by_gene, auto_mrcas_by_gene, theory_mrcas_by_gene,
                   plot_title, allo_config_used.ancestral_Ne,
                   bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc[i], allo_config_used.num_genes)
 
-        add_mrca_annotations(ax[1, i], allo_config_used, avg_slim_Tc, allo_run_duration_in_m,
+        add_mrca_annotations(ax[2, i], allo_config_used, avg_slim_Tc, allo_run_duration_in_m,
                              auto_run_duration_in_m)
 
     ax[0, 1].set(ylabel="# paralog pairs in bin")
@@ -198,6 +211,9 @@ def add_Ks_annotations(this_ax, config_used,dgks_Ks_results,dgks_hist_results,
                        bins,show_predictions):
 
     ks_predictions = ks_modeling.Ks_modeling_predictions(config_used, bins)
+    if len(dgks_Ks_results) <= 0:
+        return
+
     ks_fits=ks_modeling.Ks_modeling_fits(dgks_Ks_results,dgks_hist_results,bins)
 
     #compare simulated and predicted Ks means
@@ -227,15 +243,25 @@ def add_Ks_annotations(this_ax, config_used,dgks_Ks_results,dgks_hist_results,
 
     this_ax.annotate(annotation_txt, (0, 0), (0, -30), xycoords='axes fraction', textcoords='offset points', va='top')
 
+
+def plot_expository_allo_auto_image_list(ax, images,captions):
+    for i in range(0,len(images)):
+        im = mpimg.imread(images[i])
+        ax[i, 0].imshow(im)
+        ax[i, 0].get_xaxis().set_visible(False)
+        ax[i, 0].get_yaxis().set_visible(False)
+        # Selecting the axis-X making the bottom and top axes False.
+        ax[i, 0].tick_params(axis='x', which='both', bottom=False,
+                             top=False, labelbottom=False)
+        ax[i, 0].tick_params(axis='y', which='both', right=False,
+                             left=False, labelleft=False)
+        for pos in ['right', 'top', 'bottom', 'left']:
+            ax[i, 0].spines[pos].set_visible(False)
+        ax[i, 0].set(title=captions[i])
+
 def plot_expository_allo_auto_images(ax, png_Tc, png_Tnow):
 
-        # img = Image.open(png_Tnow)
-        # im = plt.imread(get_sample_data(png_Tnow))
-        # img.close()
 
-        # file = open(png_Tnow, "rb")  # Open file in binary read mode
-        # im = file.read()
-        # file.close()  # Close the file
         im = mpimg.imread(png_Tnow)
         ax[0, 0].imshow(im)
         ax[0, 0].get_xaxis().set_visible(False)
