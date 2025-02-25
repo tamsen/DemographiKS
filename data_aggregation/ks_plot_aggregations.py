@@ -223,6 +223,7 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
         else:
             spx_ks_results = []
             spx_run_duration_in_m = 0
+            spx_version= "NA"
             specks_mrcas_by_gene = False
 
 
@@ -242,7 +243,9 @@ def make_Tc_Ks_fig_with_subplots(bin_sizes_Ks, bin_sizes_Tc,
                   plot_title, config_used.ancestral_Ne,
                   bin_sizes_Tc[i], xmax_Tc[i], ymax_Tc[i], config_used.num_genes)
 
-        add_mrca_annotations(ax[1, i], config_used, avg_slim_Tc, dgx_run_duration_in_m, spx_run_duration_in_m)
+        add_mrca_annotations(ax[1, i], config_used, avg_slim_Tc,
+                             dgx_run_duration_in_m, spx_run_duration_in_m,
+                             dgx_version,spx_version)
 
     if config_used.mig_rate > 0:
         plot_expository_images(ax, png_with_migration_Tdiv , png_with_migration_Tnow)
