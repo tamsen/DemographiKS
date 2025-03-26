@@ -94,8 +94,8 @@ def run():
     # pick a random polyploid individual (ie, two random subgenomes from the two populations of parental subgenomes)
     num_genomes = conf.bottleneck_Ne * 2  # because diploid individuals, and thats SLiM default
     random.seed(conf.DemographiKS_random_seed)
-    focal_genomes_as_int = [(random.randint(1, num_genomes)),
-                            (random.randint(1 + num_genomes, 2 * num_genomes))]
+    focal_genomes_as_int = [(random.randint(1, num_genomes-1)),
+                            (random.randint(1 + num_genomes, (2 * num_genomes)-1))]
     focal_genomes_as_str = ["n" + str(i) for i in focal_genomes_as_int]
     log.write_to_log("random focal polyploid individual:\t" + str(focal_genomes_as_str))
 
@@ -192,7 +192,12 @@ def run():
         unique_paralog_names=list(raw_sequences_for_paralog.keys())
         for paralog_name in unique_paralog_names:
             raw_seq= raw_sequences_for_paralog[paralog_name]
+            #print("paralog_name:\t" + paralog_name)
+            #print("raw_seq:\t" + raw_seq)
+            #print("Len raw_seq:\t" + str(len(raw_seq)))
             fixed_subsequence = FASTA_extracta.replace_str_indexes(raw_seq,indexes_of_concern, "NNN")
+            #print("fixed_seq:\t" + fixed_subsequence)
+            #print("len fixed_seq:\t" + str(len(fixed_subsequence)))
             final_sequences_for_paralog[paralog_name] = fixed_subsequence
 
         #we have the sequences in memory at this point, we can calculate summary stats

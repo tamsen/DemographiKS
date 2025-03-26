@@ -13,6 +13,10 @@ def compute_num_sequence_diffs(sequence_a, sequence_b):
         return sum([sequence_a[i] != sequence_b[i] for i in range(len(sequence_a))])
     else:
         print("Sequences are not of equal length.")
+        #print("SequenceA:\t" + sequence_a)
+        #print("Len SequenceA:\t" + str(len(sequence_a)))
+        #print("SequenceB:\t" + sequence_b)
+        #print("Len SequenceB:\t" + str(len(sequence_b)))
         return None
 
 #sequences = ['AUUGCAUG', 'CGUGGCUA']

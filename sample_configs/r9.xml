@@ -1,0 +1,35 @@
+<?xml version="2.0" encoding="UTF-8"?>
+<metadata>
+ <Paths>
+     <output_folder_root>/home/tamsen/Data/DemographiKS_output/DemographiKS</output_folder_root>
+  </Paths>
+    <Chromosome>
+        <total_num_bases>3000000</total_num_bases>
+        <num_codons_in_a_gene>1000</num_codons_in_a_gene>
+        <max_num_paralogs_to_process>FALSE</max_num_paralogs_to_process>
+        <recombination_rate>1.26e-7</recombination_rate>
+    </Chromosome>
+    <Population>
+        <ancestral_ne>10</ancestral_ne>
+        <bottleneck_ne>10</bottleneck_ne>
+       <burnin_time>200000</burnin_time>
+      </Population>
+    <SequenceEvolution>
+        <WGD_gene_half_life_in_GE>31000000</WGD_gene_half_life_in_GE>
+        <mutation_rate>1.0e-5</mutation_rate>
+    </SequenceEvolution>
+<Speciation>
+        <!--<DIV_time_Ge>150000</DIV_time_Ge>-->
+        <DIV_time_Ge>1000</DIV_time_Ge><!--"T2=TDIV/Na-->
+        <WGD_time_Ge>1000</WGD_time_Ge>
+    </Speciation>
+    <Randomization>
+        <DemographiKS_random_seed>9</DemographiKS_random_seed>
+        <SLiM_rep>9</SLiM_rep>
+        <Msprime_random_seed>9</Msprime_random_seed>
+    </Randomization>
+    <StopAtStep>999</StopAtStep>
+    <LogFileName>DemographiKS_log.txt</LogFileName>
+    <IncludeVisuals>False</IncludeVisuals>
+</metadata>
+
