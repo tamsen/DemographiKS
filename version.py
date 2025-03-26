@@ -3,7 +3,8 @@
 GLOBAL_git_URL = "https://github.com/tamsen/DemographiKS"
 GLOBAL_public_version_info = [
     ["Initiated. ", "Aug 23, 2024", "v1.0.0.0"],
-    ["Ready for paper. ", "Mar 5, 2025", "v1.1.0.0"]
+    ["Ready for paper. ", "Mar 5, 2025", "v1.1.0.0"],
+    ["Bug fix. Minor index-out-of-bounds bug", "Mar 26, 2025", "v1.1.0.1"]
 ]
 
 
