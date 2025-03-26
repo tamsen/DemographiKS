@@ -27,8 +27,9 @@
         <WGD_time_Ge>10</WGD_time_Ge>
     </Speciation>
     <Randomization>
-        <SLiM_rep>1</SLiM_rep>
-        <Msprime_random_seed>1</Msprime_random_seed>
+        <DemographiKS_random_seed>7</DemographiKS_random_seed>
+        <Msprime_random_seed>8</Msprime_random_seed>
+        <SLiM_rep>9</SLiM_rep>
     </Randomization>
     <Migration>
         <mig_start_gen>5</mig_start_gen>

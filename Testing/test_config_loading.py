@@ -30,6 +30,10 @@ class TestConfigLoading(unittest.TestCase):
         self.assertEqual(conf.sample_ancestral_genomes_for_Tc[0],[1,10])
         self.assertEqual(conf.sample_ancestral_genomes_for_Tc[1],[5,7])
 
+        self.assertEqual(conf.DemographiKS_random_seed, 7)
+        self.assertEqual(conf.Msprime_random_seed, 8)
+        self.assertEqual(conf.SLiM_rep, 9)
+
         print("mig rate=" + str(conf.mig_rate))
         print("dij rate=" + str(conf.homoeologous_exchange_rate))
 
