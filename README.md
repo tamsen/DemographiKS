@@ -22,8 +22,8 @@ DemographiKS is a pipeline application, with the following steps:
 <br>
 
 ## Prerequisites
-* Run on an environment with PAML installed. We suggest v4.10.7 but have found that other versions also work.
-* Run on an environment with SLiM installed.
+* Run on an environment with PAML installed. We suggest v4.10.7.
+* Run on an environment with SLiM installed. We used v4.2.2.
 * We give directions for configuring an appropriate conda environment below.
 
 <br>
