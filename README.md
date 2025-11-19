@@ -1,6 +1,4 @@
 # DemographiKS
-
-# SpecKS
 Population-level forward simulation of polyploid evolution. Produces Ks data suitable for generating simulated Ks histograms.
 
 <br>
