@@ -22,7 +22,8 @@ DemographiKS is a pipeline application, with the following steps:
 <br>
 
 ## Prerequisites
-* Run on an environment with PAML installed. We suggest v4.10.7 but have found that other versions also work. 
+* Run on an environment with PAML installed. We suggest v4.10.7 but have found that other versions also work.
+* Run on an environment with SLiM installed.
 * We give directions for configuring an appropriate conda environment below.
 
 <br>
@@ -37,7 +38,7 @@ DemographiKS is a pipeline application, with the following steps:
 To automatically configure a conda environment suitable for DemographiKS, use the "DemographiKS_environment.yml" 
 included in the "sample_configs" folder. Example commands to install and do a short run are below.
 
-> conda env create -f /PathToSpecKS/sample_configs/DemographiKS_environment.yml
+> conda env create -f /PathToDemographiKS/sample_configs/DemographiKS_environment.yml
 
 > conda activate dgks_env
 
