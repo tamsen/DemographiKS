@@ -20,6 +20,7 @@
     <SequenceEvolution>
         <WGD_gene_half_life_in_GE>4000</WGD_gene_half_life_in_GE>
         <mutation_rate>0.001</mutation_rate>
+        <synon_to_total_mutation_rate>0.78</synon_to_total_mutation_rate>
     </SequenceEvolution>
 
     <Speciation>

@@ -99,8 +99,19 @@ def run():
     focal_genomes_as_str = ["n" + str(i) for i in focal_genomes_as_int]
     log.write_to_log("random focal polyploid individual:\t" + str(focal_genomes_as_str))
 
-    # overlays neutral mutations
-    mts = msprime.sim_mutations(ts, rate=conf.mutation_rate, random_seed=conf.Msprime_random_seed, keep=True)
+    # The next section of code  overlays neutral mutations
+
+    # note by default msprime runs DC69 which is not codon aware.
+    # CODEML *is*. We want the Ks output match CODEML, which (as we configured it)
+    # means nonsyn mutations will be less likley.
+    # Thus, DC69  allows more mutations than CODEML, cause it to run faster by 1.2/1.
+    # We adjust it so they run at the same rate, here, before pluging into msprime.
+    # (alternatively and ideally, one could code up the full CODEML model in
+    # a custom MatrixMutationModel in msprime.
+    # But, I'm not going to do that for this DGKS release, in case it introduces bugs.
+
+    adjusted_mutation_rate= conf.synon_to_total_mutation_rate * conf.mutation_rate
+    mts = msprime.sim_mutations(ts, rate=adjusted_mutation_rate, random_seed=conf.Msprime_random_seed, keep=True)
     v_list = [v for v in mts.variants()]
     log.write_to_log(str(len(v_list)) + " mutations added.")
 

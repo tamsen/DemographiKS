@@ -25,8 +25,11 @@ class DemographiKS_config:
     DIV_time_Ge=4000
     WGD_time_Ge=2000
 
+    #This will have to be adjusted if different mutation models are used.
+    synon_to_total_mutation_rate =1.0 / 1.2  #this is to match our CODEML input file
+
     # typically 2*10*Ne, but you should check how long it takes for SLiM
-    # ancestral population to be at a steady state
+    # ancestral population to be at a steady state. RC will affect this
     burnin_time=2*10*100 #
 
     #In specs WGD_half_life_MY was 31 my.
@@ -136,6 +139,8 @@ class DemographiKS_config:
                         incoming_tag = inner_layer.tag.strip()
                         if (incoming_tag == "mutation_rate"):
                             self.mutation_rate = float(incoming_txt)
+                        if (incoming_tag == "synon_to_total_mutation_rate"):
+                            self.synon_to_total_mutation_rate = float(incoming_txt)
                         if (incoming_tag == "WGD_gene_half_life_in_GE"):
                             self.mean_WGD_life_span_in_GE = half_life_to_mean_life(incoming_txt)
                         if (incoming_tag == "num_codons"):
@@ -177,13 +182,15 @@ class DemographiKS_config:
                             self.DemographiKS_random_seed = int(incoming_txt)
 
         #we are going with Ks_per_YR = mut rate * (1/1.2)
-        # we multiply by 1/1.2 since thats syn / total mut rate
-        self.Ks_per_YR = 0.833333333 * self.mutation_rate
+        # we multiply by 1/1.2 since thats syn / total mut rate, aka synon_to_total_mutation_rate
+        self.Ks_per_YR = self.synon_to_total_mutation_rate * self.mutation_rate
         self.mean_Ks_from_Tc = 2.0 * self.ancestral_Ne * self.Ks_per_YR
         self.mean_Ks_from_Nb = 2.0 * self.bottleneck_Ne * self.Ks_per_YR
         self.num_genes = int(self.total_num_bases / self.gene_length_in_bases)
         self.t_div_as_ks = self.DIV_time_Ge * self.Ks_per_YR
         self.theoretical_ks_mean_now = self.mean_Ks_from_Tc + self.t_div_as_ks
+
+
 
 def parse_tuple_string(tuple_string):
     if tuple_string.upper() == "FALSE":

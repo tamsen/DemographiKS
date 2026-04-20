@@ -1,11 +1,14 @@
 import unittest
 import os
+from pathlib import Path
+
 import demographiKS
 class TestConfigLoading(unittest.TestCase):
     def test_config_loading(self):
 
-        config_folder="../sample_configs"
-        in_file_name = os.path.join(config_folder, "test-case.xml")
+        par_dir = Path(__file__).parent.parent
+        config_folder=os.path.join(par_dir,"sample_configs")
+        in_file_name = os.path.join(par_dir,config_folder, "test-case.xml")
         mock_arguments=['cmd',in_file_name]
         conf = demographiKS.setup(mock_arguments)
 
@@ -18,7 +21,7 @@ class TestConfigLoading(unittest.TestCase):
         self.assertAlmostEqual(conf.mean_WGD_life_span_in_GE, 5770.78,2)  # add assertion here
         self.assertEqual(conf.recombination_rate, 1.26e-06)
         self.assertEqual(conf.mutation_rate, 0.001)
-        
+        self.assertEqual(conf.synon_to_total_mutation_rate, 0.78)
         self.assertEqual(conf.burnin_time, 478)
 
         self.assertEqual(conf.mig_start, 5)
