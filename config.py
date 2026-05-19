@@ -123,7 +123,9 @@ class DemographiKS_config:
 
                         if (incoming_tag == "recombination_rate"):
                             self.recombination_rate = float(incoming_txt)
-                        if (incoming_tag == "homoeologous_exchange_rate"):
+                        if (incoming_tag == "homoeologous_exchange_rate") :
+                            self.homoeologous_exchange_rate = float(incoming_txt)
+                        if (incoming_tag == "genetic_exchange_rate_parameter"):
                             self.homoeologous_exchange_rate = float(incoming_txt)
                         if (incoming_tag == "total_num_bases"):
                             self.total_num_bases = int(incoming_txt)

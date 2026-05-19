@@ -28,7 +28,7 @@ class TestConfigLoading(unittest.TestCase):
         self.assertEqual(conf.mig_stop, 10)
         self.assertEqual(conf.mig_rate, 0.5)
 
-        self.assertEqual(conf.homoeologous_exchange_rate, 0.123)
+        self.assertEqual(conf.homoeologous_exchange_rate, 0.127)
 
         self.assertEqual(conf.sample_ancestral_genomes_for_Tc[0],[1,10])
         self.assertEqual(conf.sample_ancestral_genomes_for_Tc[1],[5,7])
