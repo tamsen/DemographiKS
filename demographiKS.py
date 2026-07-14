@@ -35,7 +35,6 @@ def run():
 
     out_fasta = os.path.join(demographics_out_folder, conf.sim_name + ".fa")
     ks_csv = os.path.join(demographics_out_folder, conf.sim_name + ".csv")
-    ss_csv = os.path.join(demographics_out_folder, "summary_stats.csv")
     out_png = os.path.join(conf.output_folder, conf.sim_name + "_hist.png")
 
     folders_needed = [conf.output_folder, demographics_out_folder, slim_out_folder]
@@ -160,8 +159,6 @@ def run():
             return
 
     log.write_to_log("Step 3-5: Entering paralog-processing loop")
-    with open(ss_csv, 'a') as f:
-        f.write("paralog_ID\tpi\n")
 
     for paralog_ID in paralog_names:
 
@@ -211,11 +208,8 @@ def run():
             #print("len fixed_seq:\t" + str(len(fixed_subsequence)))
             final_sequences_for_paralog[paralog_name] = fixed_subsequence
 
-        #we have the sequences in memory at this point, we can calculate summary stats
-        pi = summary_stats.pi_nuc_diversity(list(final_sequences_for_paralog.values()))
-        with open(ss_csv, 'a') as f:
-            summary_stats_data=str(paralog_ID) + "\t" + str(pi) + "\n"
-            f.write(str(summary_stats_data))
+        #we have the sequences in memory at this point, we can calculate summary stats (if we wanted to..)
+        #pi = summary_stats.pi_nuc_diversity(list(final_sequences_for_paralog.values()))
 
         paralog_folder = os.path.join(demographics_out_folder, "paralog_" + str(paralog_ID))
         if not os.path.exists(paralog_folder):
