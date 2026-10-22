@@ -200,6 +200,32 @@ class DemographiKS_config:
 
 
     def validate(self):
+
+        #Dont let WGD happen before Tdiv.
+
+        #In terms of generations ago, we need Twgd <= Tdiv
+        if self.DIV_time_Ge < self.WGD_time_Ge:
+            print("Input error. Can't have ancestral divergence that is more recent than WGD. ")
+            return False
+
+        #MIG needs to start after Tdiv (enforced by definition), and then needs to stop before WGD
+        delta_t=self.DIV_time_Ge - self.WGD_time_Ge
+        if self.mig_stop and (delta_t < self.mig_stop):
+            print("Input error. Migration needs to stop before WGD starts. ")
+            print("Adjusting input so that migration events don't run past thwe WGD time. ")
+            self.mig_stop = delta_t
+
+        #Dont let dij stop happen after the end of the sim. Would mess up SLiM!
+        #Dij needs to start after Twgd (enforced by definition), then needs to stop before the sim ends
+        if self.dij_stop and (self.WGD_time_Ge < self.dij_stop):
+            print("Input error. Cross-genome exchange needs to stop before the sim ends. ")
+            print("Adjusting input so that cross-genome exchange events don't run past the end of the sim. ")
+            self.dij_stop= self.WGD_time_Ge
+
+
+
+        #don't let anyone run any combinations of features that we have not tested yet.
+
         doing_mig_run = (str(self.mig_rate) != str(False))
         doing_dij_run = (str(self.dij_start) != str(False))
         doing_mating_run = (str(self.assortative_mating_coefficient) != str(False))
