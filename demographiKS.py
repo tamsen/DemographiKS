@@ -20,9 +20,18 @@ def run():
     if not conf:
         return
 
+
+
     # start the log
     log.write_start_to_log(conf.output_folder, conf.log_file_name, conf.version_info)
     log.write_to_log('Command Arguments Given: %s' % sys.argv)
+
+    #validate
+    valid_config = conf.validate()
+    if not valid_config:
+        log.write_to_log("Revise config file.")
+        log.write_end_to_log()
+        return
 
     slim_out_folder = os.path.join(conf.output_folder, "SLiM_output")
     demographics_out_folder = os.path.join(conf.output_folder, "demographiKS_output")
@@ -30,8 +39,11 @@ def run():
     trees_file_at_div = os.path.join(slim_out_folder, conf.sim_name + "_trees_at_div.txt")
     my_SLiM_allo_script = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
     my_SLiM_auto_script = os.path.join("SLiM_scripts", "autotetraploid_bottleneck_trees.slim")
+
+    #experimental scripts
     my_SLiM_allo_with_migration_script = os.path.join("SLiM_scripts", "allotetraploid_migration_trees.slim")
     my_SLiM_allo_with_assortative_mating_script = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_inbreeding_trees.slim")
+    my_SLiM_allo_with_dij_delay = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_with_dij_delay.slim")
 
     out_fasta = os.path.join(demographics_out_folder, conf.sim_name + ".fa")
     ks_csv = os.path.join(demographics_out_folder, conf.sim_name + ".csv")
@@ -56,6 +68,9 @@ def run():
             if str(conf.assortative_mating_coefficient) != str(False):
                 full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script),
                                                 my_SLiM_allo_with_assortative_mating_script)
+            if str(conf.dij_start) != str(False):
+                full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script),
+                                                my_SLiM_allo_with_dij_delay)
 
         else: #if there was no parental divergence, then this must be an autopolyploid
             full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script), my_SLiM_auto_script)
@@ -102,8 +117,8 @@ def run():
 
     # note by default msprime runs DC69 which is not codon aware.
     # CODEML *is*. We want the Ks output match CODEML, which (as we configured it)
-    # means nonsyn mutations will be less likley.
-    # Thus, DC69  allows more mutations than CODEML, cause it to run faster by 1.2/1.
+    # means nonsyn mutations will be less likely.
+    # Thus, DC69  allows more mutations than CODEML, causing it to run faster by x1.2
     # We adjust it so they run at the same rate, here, before pluging into msprime.
     # (alternatively and ideally, one could code up the full CODEML model in
     # a custom MatrixMutationModel in msprime.
@@ -200,12 +215,7 @@ def run():
         unique_paralog_names=list(raw_sequences_for_paralog.keys())
         for paralog_name in unique_paralog_names:
             raw_seq= raw_sequences_for_paralog[paralog_name]
-            #print("paralog_name:\t" + paralog_name)
-            #print("raw_seq:\t" + raw_seq)
-            #print("Len raw_seq:\t" + str(len(raw_seq)))
             fixed_subsequence = FASTA_extracta.replace_str_indexes(raw_seq,indexes_of_concern, "NNN")
-            #print("fixed_seq:\t" + fixed_subsequence)
-            #print("len fixed_seq:\t" + str(len(fixed_subsequence)))
             final_sequences_for_paralog[paralog_name] = fixed_subsequence
 
         #we have the sequences in memory at this point, we can calculate summary stats (if we wanted to..)
@@ -279,6 +289,7 @@ def setup(arguments):
     shutil.copyfile(config_file, dst)
 
     return conf
+
 
 if __name__ == '__main__':
     run()

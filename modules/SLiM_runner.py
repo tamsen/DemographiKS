@@ -50,6 +50,12 @@ def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
             "-d", "MigRate="+str(config.mig_rate)]
         cmd = cmd  + extra_commands_for_migration
 
+    if str(config.dij_start) != str(False):
+        extra_commands_for_subgenome_exchange=[
+            "-d", "DijStart="+str(config.dij_start),
+            "-d", "DijStop="+str(config.dij_stop)]
+        cmd = cmd + extra_commands_for_subgenome_exchange
+
     if str(config.assortative_mating_coefficient) != str(False):
         extra_commands_for_inbreeding=[
             "-d", "AMCoef="+str(config.assortative_mating_coefficient)]

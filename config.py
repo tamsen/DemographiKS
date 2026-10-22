@@ -40,6 +40,8 @@ class DemographiKS_config:
     #Exchange rate between allopolyploid subgenomes after WGD,
     #as in "Demographic history inference and the polyploid continuum" by  Blischak et al 2023
     homoeologous_exchange_rate = 0
+    dij_start = False
+    dij_stop = False
 
     #mating
     assortative_mating_coefficient = False
@@ -127,6 +129,10 @@ class DemographiKS_config:
                             self.homoeologous_exchange_rate = float(incoming_txt)
                         if (incoming_tag == "genetic_exchange_rate_parameter"):
                             self.homoeologous_exchange_rate = float(incoming_txt)
+                        if (incoming_tag == "genetic_exchange_start"):
+                            self.dij_start = int(incoming_txt)
+                        if (incoming_tag == "genetic_exchange_stop"):
+                            self.dij_stop = int(incoming_txt)
                         if (incoming_tag == "total_num_bases"):
                             self.total_num_bases = int(incoming_txt)
                         if (incoming_tag == "num_codons_in_a_gene"):
@@ -193,6 +199,21 @@ class DemographiKS_config:
         self.theoretical_ks_mean_now = self.mean_Ks_from_Tc + self.t_div_as_ks
 
 
+    def validate(self):
+        doing_mig_run = (str(self.mig_rate) != str(False))
+        doing_dij_run = (str(self.dij_start) != str(False))
+        doing_mating_run = (str(self.assortative_mating_coefficient) != str(False))
+
+        if doing_dij_run and doing_mating_run:
+            print("For simplicity, can't simulate mating dynamics and cross genome exchange at the same time. ")
+            return False
+        if doing_dij_run and doing_mig_run:
+            print("For simplicity, can't simulate migration and cross genome exchange at the same time. ")
+            return False
+        if doing_mating_run and doing_mig_run:
+            print("For simplicity, can't simulate migration and mating dynamics at the same time. ")
+            return False
+        return True
 
 def parse_tuple_string(tuple_string):
     if tuple_string.upper() == "FALSE":

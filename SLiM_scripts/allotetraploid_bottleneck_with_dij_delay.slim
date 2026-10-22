@@ -48,13 +48,15 @@ initialize() {
 	defineConstant("mu", 0);
 
 	// When Dij should start and stop
-	// If we say dij started 100 generations ago,
-	// we mean 100 geenrations before the end of the sim.
-	// The total number of generations in this sim is the Burnin time + time since ancestral divergence.
-	// So, we need to start dij on gen Burnin time + Tdiv - dij_start
-	// So, we need to stop dij on gen Burnin time + Tdiv - dij_stop
-	defineConstant("DIJ_start_time", dij_start);
-	defineConstant("DIJ_stop_time", dij_stop);
+	// We count this in generations since WGD happened.
+	// gen 0: start sim
+	// gen BI: end burnin, ancestral divergence (Tdiv) happens
+	// gen BI + deltat, aka T1: Twgd happens
+	// gen Burnin time + T1 + DijStartInt: start dij
+	// gen Burnin time + T1 + DijStopInt: stop dij
+	// gen Burnin time + time since ancestral divergence: stop sim.
+	defineConstant("DijStartInt", asInteger(DijStart));
+	defineConstant("DijStopInt", asInteger(DijStop));
 
 	initializeMutationType("m1", 0.5, "f", 0.0);
 	m1.convertToSubstitution = T;
@@ -90,7 +92,16 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 	    asInteger(BurninTime-1),
 		asInteger(BurninTime-1)
 	);
-
+	community.rescheduleScriptBlock(
+		s5,
+	    asInteger(BurninTime + asFloat(T1) + DijStartInt),
+	    asInteger(BurninTime + asFloat(T1) + DijStartInt)
+	);
+		community.rescheduleScriptBlock(
+		s6,
+	    asInteger(BurninTime + asFloat(T1) + DijStopInt),
+	    asInteger(BurninTime + asFloat(T1) + DijStopInt)
+	);
 
 }
 
@@ -135,20 +146,17 @@ s4 10 late() {
 
 s5 10 late() {
 	catn(sim.cycle + "\t Its s5 time! Starting DIJ!");
-	// sets the homoeologous exchange / recombination rate across subgenomes
+	// Starts the homoeologous exchange / recombination rate across subgenomes
 	// (in this case it is coded as migration even though its not really migration.)
 	// as in "Demographic history inference and the polyploid continuum" by  Blischak et al 2023
-	catn(sim.cycle + "\t Homoeologous exchange between subgenomes = " + DIJ);
+	catn(sim.cycle + "\t Starting homoeologous exchange between subgenomes, dij = " + DIJ);
 	p1.setMigrationRates(p2, DIJ);
 	p2.setMigrationRates(p1, DIJ);
 }
 
 s6 10 late() {
 	catn(sim.cycle + "\t Its s6 time! Stopping DIJ!");
-	// sets the homoeologous exchange / recombination rate across subgenomes
-	// (in this case it is coded as migration even though its not really migration.)
-	// as in "Demographic history inference and the polyploid continuum" by  Blischak et al 2023
-	catn(sim.cycle + "\t Homoeologous exchange between subgenomes = 0");
+	catn(sim.cycle + "\t Stopping homoeologous exchange between subgenomes, dij = 0");
 	p1.setMigrationRates(p2, 0);
 	p2.setMigrationRates(p1, 0);
 }

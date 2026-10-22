@@ -6,7 +6,8 @@ GLOBAL_public_version_info = [
     ["Ready for paper. ", "Mar 5, 2025", "v1.1.0.0"],
     ["Bug fix. Minor index-out-of-bounds bug", "Mar 26, 2025", "v1.1.0.1"],
     ["Minor readme edits", "v1.1.0.2"],
-    ["Added configurable synon_to_total_mutation_rat", "v1.1.1"],
+    ["Added configurable synon_to_total_mutation_rate", "v1.1.1"],
+    ["New feature, you can set the start and stop times of cross genome exchange:", "v1.2.0"],
 ]
 
 
