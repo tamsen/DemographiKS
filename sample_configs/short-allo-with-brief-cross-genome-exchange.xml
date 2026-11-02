@@ -23,7 +23,7 @@
     </SequenceEvolution>
     <Speciation>
         <DIV_time_Ge>50000</DIV_time_Ge>
-        <WGD_time_Ge>30000</WGD_time_Ge>
+        <WGD_time_Ge>50000</WGD_time_Ge>
     </Speciation>
     <Randomization>
         <SLiM_rep>1</SLiM_rep>

@@ -119,10 +119,10 @@ def run():
     # CODEML *is*. We want the Ks output match CODEML, which (as we configured it)
     # means nonsyn mutations will be less likely.
     # Thus, DC69  allows more mutations than CODEML, causing it to run faster by x1.2
-    # We adjust it so they run at the same rate, here, before pluging into msprime.
+    # We adjust it so they run at the same rate, here, before plugging into msprime.
     # (alternatively and ideally, one could code up the full CODEML model in
     # a custom MatrixMutationModel in msprime.
-    # But, I'm not going to do that for this DGKS release, in case it introduces bugs.
+    # But, I'm not going to do that for this DGKS release,
 
     adjusted_mutation_rate= conf.synon_to_total_mutation_rate * conf.mutation_rate
     mts = msprime.sim_mutations(ts, rate=adjusted_mutation_rate, random_seed=conf.Msprime_random_seed, keep=True)
