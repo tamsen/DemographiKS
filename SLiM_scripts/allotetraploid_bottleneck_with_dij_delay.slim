@@ -1,20 +1,7 @@
 /*
 	Allotetraploid bottleneck
 
-	Example usage:
-
-	slim -d "nuBot=0.1" -d "T1=0.5" -d "T2=0.25" -d "rep=1" allotetraploid_bottleneck.slim
-
-	Parameters:
-		nuBot: Proportion of the ancestral population size remaining after bottleneck.
-		T1: The amount of time in dadi units (# of 2N generations) that the parents
-			are isolated before forming the allotetraploid.
-		T2: The amount of time the allotetraploid lineage has existed before we sample
-			it.
-		rep: Simulation replicate number (for running things in a for loop or
-			 an array job on an HPC).
-
-	Code sourced from:
+	Code derived from:
 	P. D. Blischak, M. Sajan, M. S. Barker, R. N. Gutenkunst, Demographic history
     inference and the polyploid continuum. Genetics 224, iyad107 (2023).
     with minor modification.
@@ -102,7 +89,6 @@ bottleneck at generation (2N * T1) and sampling time at (2N * (T1 + T2)).
 	    asInteger(BurninTime + asFloat(T1) + DijStopInt),
 	    asInteger(BurninTime + asFloat(T1) + DijStopInt)
 	);
-
 }
 
 // Burn-in here is 10 * 2 * 1000 = 20_000 generations.
@@ -124,13 +110,6 @@ s1 10 late() {
 	p1.setSubpopulationSize(asInteger(Nb));
 	p2.setSubpopulationSize(asInteger(Nb));
 	catn("size p2=" + p2.individualCount);
-
-	// sets the homoeologous exchange / recombination rate across subgenomes
-	// (in this case it is coded as migration even though its not really migration.)
-	// as in "Demographic history inference and the polyploid continuum" by  Blischak et al 2023
-	// catn(sim.cycle + "\t Homoeologous exchange between subgenomes = " + DIJ);
-	// p1.setMigrationRates(p2, DIJ);
-	// p2.setMigrationRates(p1, DIJ);
 }
 
 s3 10 late() {
@@ -160,3 +139,4 @@ s6 10 late() {
 	p1.setMigrationRates(p2, 0);
 	p2.setMigrationRates(p1, 0);
 }
+

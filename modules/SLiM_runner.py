@@ -56,6 +56,12 @@ def run_slim(config,trees_file_name, trees_file_name_at_div, my_SLiM_script):
             "-d", "DijStop="+str(config.dij_stop)]
         cmd = cmd + extra_commands_for_subgenome_exchange
 
+    if str(config.expansion_start) != str(False):
+        extra_commands_for_expansion=[
+            "-d", "Nc="+str(config.expansion_Ne),
+            "-d", "ExpansionStart="+str(config.expansion_start)]
+        cmd = cmd + extra_commands_for_expansion
+
     if str(config.assortative_mating_coefficient) != str(False):
         extra_commands_for_inbreeding=[
             "-d", "AMCoef="+str(config.assortative_mating_coefficient)]

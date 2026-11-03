@@ -40,10 +40,11 @@ def run():
     my_SLiM_allo_script = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_trees.slim")
     my_SLiM_auto_script = os.path.join("SLiM_scripts", "autotetraploid_bottleneck_trees.slim")
 
-    #experimental scripts
+    #example experimental scripts
     my_SLiM_allo_with_migration_script = os.path.join("SLiM_scripts", "allotetraploid_migration_trees.slim")
     my_SLiM_allo_with_assortative_mating_script = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_inbreeding_trees.slim")
     my_SLiM_allo_with_dij_delay = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_with_dij_delay.slim")
+    my_SLiM_allo_with_expansion_start = os.path.join("SLiM_scripts", "allotetraploid_bottleneck_with_expansion.slim")
 
     out_fasta = os.path.join(demographics_out_folder, conf.sim_name + ".fa")
     ks_csv = os.path.join(demographics_out_folder, conf.sim_name + ".csv")
@@ -71,6 +72,9 @@ def run():
             if str(conf.dij_start) != str(False):
                 full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script),
                                                 my_SLiM_allo_with_dij_delay)
+            if str(conf.expansion_start) != str(False):
+                full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script),
+                                                my_SLiM_allo_with_expansion_start)
 
         else: #if there was no parental divergence, then this must be an autopolyploid
             full_slim_script = os.path.join(os.path.dirname(path_to_current_py_script), my_SLiM_auto_script)

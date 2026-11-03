@@ -1,20 +1,7 @@
 /*
 	Allotetraploid bottleneck
 
-	Example usage:
-
-	slim -d "nuBot=0.1" -d "T1=0.5" -d "T2=0.25" -d "rep=1" allotetraploid_bottleneck.slim
-
-	Parameters:
-		nuBot: Proportion of the ancestral population size remaining after bottleneck.
-		T1: The amount of time in dadi units (# of 2N generations) that the parents
-			are isolated before forming the allotetraploid.
-		T2: The amount of time the allotetraploid lineage has existed before we sample
-			it.
-		rep: Simulation replicate number (for running things in a for loop or
-			 an array job on an HPC).
-
-	Code sourced from:
+	Code derived from:
 	P. D. Blischak, M. Sajan, M. S. Barker, R. N. Gutenkunst, Demographic history
     inference and the polyploid continuum. Genetics 224, iyad107 (2023).
     with minor modification.

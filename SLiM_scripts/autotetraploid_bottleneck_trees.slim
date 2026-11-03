@@ -1,22 +1,11 @@
-// Peter Ralph, 10 September 2019: autotetraploidy
-// Modified by Paul Blischak, 29 September 2020
-
 /*
-	Autopolyploid bottleneck
+	Allotetraploid bottleneck
 
-	Example usage:
-
-	slim -d "nuBot=0.1" -d "rep=1" autotetraploid_snm.slim
-
-	Parameters:
-		nuBot: Proportion of the ancestral population size remaining after bottleneck.
-		rep: Simulation replicate number (for running things in a for loop or
-			 an array job on an HPC).
-
-	Code sourced from:
+	Code derived from:
 	P. D. Blischak, M. Sajan, M. S. Barker, R. N. Gutenkunst, Demographic history
     inference and the polyploid continuum. Genetics 224, iyad107 (2023).
     with minor modification.
+
 */
 
 initialize() {

@@ -22,6 +22,8 @@ class DemographiKS_config:
     total_num_bases = 2000
     ancestral_Ne = 100
     bottleneck_Ne = 20
+    expansion_Ne = False
+
     DIV_time_Ge=4000
     WGD_time_Ge=2000
 
@@ -42,6 +44,8 @@ class DemographiKS_config:
     homoeologous_exchange_rate = 0
     dij_start = False
     dij_stop = False
+    expansion_start = False
+
 
     #mating
     assortative_mating_coefficient = False
@@ -164,6 +168,10 @@ class DemographiKS_config:
                             self.ancestral_Ne= int(incoming_txt)
                         if (incoming_tag == "bottleneck_ne"):
                             self.bottleneck_Ne = int(incoming_txt)
+                        if (incoming_tag == "expansion_ne"):
+                            self.expansion_Ne = int(incoming_txt)
+                        if (incoming_tag == "expansion_start"):
+                                self.expansion_start  = int(incoming_txt)
                         if (incoming_tag == "burnin_time"):
                             self.burnin_time = int(incoming_txt)
                         if (incoming_tag == "assortative_mating_coefficient"):
