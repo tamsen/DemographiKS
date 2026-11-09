@@ -4,6 +4,8 @@ import os
 import shutil
 import msprime
 import sys
+
+import pyslim
 import tskit
 import random
 from datetime import datetime
@@ -97,6 +99,13 @@ def run():
     log.write_to_log("Step 2: Generating paralogs from trees file")
     log.write_to_log("Loading:\t" + str(final_trees_file))
     ts = tskit.load(final_trees_file)
+
+    # Recapitate to guarantee full coalescence back through time
+    ts_coalesced = pyslim.recapitate(ts,
+        ancestral_Ne=conf.ancestral_Ne, # Ne of the founding population
+        recombination_rate=conf.recombination_rate
+            )
+    ts = ts_coalesced
 
     # log.write_to_log("SLiM metadata dict:\t" + str(metadata))
     num_individuals_if_diploid = ts.individuals_population.size
