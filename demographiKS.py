@@ -107,6 +107,10 @@ def run():
             )
     ts = ts_coalesced
 
+    # TODO, consider simplification if we will not need anything else downstream
+    # Simplify the tree sequence to keep only those nodes
+    # ts_simplified = ts.simplify(nodes_of_interest)
+
     # log.write_to_log("SLiM metadata dict:\t" + str(metadata))
     num_individuals_if_diploid = ts.individuals_population.size
     num_polyploids = num_individuals_if_diploid / 2.0
@@ -119,7 +123,10 @@ def run():
     log.write_to_log("ploidy per polyploid:\t" + str(int(num_genome_per_individual)))
 
     # pick a random polyploid individual (ie, two random subgenomes from the two populations of parental subgenomes)
-    num_genomes = conf.bottleneck_Ne * 2  # because diploid individuals, and thats SLiM default
+    num_individuals_at_the_end_of_the_sim= conf.bottleneck_Ne
+    if conf.expansion_Ne:
+        num_individuals_at_the_end_of_the_sim = conf.expansion_Ne
+    num_genomes = num_individuals_at_the_end_of_the_sim * 2  # because diploid individuals, and thats SLiM default
     random.seed(conf.DemographiKS_random_seed)
     focal_genomes_as_int = [(random.randint(1, num_genomes-1)),
                             (random.randint(1 + num_genomes, (2 * num_genomes)-1))]
