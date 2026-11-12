@@ -19,7 +19,7 @@ class DemographiKS_config:
     stop_codons=["TAA","TGA","TAG"]
     max_num_paralogs_to_process=20 #per genome
     log_file_name = "log.txt"
-    total_num_bases = 2000
+    total_num_bases = 30000
     ancestral_Ne = 100
     bottleneck_Ne = 20
     expansion_Ne = False
