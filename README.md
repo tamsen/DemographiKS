@@ -37,10 +37,10 @@ DemographiKS is a pipeline application, with the following steps:
 <br>
 
 ## Configuration
-To automatically configure a conda environment suitable for DemographiKS, use the "DemographiKS_environment.yml" 
+To automatically configure a conda environment suitable for DemographiKS, use the "dgks_env.yml" 
 included in the "sample_configs" folder. Example commands to install and do a short run are below.
 
-> conda env create -f /PathToDemographiKS/sample_configs/DemographiKS_environment.yml
+> conda env create -f /PathToDemographiKS/sample_configs/dgks_env.yml
 
 > conda activate dgks_env
 
@@ -49,10 +49,10 @@ included in the "sample_configs" folder. Example commands to install and do a sh
 <br>
 
 ## Help
-* There are example config files and an overview of the parameters in the "sample_configs" folder.
+* There are example config files in the "sample_configs" folder. "short-auto-run.xml" will quickly test everything works. Just update the path "output_folder_root" in the config .xml file to where you want the output to go. 
 
 ## OS
-* Tested on a mac and linux (ubuntu)
+* Tested on a mac and linux desktop and clusters (Ubuntu v20, CentOS 7, Rocky 9.8)
 
 ## Referencing DemographiKS
 Publication forthcoming
