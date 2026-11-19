@@ -19,8 +19,7 @@
         <mutation_rate>1.0e-5</mutation_rate>
     </SequenceEvolution>
 <Speciation>
-        <!--<DIV_time_Ge>150000</DIV_time_Ge>-->
-        <DIV_time_Ge>1000</DIV_time_Ge><!--"T2=TDIV/Na-->
+        <DIV_time_Ge>1000</DIV_time_Ge>
         <WGD_time_Ge>1000</WGD_time_Ge>
     </Speciation>
     <Randomization>

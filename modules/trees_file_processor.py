@@ -14,20 +14,16 @@ def plot_coalescent(trees_file, genome_index_1,genome_index_2, config, output_fo
         gene_length=3*config.num_codons_in_a_gene
         num_genes=int(genome_length/gene_length)
         label_for_pair=str(genome_index_1) + "_" + str(genome_index_2)
-        print("num genes: " + str(num_genes))
         #get tree for every gene
         gene_starts=[i*gene_length for i in range(0,num_genes)]
         gene_centers=[g+int(gene_length/2)for g in gene_starts]
         mrcas_by_gene=[]
         mrcas_by_tree=[]
-        print("num gene centers: " + str(len(gene_centers)))
         for gene_center in gene_centers:
             tree_for_gene=reduced_ts.at(gene_center)
-            print("checking a gene")
             if not tree_for_gene.has_multiple_roots:
                 mrca = reduced_ts.node(tree_for_gene.root)
                 mrcas_by_gene.append(mrca.time)
-                print("added to the list")
 
         tree_interval_starts=[]
         for tree in reduced_ts.trees():
