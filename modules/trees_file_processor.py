@@ -9,12 +9,12 @@ from matplotlib import pyplot as plt
 def plot_coalescent(trees_file, genome_index_1,genome_index_2, config, output_folder):
 
         ts = tskit.load(trees_file)
-        reduced_ts = ts.simplify([genome_index_1,genome_index_2])  # simplify to the first 10 samples
+        reduced_ts = ts.simplify([genome_index_1,genome_index_2])
         genome_length=config.total_num_bases
         gene_length=3*config.num_codons_in_a_gene
         num_genes=int(genome_length/gene_length)
         label_for_pair=str(genome_index_1) + "_" + str(genome_index_2)
-
+        print("num genes: " + str(num_genes))
         #get tree for every gene
         gene_starts=[i*gene_length for i in range(0,num_genes)]
         gene_centers=[g+int(gene_length/2)for g in gene_starts]
